@@ -108,12 +108,27 @@ typedef short int			int16;
 
 	} CF_Rect;
 
+	// May include Rectangle Path, Bézier Path, and other geometry sources in the future.
+	typedef enum
+	{
+		CF_GEOMETRY_SOURCE_LAYER_BOUNDS = 0
+
+	} CF_GeometrySource;
+
 	typedef struct
 	{
-		CF_Rect bounds;
+		CF_Rect geometryBounds;
+		CF_GeometrySource source;
+		A_Boolean isFallback;
 
-		A_long width;
-		A_long height;
+	} CF_GeometryContext;
+
+	typedef struct
+	{
+		CF_Rect geometryBounds;
+
+		A_long inputWidth;
+		A_long inputHeight;
 
 	} CF_RenderContext;
 

@@ -30,8 +30,8 @@ typedef struct {
 
 TableString		g_strs[StrID_NUMTYPES] = {
 	StrID_NONE,						"",
-	StrID_Name,						"Skeleton",
-	StrID_Description,				"An empty (skeletal, if you will) effect sample,\r for your modifying pleasure.\rCopyright 2007-2023 Adobe Inc.",
+	StrID_Name,						"CornerFlex",
+	StrID_Description,				"Flexible edge trimming for Adobe After Effects.",
 	StrID_Gain_Param_Name,			"Gain",
 	StrID_Color_Param_Name,			"Color",
 };

@@ -13,11 +13,11 @@ resource 'PiPL' (16000) {
 		},
 		/* [2] */
 		Name {
-			"Skeleton"
+			"CornerFlex"
 		},
 		/* [3] */
 		Category {
-			"Sample Plug-ins"
+			"Burgos in Motion"
 		},
 #ifdef AE_OS_WIN
     #if defined(AE_PROC_INTELx64)
@@ -57,7 +57,7 @@ resource 'PiPL' (16000) {
 		},
 		/* [11] */
 		AE_Effect_Match_Name {
-			"ADBE Skeleton"
+			"BurgosInMotion CornerFlex"
 		},
 		/* [12] */
 		AE_Reserved_Info {

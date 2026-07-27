@@ -17,13 +17,13 @@ BEGIN
 	"eman",
 	0, 0x0,
 	12, 0x0,
-	"\x08Skeleton\0\0\0", 
+	"\x0ACornerFlex\0", 
 
 	"MIB8",
 	"gtac", 
 	0, 0x0,
-	16, 0x0,
-	"\x0FSample Plug-ins", 
+	20, 0x0,
+	"\x10Burgos in Motion\0\0\0", 
 
 	"MIB8",
 	"4668", 
@@ -70,8 +70,8 @@ BEGIN
 	"MIB8",
 	"ANMe",
 	0, 0x0,
-	16, 0x0,
-	"\x0DADBE Skeleton\0\0", 
+	28, 0x0,
+	"\x19BurgosInMotion CornerFlex\0\0", 
 
 	"MIB8",
 	0x6165464CL, 

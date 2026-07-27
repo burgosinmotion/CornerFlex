@@ -192,16 +192,16 @@ TrimFunc16(
 		static_cast<const CF_RenderContext*>(refcon);
 
 	const PF_FpLong leftBoundary =
-		context->bounds.left;
+		context->geometryBounds.left;
 
 	const PF_FpLong topBoundary =
-		context->bounds.top;
+		context->geometryBounds.top;
 
 	const PF_FpLong rightBoundary =
-		context->bounds.right;
+		context->geometryBounds.right;
 
 	const PF_FpLong bottomBoundary =
-		context->bounds.bottom;
+		context->geometryBounds.bottom;
 
 	const PF_Boolean outsideBounds =
 		x < leftBoundary ||
@@ -236,16 +236,16 @@ TrimFunc8(
 		static_cast<const CF_RenderContext*>(refcon);
 
 	const PF_FpLong leftBoundary =
-		context->bounds.left;
+		context->geometryBounds.left;
 
 	const PF_FpLong topBoundary =
-		context->bounds.top;
+		context->geometryBounds.top;
 
 	const PF_FpLong rightBoundary =
-		context->bounds.right;
+		context->geometryBounds.right;
 
 	const PF_FpLong bottomBoundary =
-		context->bounds.bottom;
+		context->geometryBounds.bottom;
 
 	const PF_Boolean outsideBounds =
 		x < leftBoundary ||
@@ -328,6 +328,29 @@ BuildTrimRectangle(
 	return rect;
 }
 
+static CF_GeometryContext
+BuildGeometryContext(
+	const CornerFlexSettings& settings,
+	A_long inputWidth,
+	A_long inputHeight)
+{
+	CF_GeometryContext geometryContext;
+	AEFX_CLR_STRUCT(geometryContext);
+
+	geometryContext.geometryBounds =
+		BuildTrimRectangle(
+			settings,
+			inputWidth,
+			inputHeight);
+
+	geometryContext.source =
+		CF_GEOMETRY_SOURCE_LAYER_BOUNDS;
+
+	geometryContext.isFallback = TRUE;
+
+	return geometryContext;
+}
+
 static PF_Err
 Render(
 	PF_InData* in_data,
@@ -345,17 +368,20 @@ Render(
 	CornerFlexSettings settings;
 	ReadCornerFlexSettings(params, settings);
 
-	context.width =
+	context.inputWidth =
 		params[CORNERFLEX_INPUT]->u.ld.width;
 
-	context.height =
+	context.inputHeight =
 		params[CORNERFLEX_INPUT]->u.ld.height;
 
-	context.bounds =
-		BuildTrimRectangle(
+	const CF_GeometryContext geometryContext =
+		BuildGeometryContext(
 			settings,
-			context.width,
-			context.height);
+			context.inputWidth,
+			context.inputHeight);
+
+	context.geometryBounds =
+		geometryContext.geometryBounds;
 
 	const A_long linesL =
 		output->extent_hint.bottom -
@@ -409,8 +435,8 @@ PF_Err PluginDataEntryFunction2(
 		inPtr,
 		inPluginDataCallBackPtr,
 		"CornerFlex", // Name
-		"CornerFlex", // Match Name
-		"CornerFlex", // Category
+		"BurgosInMotion CornerFlex", // Match Name
+		"Burgos in Motion", // Category
 		AE_RESERVED_INFO, // Reserved Info
 		"EffectMain",	// Entry point
 		"https://www.adobe.com");	// support URL
