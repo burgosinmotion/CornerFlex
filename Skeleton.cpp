@@ -346,9 +346,50 @@ BuildGeometryContext(
 	geometryContext.source =
 		CF_GEOMETRY_SOURCE_LAYER_BOUNDS;
 
+	geometryContext.primitiveType =
+		CF_PRIMITIVE_UNKNOWN;
+
 	geometryContext.isFallback = TRUE;
 
 	return geometryContext;
+}
+
+CF_GeometryContext
+ExecuteTrimOperation(
+	CF_GeometryContext geometryContext,
+	const CornerFlexSettings& settings)
+{
+	static_cast<void>(settings);
+
+	return geometryContext;
+}
+
+CF_GeometryContext
+ExecuteGeometryPipeline(
+	CF_GeometryContext geometryContext,
+	const CornerFlexSettings& settings)
+{
+	return ExecuteTrimOperation(
+		geometryContext,
+		settings);
+}
+
+CF_RenderContext
+BuildRenderContext(
+	const CF_GeometryContext& geometryContext,
+	A_long inputWidth,
+	A_long inputHeight)
+{
+	CF_RenderContext renderContext;
+	AEFX_CLR_STRUCT(renderContext);
+
+	renderContext.geometryBounds =
+		geometryContext.geometryBounds;
+
+	renderContext.inputWidth = inputWidth;
+	renderContext.inputHeight = inputHeight;
+
+	return renderContext;
 }
 
 static PF_Err
@@ -362,26 +403,31 @@ Render(
 
 	AEGP_SuiteHandler suites(in_data->pica_basicP);
 
-	CF_RenderContext context;
-	AEFX_CLR_STRUCT(context);
-
 	CornerFlexSettings settings;
 	ReadCornerFlexSettings(params, settings);
 
-	context.inputWidth =
+	const A_long inputWidth =
 		params[CORNERFLEX_INPUT]->u.ld.width;
 
-	context.inputHeight =
+	const A_long inputHeight =
 		params[CORNERFLEX_INPUT]->u.ld.height;
 
-	const CF_GeometryContext geometryContext =
+	CF_GeometryContext geometryContext =
 		BuildGeometryContext(
 			settings,
-			context.inputWidth,
-			context.inputHeight);
+			inputWidth,
+			inputHeight);
 
-	context.geometryBounds =
-		geometryContext.geometryBounds;
+	geometryContext =
+		ExecuteGeometryPipeline(
+			geometryContext,
+			settings);
+
+	CF_RenderContext context =
+		BuildRenderContext(
+			geometryContext,
+			inputWidth,
+			inputHeight);
 
 	const A_long linesL =
 		output->extent_hint.bottom -

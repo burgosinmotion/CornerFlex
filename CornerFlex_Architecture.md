@@ -59,6 +59,7 @@ Extensión CEP
 → parámetros nativos de CornerFlex
 → CornerFlexSettings
 → Geometry Engine
+→ Geometry Operation Pipeline
 → CF_RenderContext
 → Pixel Renderer
 ```
@@ -67,6 +68,7 @@ Extensión CEP
 - **Parámetros nativos:** almacenan valores animables, serializables y compatibles con expresiones.
 - **CornerFlexSettings:** contiene los valores resueltos que consume la lógica nativa.
 - **Geometry Engine:** construye y precalcula la representación geométrica.
+- **Geometry Operation Pipeline:** aplica operaciones geométricas ordenadas antes de construir el contexto de render.
 - **CF_RenderContext:** transporta datos inmutables y preparados hacia los callbacks.
 - **Pixel Renderer:** evalúa la geometría y escribe los píxeles en 8 o 16 bpc.
 
@@ -80,6 +82,14 @@ La geometría de CornerFlex debe calcularse respecto al objeto objetivo. Por eje
 - shape rectangular: 150 × 150;
 - Trim Left: 10 %;
 - resultado esperado: 15 píxeles respecto al shape, no 192 píxeles respecto a la composición.
+
+### Primitive Foundation
+
+`CF_PrimitiveType` describe la naturaleza geométrica de la entrada. No contiene geometría ni lógica de renderizado. Mientras Layer Bounds sea la fuente temporal o fallback, se utiliza `CF_PRIMITIVE_UNKNOWN`. En el futuro permitirá distinguir Rectangle, Ellipse, Bézier, Polygon, Star y Custom Path.
+
+### Geometry Operation Pipeline
+
+El flujo geométrico sigue `BuildGeometryContext()` → `ExecuteGeometryPipeline()` → `BuildRenderContext()` → render. `ExecuteTrimOperation()` es la primera operación y actualmente funciona como pass-through, por lo que no altera `geometryBounds`. El renderer permanece independiente del pipeline y solo consume `CF_RenderContext`.
 
 ## 6. Input Bounds versus Geometry Bounds
 
@@ -145,6 +155,9 @@ Actualmente están implementados:
 - `ReadCornerFlexSettings()`;
 - `BuildTrimRectangle()`;
 - `BuildGeometryContext()`;
+- `ExecuteTrimOperation()`;
+- `ExecuteGeometryPipeline()`;
+- `BuildRenderContext()`;
 - `TrimFunc8()`;
 - `TrimFunc16()`;
 - render de 8 y 16 bpc.

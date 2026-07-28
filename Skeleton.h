@@ -115,10 +115,23 @@ typedef short int			int16;
 
 	} CF_GeometrySource;
 
+	typedef enum
+	{
+		CF_PRIMITIVE_UNKNOWN = 0,
+		CF_PRIMITIVE_RECTANGLE,
+		CF_PRIMITIVE_ELLIPSE,
+		CF_PRIMITIVE_BEZIER,
+		CF_PRIMITIVE_POLYGON,
+		CF_PRIMITIVE_STAR,
+		CF_PRIMITIVE_CUSTOM_PATH
+
+	} CF_PrimitiveType;
+
 	typedef struct
 	{
 		CF_Rect geometryBounds;
 		CF_GeometrySource source;
+		CF_PrimitiveType primitiveType;
 		A_Boolean isFallback;
 
 	} CF_GeometryContext;
@@ -131,6 +144,22 @@ typedef short int			int16;
 		A_long inputHeight;
 
 	} CF_RenderContext;
+
+	CF_GeometryContext
+	ExecuteTrimOperation(
+		CF_GeometryContext geometryContext,
+		const CornerFlexSettings& settings);
+
+	CF_GeometryContext
+	ExecuteGeometryPipeline(
+		CF_GeometryContext geometryContext,
+		const CornerFlexSettings& settings);
+
+	CF_RenderContext
+	BuildRenderContext(
+		const CF_GeometryContext& geometryContext,
+		A_long inputWidth,
+		A_long inputHeight);
 
 
 extern "C" {
