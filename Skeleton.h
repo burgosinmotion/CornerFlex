@@ -158,6 +158,14 @@ typedef short int			int16;
 
 	typedef struct
 	{
+		A_Boolean wasFound;
+		A_Boolean isRectanglePath;
+		int32_t uniqueStreamId;
+
+	} CF_GeometryTargetLocation;
+
+	typedef struct
+	{
 		CF_Rect bounds;
 		A_Boolean isAvailable;
 

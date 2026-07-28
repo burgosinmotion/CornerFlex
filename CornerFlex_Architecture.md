@@ -171,6 +171,22 @@ Estrategias evaluadas:
 
 La estrategia recomendada para la siguiente fase es que CEP capture explícitamente el objetivo y entregue `layerId + uniqueStreamId`, acompañado por una ruta de índices y Match Names como información de validación o recuperación. La integración deberá resolver y verificar esa identidad en el host antes de producir `CF_RectangleSourceData`; ninguna ruta deberá elegir automáticamente el primer path, el visible o el aparentemente único.
 
+#### Geometry Target Locator
+
+Identity, Location y Geometry Source representan responsabilidades distintas:
+
+- `CF_GeometryTargetIdentity` describe qué stream se desea encontrar.
+- `CF_GeometryTargetLocation` informa si el stream fue localizado y si pudo validarse como Rectangle Path, sin conservar referencias del SDK.
+- `CF_RectangleSourceData` contendrá la geometría cuando exista un Geometry Reader; localizar un target no activa esta fuente.
+
+`LocateGeometryTargetInAfterEffects()` retorna inmediatamente un resultado limpio cuando la identidad no es válida. Para una identidad válida, obtiene la capa del efecto mediante `AEGP_PFInterfaceSuite1`, compara su ID con `targetIdentity.layerId`, obtiene el grupo raíz con `AEGP_DynamicStreamSuite4` y recorre sus hijos por índice. Cada candidato se compara mediante `AEGP_StreamSuite6::AEGP_GetUniqueStreamID()`. El recorrido está limitado a 32 niveles y no selecciona otro path cuando el objetivo no aparece.
+
+CornerFlex registra un `AEGP_PluginID` durante `GlobalSetup()` porque las APIs que crean referencias de streams requieren ese identificador. Cada `AEGP_StreamRefH` hijo se libera antes de continuar y el stream raíz se libera antes de retornar. Los handles de capa son referencias prestadas y no se almacenan. El resultado solo conserva `wasFound`, `isRectanglePath` y `uniqueStreamId`.
+
+Al encontrar el Unique Stream ID se consulta el Match Name mediante `AEGP_GetMatchName()`. Los headers y ejemplos del SDK 2025 revisados no exponen una constante oficial para el Match Name de Rectangle Path. Por ello CornerFlex no introduce un literal no verificado: el target puede marcarse como encontrado, pero `isRectanglePath` permanece en `FALSE`. Esta limitación impide validar o leer la geometría en esta fase.
+
+`DiscoverRectangleSourceFromAfterEffects()` llama al localizador, pero continúa devolviendo `isAvailable = FALSE`. Layer Bounds sigue siendo la única fuente activa y no se leen Size, Position, Roundness, dirección, transformaciones ni valores temporales.
+
 ### Geometry Operation Pipeline
 
 El flujo geométrico sigue `BuildGeometryContext()` → `ExecuteGeometryPipeline()` → `BuildRenderContext()` → render. `BuildGeometryContext()` crea la geometría base y `ExecuteTrimOperation()` es la primera operación real: transforma sus `geometryBounds` mediante `BuildTrimRectangle()`. El renderer permanece independiente del pipeline y solo consume `CF_RenderContext`.
@@ -261,6 +277,7 @@ Actualmente están implementados:
 - `CF_RectangleGeometry`;
 - `CF_CornerRadii`;
 - `CF_GeometryTargetIdentity`;
+- `CF_GeometryTargetLocation`;
 - `CF_RectangleSourceData`;
 - `CF_GeometryResolveRequest`;
 - `CF_GeometrySourceData`;

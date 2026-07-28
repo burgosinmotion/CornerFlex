@@ -44,6 +44,8 @@
 
 #include "Skeleton.h"
 
+static AEGP_PluginID S_cornerFlexPluginId = 0;
+
 static PF_Err 
 About (	
 	PF_InData		*in_data,
@@ -71,15 +73,26 @@ GlobalSetup (
 	PF_ParamDef		*params[],
 	PF_LayerDef		*output )
 {
-	out_data->my_version = PF_VERSION(	MAJOR_VERSION, 
+	PF_Err err = PF_Err_NONE;
+
+	out_data->my_version = PF_VERSION(	MAJOR_VERSION,
 										MINOR_VERSION,
-										BUG_VERSION, 
-										STAGE_VERSION, 
+										BUG_VERSION,
+										STAGE_VERSION,
 										BUILD_VERSION);
 
 	out_data->out_flags =  PF_OutFlag_DEEP_COLOR_AWARE;	// just 16bpc, not 32bpc
-	
-	return PF_Err_NONE;
+
+	if (in_data->appl_id == kAppID_AfterEffects) {
+		AEGP_SuiteHandler suites(in_data->pica_basicP);
+
+		ERR(suites.UtilitySuite3()->AEGP_RegisterWithAEGP(
+			NULL,
+			STR(StrID_Name),
+			&S_cornerFlexPluginId));
+	}
+
+	return err;
 }
 
 static PF_Err
@@ -328,6 +341,182 @@ BuildTrimRectangle(
 	return rect;
 }
 
+static const A_long CF_MAX_TARGET_STREAM_DEPTH = 32;
+
+static A_Err
+LocateGeometryTargetInStreamGroup(
+	AEGP_DynamicStreamSuite4* dynamicStreamSuite,
+	AEGP_StreamSuite6* streamSuite,
+	AEGP_StreamRefH groupStreamH,
+	const CF_GeometryTargetIdentity& targetIdentity,
+	A_long depth,
+	CF_GeometryTargetLocation& location)
+{
+	A_Err err = A_Err_NONE;
+
+	if (!groupStreamH ||
+		location.wasFound ||
+		depth >= CF_MAX_TARGET_STREAM_DEPTH) {
+		return err;
+	}
+
+	A_long streamCount = 0;
+
+	err = dynamicStreamSuite->AEGP_GetNumStreamsInGroup(
+		groupStreamH,
+		&streamCount);
+
+	for (A_long streamIndex = 0;
+		!err &&
+		!location.wasFound &&
+		streamIndex < streamCount;
+		streamIndex++) {
+
+		AEGP_StreamRefH childStreamH = NULL;
+		A_Err childErr = A_Err_NONE;
+
+		childErr = dynamicStreamSuite->AEGP_GetNewStreamRefByIndex(
+			S_cornerFlexPluginId,
+			groupStreamH,
+			streamIndex,
+			&childStreamH);
+
+		if (!childErr && childStreamH) {
+			int32_t uniqueStreamId = 0;
+
+			childErr = streamSuite->AEGP_GetUniqueStreamID(
+				childStreamH,
+				&uniqueStreamId);
+
+			if (!childErr &&
+				uniqueStreamId == targetIdentity.uniqueStreamId) {
+
+				A_char matchName[AEGP_MAX_STREAM_MATCH_NAME_SIZE] = {};
+
+				childErr = dynamicStreamSuite->AEGP_GetMatchName(
+					childStreamH,
+					matchName);
+
+				if (!childErr) {
+					location.wasFound = TRUE;
+					location.uniqueStreamId = uniqueStreamId;
+
+					// No Rectangle Path Match Name constant is exposed by this SDK.
+					location.isRectanglePath = FALSE;
+				}
+			}
+
+			if (!childErr && !location.wasFound) {
+				AEGP_StreamGroupingType groupingType =
+					AEGP_StreamGroupingType_NONE;
+
+				childErr = dynamicStreamSuite->AEGP_GetStreamGroupingType(
+					childStreamH,
+					&groupingType);
+
+				if (!childErr &&
+					(groupingType == AEGP_StreamGroupingType_NAMED_GROUP ||
+					 groupingType == AEGP_StreamGroupingType_INDEXED_GROUP)) {
+
+					childErr = LocateGeometryTargetInStreamGroup(
+						dynamicStreamSuite,
+						streamSuite,
+						childStreamH,
+						targetIdentity,
+						depth + 1,
+						location);
+				}
+			}
+		}
+
+		if (childStreamH) {
+			streamSuite->AEGP_DisposeStream(childStreamH);
+		}
+
+		static_cast<void>(childErr);
+	}
+
+	return err;
+}
+
+static CF_GeometryTargetLocation
+LocateGeometryTargetInAfterEffects(
+	PF_InData* in_data,
+	const CF_GeometryTargetIdentity& targetIdentity)
+{
+	CF_GeometryTargetLocation location;
+	AEFX_CLR_STRUCT(location);
+
+	if (!targetIdentity.isValid ||
+		!in_data ||
+		!S_cornerFlexPluginId) {
+		return location;
+	}
+
+	AEGP_StreamRefH rootStreamH = NULL;
+	AEGP_PFInterfaceSuite1* pfInterfaceSuite = NULL;
+	AEGP_LayerSuite9* layerSuite = NULL;
+	AEGP_DynamicStreamSuite4* dynamicStreamSuite = NULL;
+	AEGP_StreamSuite6* streamSuite = NULL;
+	AEGP_SuiteHandler suites(in_data->pica_basicP);
+
+	try {
+		pfInterfaceSuite = suites.PFInterfaceSuite1();
+		layerSuite = suites.LayerSuite9();
+		dynamicStreamSuite = suites.DynamicStreamSuite4();
+		streamSuite = suites.StreamSuite6();
+	}
+	catch (...) {
+		return location;
+	}
+
+	AEGP_LayerH effectLayerH = NULL;
+	AEGP_LayerIDVal effectLayerId = AEGP_LayerIDVal_NONE;
+
+	A_Err err =
+		pfInterfaceSuite->AEGP_GetEffectLayer(
+			in_data->effect_ref,
+			&effectLayerH);
+
+	if (!err && effectLayerH) {
+		err = layerSuite->AEGP_GetLayerID(
+			effectLayerH,
+			&effectLayerId);
+	}
+
+	if (!err &&
+		effectLayerId == targetIdentity.layerId) {
+
+		err = dynamicStreamSuite->AEGP_GetNewStreamRefForLayer(
+			S_cornerFlexPluginId,
+			effectLayerH,
+			&rootStreamH);
+	}
+
+	if (!err && rootStreamH) {
+		err = LocateGeometryTargetInStreamGroup(
+			dynamicStreamSuite,
+			streamSuite,
+			rootStreamH,
+			targetIdentity,
+			0,
+			location);
+	}
+
+	if (rootStreamH) {
+		const A_Err disposeErr =
+			streamSuite->AEGP_DisposeStream(rootStreamH);
+
+		if (!err) {
+			err = disposeErr;
+		}
+	}
+
+	static_cast<void>(err);
+
+	return location;
+}
+
 // After Effects integration boundary. Property selection is not reliable in Render.
 static CF_RectangleSourceData
 DiscoverRectangleSourceFromAfterEffects(
@@ -339,8 +528,12 @@ DiscoverRectangleSourceFromAfterEffects(
 
 	rectangleSource.isAvailable = FALSE;
 
-	static_cast<void>(in_data);
-	static_cast<void>(targetIdentity);
+	const CF_GeometryTargetLocation targetLocation =
+		LocateGeometryTargetInAfterEffects(
+			in_data,
+			targetIdentity);
+
+	static_cast<void>(targetLocation);
 
 	return rectangleSource;
 }
