@@ -352,6 +352,30 @@ BuildGeometryContext(
 	return geometryContext;
 }
 
+A_Boolean
+IsGeometryContextValid(
+	const CF_GeometryContext& geometryContext)
+{
+	const CF_Rect& bounds =
+		geometryContext.geometryBounds;
+
+	const PF_FpLong width =
+		bounds.right - bounds.left;
+
+	const PF_FpLong height =
+		bounds.bottom - bounds.top;
+
+	const A_Boolean orderedBounds =
+		bounds.left <= bounds.right &&
+		bounds.top <= bounds.bottom;
+
+	const A_Boolean nonNegativeSize =
+		width >= 0 &&
+		height >= 0;
+
+	return orderedBounds && nonNegativeSize;
+}
+
 CF_GeometryContext
 ExecuteTrimOperation(
 	CF_GeometryContext geometryContext,
@@ -429,10 +453,20 @@ Render(
 			inputWidth,
 			inputHeight);
 
+	const A_Boolean baseGeometryIsValid =
+		IsGeometryContextValid(geometryContext);
+
 	geometryContext =
 		ExecuteGeometryPipeline(
 			geometryContext,
 			settings);
+
+	const A_Boolean pipelineGeometryIsValid =
+		IsGeometryContextValid(geometryContext);
+
+	// Validation remains observational until an explicit SDK error policy is defined.
+	static_cast<void>(baseGeometryIsValid);
+	static_cast<void>(pipelineGeometryIsValid);
 
 	CF_RenderContext context =
 		BuildRenderContext(

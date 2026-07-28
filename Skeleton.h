@@ -145,6 +145,11 @@ typedef short int			int16;
 
 	} CF_RenderContext;
 
+	// Validates geometry data without modifying it or accessing the host.
+	A_Boolean
+	IsGeometryContextValid(
+		const CF_GeometryContext& geometryContext);
+
 	// Applies resolved Trim settings to geometry without rendering.
 	CF_GeometryContext
 	ExecuteTrimOperation(

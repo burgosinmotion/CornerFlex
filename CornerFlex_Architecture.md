@@ -101,6 +101,14 @@ El contrato oficial del Core es `Geometry → Operation → Geometry`: cada oper
 - El pipeline solo coordina la ejecución ordenada de operaciones.
 - La construcción de `CF_RenderContext` ocurre después del pipeline y mantiene separado al renderer.
 
+### Geometry Validation
+
+`IsGeometryContextValid()` comprueba que `left <= right`, `top <= bottom` y que el ancho y el alto calculados no sean negativos. Es una función pura: no modifica geometría, no renderiza y no accede a APIs, callbacks, suites ni buffers de After Effects.
+
+La validación se ejecuta después de `BuildGeometryContext()` y después de `ExecuteGeometryPipeline()`. Validar y normalizar son responsabilidades distintas: la validación informa sobre el estado, mientras que una eventual normalización transformaría los datos.
+
+La política actual es observacional para conservar el comportamiento visual existente. Los parámetros Trim pueden producir bounds invertidos, que actualmente generan transparencia total en el renderer. Hasta definir una política de error compatible con el SDK, esos bounds no se corrigen ni se rechazan silenciosamente. La respuesta mínima futura propuesta es abortar antes de `BuildRenderContext()` con un error explícito del SDK acordado y verificable. El contrato objetivo es que el renderer reciba únicamente geometría que haya superado la validación.
+
 ## 6. Input Bounds versus Geometry Bounds
 
 ### Input Bounds
@@ -165,6 +173,7 @@ Actualmente están implementados:
 - `ReadCornerFlexSettings()`;
 - `BuildTrimRectangle()`;
 - `BuildGeometryContext()`;
+- `IsGeometryContextValid()`;
 - `ExecuteTrimOperation()`;
 - `ExecuteGeometryPipeline()`;
 - `BuildRenderContext()`;
