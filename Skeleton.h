@@ -145,11 +145,13 @@ typedef short int			int16;
 
 	} CF_RenderContext;
 
+	// Geometry operations transform geometry data without rendering.
 	CF_GeometryContext
 	ExecuteTrimOperation(
 		CF_GeometryContext geometryContext,
 		const CornerFlexSettings& settings);
 
+	// Coordinates geometry operations without accessing the renderer or host.
 	CF_GeometryContext
 	ExecuteGeometryPipeline(
 		CF_GeometryContext geometryContext,

@@ -91,6 +91,16 @@ La geometría de CornerFlex debe calcularse respecto al objeto objetivo. Por eje
 
 El flujo geométrico sigue `BuildGeometryContext()` → `ExecuteGeometryPipeline()` → `BuildRenderContext()` → render. `ExecuteTrimOperation()` es la primera operación y actualmente funciona como pass-through, por lo que no altera `geometryBounds`. El renderer permanece independiente del pipeline y solo consume `CF_RenderContext`.
 
+### Geometry Operation Contract
+
+El contrato oficial del Core es `Geometry → Operation → Geometry`: cada operación recibe un `CF_GeometryContext` y devuelve un `CF_GeometryContext`.
+
+- Las operaciones transforman datos geométricos; no renderizan.
+- Las operaciones no conocen After Effects ni acceden a callbacks, suites o buffers del host.
+- `CornerFlexSettings` entrega valores ya resueltos como entrada del Core.
+- El pipeline solo coordina la ejecución ordenada de operaciones.
+- La construcción de `CF_RenderContext` ocurre después del pipeline y mantiene separado al renderer.
+
 ## 6. Input Bounds versus Geometry Bounds
 
 ### Input Bounds
