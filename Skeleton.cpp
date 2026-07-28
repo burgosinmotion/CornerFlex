@@ -352,6 +352,15 @@ ResolveLayerBoundsGeometry(
 	return sourceData;
 }
 
+CF_GeometrySourceData
+ResolveGeometrySource(
+	const CF_GeometryResolveRequest& request)
+{
+	return ResolveLayerBoundsGeometry(
+		request.inputWidth,
+		request.inputHeight);
+}
+
 CF_RectangleGeometry
 BuildRectangleGeometry(
 	const CF_Rect& bounds)
@@ -512,10 +521,14 @@ Render(
 	const A_long inputHeight =
 		params[CORNERFLEX_INPUT]->u.ld.height;
 
+	CF_GeometryResolveRequest resolveRequest;
+	AEFX_CLR_STRUCT(resolveRequest);
+
+	resolveRequest.inputWidth = inputWidth;
+	resolveRequest.inputHeight = inputHeight;
+
 	const CF_GeometrySourceData sourceData =
-		ResolveLayerBoundsGeometry(
-			inputWidth,
-			inputHeight);
+		ResolveGeometrySource(resolveRequest);
 
 	CF_GeometryContext geometryContext =
 		BuildGeometryContext(sourceData);

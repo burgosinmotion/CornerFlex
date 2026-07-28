@@ -119,6 +119,24 @@ Resolver una fuente y construir el contexto son responsabilidades distintas. `Re
 
 Layer Bounds continúa siendo el fallback actual, con `CF_GEOMETRY_SOURCE_LAYER_BOUNDS`, `CF_PRIMITIVE_UNKNOWN` e `isFallback = TRUE`. Esta separación prepara el Core para recibir futuras fuentes reales sin implementar todavía acceso a Rectangle Path, Ellipse Path, Bézier Path o selecciones de After Effects. Las operaciones geométricas consumen `CF_GeometryContext` y permanecen independientes del origen de la geometría.
 
+#### Geometry Resolve Request
+
+`CF_GeometryResolveRequest` agrupa los datos necesarios para solicitar una fuente geométrica. Actualmente contiene únicamente `inputWidth` e `inputHeight` y no consulta selección, Shape Layers ni Property Streams.
+
+#### Geometry Source Resolver Contract
+
+`ResolveGeometrySource()` es el único punto de entrada utilizado por el flujo principal. Recibe una solicitud, delega en un resolver concreto y devuelve `CF_GeometrySourceData`.
+
+```text
+CF_GeometryResolveRequest
+→ ResolveGeometrySource()
+→ resolver concreto
+→ CF_GeometrySourceData
+→ BuildGeometryContext()
+```
+
+La única implementación activa es `ResolveLayerBoundsGeometry()`. Las fuentes futuras deberán cumplir el mismo contrato y devolver `CF_GeometrySourceData`. Las operaciones geométricas permanecen independientes del resolver y del origen de la geometría.
+
 ### Geometry Operation Pipeline
 
 El flujo geométrico sigue `BuildGeometryContext()` → `ExecuteGeometryPipeline()` → `BuildRenderContext()` → render. `BuildGeometryContext()` crea la geometría base y `ExecuteTrimOperation()` es la primera operación real: transforma sus `geometryBounds` mediante `BuildTrimRectangle()`. El renderer permanece independiente del pipeline y solo consume `CF_RenderContext`.
@@ -208,10 +226,12 @@ Actualmente están implementados:
 - `CF_Rect`;
 - `CF_RectangleGeometry`;
 - `CF_CornerRadii`;
+- `CF_GeometryResolveRequest`;
 - `CF_GeometrySourceData`;
 - `CF_GeometryContext`;
 - `CF_RenderContext`;
 - `ResolveLayerBoundsGeometry()`;
+- `ResolveGeometrySource()`;
 - `BuildRectangleGeometry()`;
 - `ReadCornerFlexSettings()`;
 - `BuildTrimRectangle()`;

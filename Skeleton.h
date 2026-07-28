@@ -148,6 +148,13 @@ typedef short int			int16;
 
 	typedef struct
 	{
+		A_long inputWidth;
+		A_long inputHeight;
+
+	} CF_GeometryResolveRequest;
+
+	typedef struct
+	{
 		CF_Rect bounds;
 		CF_GeometrySource source;
 		CF_PrimitiveType primitiveType;
@@ -180,6 +187,11 @@ typedef short int			int16;
 	ResolveLayerBoundsGeometry(
 		A_long inputWidth,
 		A_long inputHeight);
+
+	// Common entry point for geometry source resolution.
+	CF_GeometrySourceData
+	ResolveGeometrySource(
+		const CF_GeometryResolveRequest& request);
 
 	// Builds an immutable rectangle description from resolved bounds.
 	CF_RectangleGeometry
