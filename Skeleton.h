@@ -138,6 +138,15 @@ typedef short int			int16;
 
 	typedef struct
 	{
+		CF_Rect bounds;
+		CF_GeometrySource source;
+		CF_PrimitiveType primitiveType;
+		A_Boolean isFallback;
+
+	} CF_GeometrySourceData;
+
+	typedef struct
+	{
 		CF_Rect geometryBounds;
 		CF_CornerRadii cornerRadii;
 		CF_GeometrySource source;
@@ -154,6 +163,12 @@ typedef short int			int16;
 		A_long inputHeight;
 
 	} CF_RenderContext;
+
+	// Resolves the current Layer Bounds fallback before context construction.
+	CF_GeometrySourceData
+	ResolveLayerBoundsGeometry(
+		A_long inputWidth,
+		A_long inputHeight);
 
 	// Validates geometry data without modifying it or accessing the host.
 	A_Boolean

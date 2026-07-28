@@ -328,18 +328,39 @@ BuildTrimRectangle(
 	return rect;
 }
 
-static CF_GeometryContext
-BuildGeometryContext(
+CF_GeometrySourceData
+ResolveLayerBoundsGeometry(
 	A_long inputWidth,
 	A_long inputHeight)
+{
+	CF_GeometrySourceData sourceData;
+	AEFX_CLR_STRUCT(sourceData);
+
+	sourceData.bounds.left = 0;
+	sourceData.bounds.top = 0;
+	sourceData.bounds.right = inputWidth;
+	sourceData.bounds.bottom = inputHeight;
+
+	sourceData.source =
+		CF_GEOMETRY_SOURCE_LAYER_BOUNDS;
+
+	sourceData.primitiveType =
+		CF_PRIMITIVE_UNKNOWN;
+
+	sourceData.isFallback = TRUE;
+
+	return sourceData;
+}
+
+static CF_GeometryContext
+BuildGeometryContext(
+	const CF_GeometrySourceData& sourceData)
 {
 	CF_GeometryContext geometryContext;
 	AEFX_CLR_STRUCT(geometryContext);
 
-	geometryContext.geometryBounds.left = 0;
-	geometryContext.geometryBounds.top = 0;
-	geometryContext.geometryBounds.right = inputWidth;
-	geometryContext.geometryBounds.bottom = inputHeight;
+	geometryContext.geometryBounds =
+		sourceData.bounds;
 
 	geometryContext.cornerRadii.topLeft = 0;
 	geometryContext.cornerRadii.topRight = 0;
@@ -347,12 +368,13 @@ BuildGeometryContext(
 	geometryContext.cornerRadii.bottomLeft = 0;
 
 	geometryContext.source =
-		CF_GEOMETRY_SOURCE_LAYER_BOUNDS;
+		sourceData.source;
 
 	geometryContext.primitiveType =
-		CF_PRIMITIVE_UNKNOWN;
+		sourceData.primitiveType;
 
-	geometryContext.isFallback = TRUE;
+	geometryContext.isFallback =
+		sourceData.isFallback;
 
 	return geometryContext;
 }
@@ -462,10 +484,13 @@ Render(
 	const A_long inputHeight =
 		params[CORNERFLEX_INPUT]->u.ld.height;
 
-	CF_GeometryContext geometryContext =
-		BuildGeometryContext(
+	const CF_GeometrySourceData sourceData =
+		ResolveLayerBoundsGeometry(
 			inputWidth,
 			inputHeight);
+
+	CF_GeometryContext geometryContext =
+		BuildGeometryContext(sourceData);
 
 	const A_Boolean baseGeometryIsValid =
 		IsGeometryContextValid(geometryContext);
