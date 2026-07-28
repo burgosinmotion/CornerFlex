@@ -130,7 +130,8 @@ typedef short int			int16;
 	// May include Rectangle Path, Bézier Path, and other geometry sources in the future.
 	typedef enum
 	{
-		CF_GEOMETRY_SOURCE_LAYER_BOUNDS = 0
+		CF_GEOMETRY_SOURCE_LAYER_BOUNDS = 0,
+		CF_GEOMETRY_SOURCE_RECTANGLE
 
 	} CF_GeometrySource;
 
@@ -148,8 +149,16 @@ typedef short int			int16;
 
 	typedef struct
 	{
+		CF_Rect bounds;
+		A_Boolean isAvailable;
+
+	} CF_RectangleSourceData;
+
+	typedef struct
+	{
 		A_long inputWidth;
 		A_long inputHeight;
+		CF_RectangleSourceData rectangleSource;
 
 	} CF_GeometryResolveRequest;
 
@@ -187,6 +196,11 @@ typedef short int			int16;
 	ResolveLayerBoundsGeometry(
 		A_long inputWidth,
 		A_long inputHeight);
+
+	// Resolves an available rectangle source without accessing the host.
+	CF_GeometrySourceData
+	ResolveRectangleGeometry(
+		const CF_RectangleSourceData& rectangleSource);
 
 	// Common entry point for geometry source resolution.
 	CF_GeometrySourceData

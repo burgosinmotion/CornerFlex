@@ -121,21 +121,28 @@ Layer Bounds continúa siendo el fallback actual, con `CF_GEOMETRY_SOURCE_LAYER_
 
 #### Geometry Resolve Request
 
-`CF_GeometryResolveRequest` agrupa los datos necesarios para solicitar una fuente geométrica. Actualmente contiene únicamente `inputWidth` e `inputHeight` y no consulta selección, Shape Layers ni Property Streams.
+`CF_GeometryResolveRequest` agrupa los datos necesarios para solicitar una fuente geométrica. Contiene `inputWidth`, `inputHeight` y un `CF_RectangleSourceData` opcional. Este último transporta bounds candidatos y un indicador `isAvailable`, sin consultar selección, Shape Layers ni Property Streams.
+
+#### Rectangle Source Data
+
+`CF_RectangleSourceData` representa una fuente rectangular candidata. Cuando está disponible, `ResolveRectangleGeometry()` devuelve sus bounds con `CF_GEOMETRY_SOURCE_RECTANGLE`, `CF_PRIMITIVE_RECTANGLE` e `isFallback = FALSE`. El resolver es puro y no accede al SDK.
 
 #### Geometry Source Resolver Contract
 
-`ResolveGeometrySource()` es el único punto de entrada utilizado por el flujo principal. Recibe una solicitud, delega en un resolver concreto y devuelve `CF_GeometrySourceData`.
+`ResolveGeometrySource()` es el único punto de entrada utilizado por el flujo principal. Rectangle Source tiene prioridad sobre Layer Bounds; cuando no está disponible, Layer Bounds permanece como fallback. Ambas rutas devuelven `CF_GeometrySourceData`.
 
 ```text
 CF_GeometryResolveRequest
-→ ResolveGeometrySource()
-→ resolver concreto
-→ CF_GeometrySourceData
-→ BuildGeometryContext()
+├── Rectangle Source disponible
+│   → ResolveRectangleGeometry()
+│
+└── Sin Rectangle Source
+    → ResolveLayerBoundsGeometry()
+
+Ambas rutas → CF_GeometrySourceData → BuildGeometryContext()
 ```
 
-La única implementación activa es `ResolveLayerBoundsGeometry()`. Las fuentes futuras deberán cumplir el mismo contrato y devolver `CF_GeometrySourceData`. Las operaciones geométricas permanecen independientes del resolver y del origen de la geometría.
+La disponibilidad de Rectangle Source permanece desactivada explícitamente en `Render()` hasta integrar una fuente real. Por ello, `ResolveLayerBoundsGeometry()` sigue siendo la única ruta activa. Las fuentes futuras deberán cumplir el mismo contrato y devolver `CF_GeometrySourceData`. Las operaciones geométricas permanecen independientes del resolver y del origen.
 
 ### Geometry Operation Pipeline
 
@@ -226,11 +233,13 @@ Actualmente están implementados:
 - `CF_Rect`;
 - `CF_RectangleGeometry`;
 - `CF_CornerRadii`;
+- `CF_RectangleSourceData`;
 - `CF_GeometryResolveRequest`;
 - `CF_GeometrySourceData`;
 - `CF_GeometryContext`;
 - `CF_RenderContext`;
 - `ResolveLayerBoundsGeometry()`;
+- `ResolveRectangleGeometry()`;
 - `ResolveGeometrySource()`;
 - `BuildRectangleGeometry()`;
 - `ReadCornerFlexSettings()`;

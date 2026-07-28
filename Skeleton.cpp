@@ -353,9 +353,35 @@ ResolveLayerBoundsGeometry(
 }
 
 CF_GeometrySourceData
+ResolveRectangleGeometry(
+	const CF_RectangleSourceData& rectangleSource)
+{
+	CF_GeometrySourceData sourceData;
+	AEFX_CLR_STRUCT(sourceData);
+
+	sourceData.bounds =
+		rectangleSource.bounds;
+
+	sourceData.source =
+		CF_GEOMETRY_SOURCE_RECTANGLE;
+
+	sourceData.primitiveType =
+		CF_PRIMITIVE_RECTANGLE;
+
+	sourceData.isFallback = FALSE;
+
+	return sourceData;
+}
+
+CF_GeometrySourceData
 ResolveGeometrySource(
 	const CF_GeometryResolveRequest& request)
 {
+	if (request.rectangleSource.isAvailable) {
+		return ResolveRectangleGeometry(
+			request.rectangleSource);
+	}
+
 	return ResolveLayerBoundsGeometry(
 		request.inputWidth,
 		request.inputHeight);
@@ -526,6 +552,7 @@ Render(
 
 	resolveRequest.inputWidth = inputWidth;
 	resolveRequest.inputHeight = inputHeight;
+	resolveRequest.rectangleSource.isAvailable = FALSE;
 
 	const CF_GeometrySourceData sourceData =
 		ResolveGeometrySource(resolveRequest);
