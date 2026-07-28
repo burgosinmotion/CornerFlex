@@ -405,9 +405,18 @@ ExecuteGeometryPipeline(
 	CF_GeometryContext geometryContext,
 	const CornerFlexSettings& settings)
 {
-	return ExecuteTrimOperation(
-		geometryContext,
-		settings);
+	CF_GeometryContext pipelineGeometry =
+		geometryContext;
+
+	// Operation 1: Trim.
+	pipelineGeometry =
+		ExecuteTrimOperation(
+			pipelineGeometry,
+			settings);
+
+	// Future operation slots: Radius, Chamfer, Offset.
+
+	return pipelineGeometry;
 }
 
 CF_RenderContext
