@@ -330,18 +330,16 @@ BuildTrimRectangle(
 
 static CF_GeometryContext
 BuildGeometryContext(
-	const CornerFlexSettings& settings,
 	A_long inputWidth,
 	A_long inputHeight)
 {
 	CF_GeometryContext geometryContext;
 	AEFX_CLR_STRUCT(geometryContext);
 
-	geometryContext.geometryBounds =
-		BuildTrimRectangle(
-			settings,
-			inputWidth,
-			inputHeight);
+	geometryContext.geometryBounds.left = 0;
+	geometryContext.geometryBounds.top = 0;
+	geometryContext.geometryBounds.right = inputWidth;
+	geometryContext.geometryBounds.bottom = inputHeight;
 
 	geometryContext.source =
 		CF_GEOMETRY_SOURCE_LAYER_BOUNDS;
@@ -359,7 +357,21 @@ ExecuteTrimOperation(
 	CF_GeometryContext geometryContext,
 	const CornerFlexSettings& settings)
 {
-	static_cast<void>(settings);
+	const A_long geometryWidth =
+		static_cast<A_long>(
+			geometryContext.geometryBounds.right -
+			geometryContext.geometryBounds.left);
+
+	const A_long geometryHeight =
+		static_cast<A_long>(
+			geometryContext.geometryBounds.bottom -
+			geometryContext.geometryBounds.top);
+
+	geometryContext.geometryBounds =
+		BuildTrimRectangle(
+			settings,
+			geometryWidth,
+			geometryHeight);
 
 	return geometryContext;
 }
@@ -414,7 +426,6 @@ Render(
 
 	CF_GeometryContext geometryContext =
 		BuildGeometryContext(
-			settings,
 			inputWidth,
 			inputHeight);
 

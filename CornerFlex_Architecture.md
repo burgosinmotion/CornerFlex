@@ -89,7 +89,7 @@ La geometría de CornerFlex debe calcularse respecto al objeto objetivo. Por eje
 
 ### Geometry Operation Pipeline
 
-El flujo geométrico sigue `BuildGeometryContext()` → `ExecuteGeometryPipeline()` → `BuildRenderContext()` → render. `ExecuteTrimOperation()` es la primera operación y actualmente funciona como pass-through, por lo que no altera `geometryBounds`. El renderer permanece independiente del pipeline y solo consume `CF_RenderContext`.
+El flujo geométrico sigue `BuildGeometryContext()` → `ExecuteGeometryPipeline()` → `BuildRenderContext()` → render. `BuildGeometryContext()` crea la geometría base y `ExecuteTrimOperation()` es la primera operación real: transforma sus `geometryBounds` mediante `BuildTrimRectangle()`. El renderer permanece independiente del pipeline y solo consume `CF_RenderContext`.
 
 ### Geometry Operation Contract
 
@@ -172,7 +172,7 @@ Actualmente están implementados:
 - `TrimFunc16()`;
 - render de 8 y 16 bpc.
 
-Actualmente, `BuildGeometryContext()` construye la geometría mediante `BuildTrimRectangle()`, que todavía utiliza Input Bounds como fallback. Por ello, el efecto aún opera visualmente respecto a la composición o al buffer completo. Este comportamiento es temporal y no representa el objetivo final del producto, que consiste en operar respecto al shape o Bézier path seleccionado.
+Actualmente, `BuildGeometryContext()` crea Layer Bounds a partir de Input Bounds como fallback y `ExecuteTrimOperation()` aplica Trim sobre esa geometría base. Por ello, el efecto aún opera visualmente respecto a la composición o al buffer completo. Este comportamiento es temporal y no representa el objetivo final del producto, que consiste en operar respecto al shape o Bézier path seleccionado.
 
 ## 10. Hoja de ruta técnica
 

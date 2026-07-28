@@ -145,7 +145,7 @@ typedef short int			int16;
 
 	} CF_RenderContext;
 
-	// Geometry operations transform geometry data without rendering.
+	// Applies resolved Trim settings to geometry without rendering.
 	CF_GeometryContext
 	ExecuteTrimOperation(
 		CF_GeometryContext geometryContext,
