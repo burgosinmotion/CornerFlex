@@ -87,6 +87,12 @@ La geometría de CornerFlex debe calcularse respecto al objeto objetivo. Por eje
 
 `CF_PrimitiveType` describe la naturaleza geométrica de la entrada. No contiene geometría ni lógica de renderizado. Mientras Layer Bounds sea la fuente temporal o fallback, se utiliza `CF_PRIMITIVE_UNKNOWN`. En el futuro permitirá distinguir Rectangle, Ellipse, Bézier, Polygon, Star y Custom Path.
 
+### Rectangle Primitive Foundation
+
+`CF_RectangleGeometry` representa una primitiva rectangular mediante bounds, ancho, alto y centro. Es información geométrica independiente de APIs, selecciones o streams de After Effects. `BuildGeometryContext()` construye actualmente esta representación a partir de los Layer Bounds resueltos.
+
+La representación rectangular describe la geometría base previa a las operaciones. `geometryBounds` continúa siendo el dato transformable del pipeline. Mientras Layer Bounds sea solo un fallback y no una Rectangle Path identificada, `primitiveType` permanece en `CF_PRIMITIVE_UNKNOWN`. Ningún dato de `CF_RectangleGeometry` afecta todavía al rasterizado.
+
 ### Radius Foundation
 
 `CF_CornerRadii` representa los radios top-left, top-right, bottom-right y bottom-left como parte de la descripción geométrica. `CF_GeometryContext` conserva estos valores junto a `geometryBounds`, pero actualmente todos se inicializan en cero y no afectan al pipeline ni al rasterizado. Todavía no existe una operación Radius.
@@ -184,6 +190,7 @@ Actualmente están implementados:
 - Trim independiente por lado;
 - `CornerFlexSettings`;
 - `CF_Rect`;
+- `CF_RectangleGeometry`;
 - `CF_CornerRadii`;
 - `CF_GeometrySourceData`;
 - `CF_GeometryContext`;

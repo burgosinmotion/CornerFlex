@@ -110,6 +110,16 @@ typedef short int			int16;
 
 	typedef struct
 	{
+		CF_Rect bounds;
+		PF_FpLong width;
+		PF_FpLong height;
+		PF_FpLong centerX;
+		PF_FpLong centerY;
+
+	} CF_RectangleGeometry;
+
+	typedef struct
+	{
 		PF_FpLong topLeft;
 		PF_FpLong topRight;
 		PF_FpLong bottomRight;
@@ -148,6 +158,7 @@ typedef short int			int16;
 	typedef struct
 	{
 		CF_Rect geometryBounds;
+		CF_RectangleGeometry rectangleGeometry;
 		CF_CornerRadii cornerRadii;
 		CF_GeometrySource source;
 		CF_PrimitiveType primitiveType;

@@ -362,6 +362,25 @@ BuildGeometryContext(
 	geometryContext.geometryBounds =
 		sourceData.bounds;
 
+	geometryContext.rectangleGeometry.bounds =
+		sourceData.bounds;
+
+	geometryContext.rectangleGeometry.width =
+		sourceData.bounds.right -
+		sourceData.bounds.left;
+
+	geometryContext.rectangleGeometry.height =
+		sourceData.bounds.bottom -
+		sourceData.bounds.top;
+
+	geometryContext.rectangleGeometry.centerX =
+		sourceData.bounds.left +
+		(geometryContext.rectangleGeometry.width / 2.0);
+
+	geometryContext.rectangleGeometry.centerY =
+		sourceData.bounds.top +
+		(geometryContext.rectangleGeometry.height / 2.0);
+
 	geometryContext.cornerRadii.topLeft = 0;
 	geometryContext.cornerRadii.topRight = 0;
 	geometryContext.cornerRadii.bottomRight = 0;
