@@ -147,6 +147,15 @@ typedef short int			int16;
 
 	} CF_PrimitiveType;
 
+	// Serializable identity captured by the After Effects integration layer.
+	typedef struct
+	{
+		A_Boolean isValid;
+		AEGP_LayerIDVal layerId;
+		int32_t uniqueStreamId;
+
+	} CF_GeometryTargetIdentity;
+
 	typedef struct
 	{
 		CF_Rect bounds;

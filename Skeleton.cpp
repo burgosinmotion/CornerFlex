@@ -331,7 +331,8 @@ BuildTrimRectangle(
 // After Effects integration boundary. Property selection is not reliable in Render.
 static CF_RectangleSourceData
 DiscoverRectangleSourceFromAfterEffects(
-	PF_InData* in_data)
+	PF_InData* in_data,
+	const CF_GeometryTargetIdentity& targetIdentity)
 {
 	CF_RectangleSourceData rectangleSource;
 	AEFX_CLR_STRUCT(rectangleSource);
@@ -339,6 +340,7 @@ DiscoverRectangleSourceFromAfterEffects(
 	rectangleSource.isAvailable = FALSE;
 
 	static_cast<void>(in_data);
+	static_cast<void>(targetIdentity);
 
 	return rectangleSource;
 }
@@ -567,8 +569,16 @@ Render(
 
 	resolveRequest.inputWidth = inputWidth;
 	resolveRequest.inputHeight = inputHeight;
+
+	CF_GeometryTargetIdentity targetIdentity;
+	AEFX_CLR_STRUCT(targetIdentity);
+
+	targetIdentity.isValid = FALSE;
+
 	resolveRequest.rectangleSource =
-		DiscoverRectangleSourceFromAfterEffects(in_data);
+		DiscoverRectangleSourceFromAfterEffects(
+			in_data,
+			targetIdentity);
 
 	const CF_GeometrySourceData sourceData =
 		ResolveGeometrySource(resolveRequest);

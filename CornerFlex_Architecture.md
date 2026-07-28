@@ -156,6 +156,21 @@ El SDK también permite obtener la selección de una composición mediante `AEGP
 
 `DiscoverRectangleSourceFromAfterEffects()` devuelve actualmente `isAvailable = FALSE`; no genera bounds simulados, no retiene referencias del SDK y no participa en el render. En consecuencia, `ResolveGeometrySource()` continúa seleccionando Layer Bounds. Para activar una fuente real será necesario proporcionar una identidad estable del path objetivo —por ejemplo, capturada explícitamente por la extensión— y definir su sistema de coordenadas y tiempo de evaluación.
 
+#### Geometry Target Identity
+
+La selección del objetivo y el descubrimiento de su geometría son fases separadas. `CF_GeometryTargetIdentity` transporta únicamente una identidad simple y serializable mediante `isValid`, `layerId` y `uniqueStreamId`; no contiene bounds, valores de propiedades, punteros, handles ni referencias del SDK. `Render()` crea actualmente una identidad inválida y el adaptador la recibe sin utilizarla.
+
+El SDK ofrece `AEGP_LayerSuite9::AEGP_GetLayerID()` y `AEGP_GetLayerFromLayerID()` para identificar una capa dentro de su composición. `AEGP_StreamSuite6::AEGP_GetUniqueStreamID()` entrega un entero único para un stream. `AEGP_DynamicStreamSuite4` permite consultar Match Names, subir por la jerarquía y obtener el índice de un hijo dentro de un grupo indexado. Los headers revisados no documentan un Persistent ID específico para propiedades ni garantizan que el Unique Stream ID sobreviva a la reapertura del proyecto.
+
+Estrategias evaluadas:
+
+- **Layer ID + jerarquía de índices:** no depende de nombres, pero el reordenamiento o la inserción de grupos invalida la ruta.
+- **Layer ID + cadena de Match Names:** resiste el renombrado visible y parte del reordenamiento, pero no distingue hermanos duplicados con los mismos Match Names.
+- **Layer ID + Unique Stream ID:** resiste renombrado y reordenamiento durante el contexto en que el ID es válido; no existe búsqueda inversa directa por ID y su persistencia entre sesiones no está documentada.
+- **Datos capturados por CEP:** permiten una selección explícita y transportar una identidad compuesta, pero duplicaciones y reapertura exigen volver a validar el objetivo contra el proyecto.
+
+La estrategia recomendada para la siguiente fase es que CEP capture explícitamente el objetivo y entregue `layerId + uniqueStreamId`, acompañado por una ruta de índices y Match Names como información de validación o recuperación. La integración deberá resolver y verificar esa identidad en el host antes de producir `CF_RectangleSourceData`; ninguna ruta deberá elegir automáticamente el primer path, el visible o el aparentemente único.
+
 ### Geometry Operation Pipeline
 
 El flujo geométrico sigue `BuildGeometryContext()` → `ExecuteGeometryPipeline()` → `BuildRenderContext()` → render. `BuildGeometryContext()` crea la geometría base y `ExecuteTrimOperation()` es la primera operación real: transforma sus `geometryBounds` mediante `BuildTrimRectangle()`. El renderer permanece independiente del pipeline y solo consume `CF_RenderContext`.
@@ -245,6 +260,7 @@ Actualmente están implementados:
 - `CF_Rect`;
 - `CF_RectangleGeometry`;
 - `CF_CornerRadii`;
+- `CF_GeometryTargetIdentity`;
 - `CF_RectangleSourceData`;
 - `CF_GeometryResolveRequest`;
 - `CF_GeometrySourceData`;
