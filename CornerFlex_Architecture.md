@@ -144,6 +144,18 @@ Ambas rutas → CF_GeometrySourceData → BuildGeometryContext()
 
 La disponibilidad de Rectangle Source permanece desactivada explícitamente en `Render()` hasta integrar una fuente real. Por ello, `ResolveLayerBoundsGeometry()` sigue siendo la única ruta activa. Las fuentes futuras deberán cumplir el mismo contrato y devolver `CF_GeometrySourceData`. Las operaciones geométricas permanecen independientes del resolver y del origen.
 
+#### After Effects Geometry Adapter
+
+La capa **AE Integration** traduce datos del host a contratos simples del Core. `DiscoverRectangleSourceFromAfterEffects()` es el punto de adaptación inicial para una Rectangle Path candidata: recibe el contexto mínimo disponible del efecto y siempre inicializa un `CF_RectangleSourceData` seguro. El Core geométrico no consulta suites, streams, Shape Layers ni selección.
+
+#### Rectangle Source Discovery
+
+El SDK incluido expone `AEGP_PFInterfaceSuite1::AEGP_GetEffectLayer()` durante `PF_Cmd_RENDER` para obtener la capa que contiene el efecto. También ofrece `AEGP_DynamicStreamSuite4` para recorrer grupos y localizar streams por índice o Match Name, y `AEGP_StreamSuite6` para consultar tipos y valores de propiedades. Estas APIs permitirían inspeccionar grupos de contenido y propiedades equivalentes a Size, Position y Roundness una vez definido un objetivo inequívoco.
+
+El SDK también permite obtener la selección de una composición mediante `AEGP_GetNewCollectionFromCompSelection()` y representar elementos `STREAMREF` en `AEGP_CollectionSuite2`. Sin embargo, esa selección pertenece a la composición activa de la interfaz y no constituye una identidad estable ni fiable del path objetivo durante el render. `AEGP_LayerSuite9::AEGP_GetActiveLayer()` solo informa una capa activa y una Shape Layer puede contener varios grupos y Rectangle Paths. Para evitar una elección implícita, el adaptador no adquiere suites ni recorre streams en esta fase.
+
+`DiscoverRectangleSourceFromAfterEffects()` devuelve actualmente `isAvailable = FALSE`; no genera bounds simulados, no retiene referencias del SDK y no participa en el render. En consecuencia, `ResolveGeometrySource()` continúa seleccionando Layer Bounds. Para activar una fuente real será necesario proporcionar una identidad estable del path objetivo —por ejemplo, capturada explícitamente por la extensión— y definir su sistema de coordenadas y tiempo de evaluación.
+
 ### Geometry Operation Pipeline
 
 El flujo geométrico sigue `BuildGeometryContext()` → `ExecuteGeometryPipeline()` → `BuildRenderContext()` → render. `BuildGeometryContext()` crea la geometría base y `ExecuteTrimOperation()` es la primera operación real: transforma sus `geometryBounds` mediante `BuildTrimRectangle()`. El renderer permanece independiente del pipeline y solo consume `CF_RenderContext`.
@@ -241,6 +253,7 @@ Actualmente están implementados:
 - `ResolveLayerBoundsGeometry()`;
 - `ResolveRectangleGeometry()`;
 - `ResolveGeometrySource()`;
+- `DiscoverRectangleSourceFromAfterEffects()` como adaptador seguro todavía desactivado;
 - `BuildRectangleGeometry()`;
 - `ReadCornerFlexSettings()`;
 - `BuildTrimRectangle()`;

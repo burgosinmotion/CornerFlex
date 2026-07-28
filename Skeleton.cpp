@@ -328,6 +328,21 @@ BuildTrimRectangle(
 	return rect;
 }
 
+// After Effects integration boundary. Property selection is not reliable in Render.
+static CF_RectangleSourceData
+DiscoverRectangleSourceFromAfterEffects(
+	PF_InData* in_data)
+{
+	CF_RectangleSourceData rectangleSource;
+	AEFX_CLR_STRUCT(rectangleSource);
+
+	rectangleSource.isAvailable = FALSE;
+
+	static_cast<void>(in_data);
+
+	return rectangleSource;
+}
+
 CF_GeometrySourceData
 ResolveLayerBoundsGeometry(
 	A_long inputWidth,
@@ -552,7 +567,8 @@ Render(
 
 	resolveRequest.inputWidth = inputWidth;
 	resolveRequest.inputHeight = inputHeight;
-	resolveRequest.rectangleSource.isAvailable = FALSE;
+	resolveRequest.rectangleSource =
+		DiscoverRectangleSourceFromAfterEffects(in_data);
 
 	const CF_GeometrySourceData sourceData =
 		ResolveGeometrySource(resolveRequest);
