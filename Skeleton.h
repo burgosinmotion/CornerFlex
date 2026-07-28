@@ -156,6 +156,14 @@ typedef short int			int16;
 
 	} CF_GeometryTargetIdentity;
 
+	// Versioned, pointer-free payload for a future per-instance transport channel.
+	typedef struct
+	{
+		A_long version;
+		CF_GeometryTargetIdentity targetIdentity;
+
+	} CF_GeometryTargetState;
+
 	typedef struct
 	{
 		A_Boolean wasFound;

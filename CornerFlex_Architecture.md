@@ -171,6 +171,26 @@ Estrategias evaluadas:
 
 La estrategia recomendada para la siguiente fase es que CEP capture explícitamente el objetivo y entregue `layerId + uniqueStreamId`, acompañado por una ruta de índices y Match Names como información de validación o recuperación. La integración deberá resolver y verificar esa identidad en el host antes de producir `CF_RectangleSourceData`; ninguna ruta deberá elegir automáticamente el primer path, el visible o el aparentemente único.
 
+#### Geometry Target Identity Transport
+
+`CF_GeometryTargetState` define el payload lógico que deberá viajar entre el workflow externo y una instancia del efecto. Contiene una versión de esquema y `CF_GeometryTargetIdentity`; es un bloque de datos simples, serializable y libre de handles, punteros o referencias del SDK. La estructura todavía no está conectada a parámetros, sequence data ni `Render()`.
+
+Alternativas evaluadas con el SDK local:
+
+- **Parámetros nativos ocultos:** After Effects guarda los valores con la instancia, los incluye al duplicar o copiar el efecto y los entrega como snapshots de render compatibles con MFR. Parámetros escalares pueden transportar versión, validez, Layer ID y Unique Stream ID. CEP puede dirigirse a propiedades del efecto mediante scripting, sujeto a validar el acceso a parámetros invisibles. Añadirlos cambia el contrato publicado: requiere nuevos índices, Match Names internos y Disk IDs permanentes.
+- **Parámetro de datos arbitrarios:** `PF_Param_ARBITRARY_DATA` admite copia, flatten, unflatten, comparación, impresión y lectura mediante `PF_Cmd_ARBITRARY_CALLBACK`. Es persistente y versionable, pero exige implementar el ciclo completo de callbacks y los datos opacos no ofrecen un canal sencillo y oficialmente confirmado para escritura desde CEP.
+- **Sequence data:** pertenece a una instancia y su contenido puede escribirse al proyecto. Para MFR debe tratarse como solo lectura durante render mediante `PF_EffectSequenceDataSuite` y soportar flatten/resetup, incluyendo `PF_OutFlag2_SUPPORTS_GET_FLATTENED_SEQUENCE_DATA` cuando corresponda. CEP no dispone en el SDK revisado de acceso directo a ese bloque; sincronizarlo desde scripting necesitaría otro canal.
+- **AEGP Persistent Data Suite:** `AEGP_PersistentDataSuite4` guarda strings, enteros y datos binarios, pero el propio header indica que el host persistente actual es la aplicación. No representa estado por instancia y produciría colisiones entre efectos, capas o proyectos.
+- **Scripting o CEP sin almacenamiento nativo:** puede capturar y enviar datos durante una sesión, pero no garantiza disponibilidad en render, Render Queue, reapertura o cuando la extensión está cerrada.
+
+La estrategia recomendada es transportar el estado mediante parámetros nativos escalares ocultos, no animables y con Match Names internos estables. El esquema futuro debería reservar cuatro valores: `version`, `isValid`, `layerId` y `uniqueStreamId`. CEP escribiría esos parámetros; el AEX construiría un `CF_GeometryTargetState` inmutable desde el snapshot recibido y el Target Locator consumiría únicamente `targetIdentity`.
+
+Esta estrategia requiere nuevos parámetros y Disk IDs, por lo que no se implementa en esta fase. Cuando se publique, los IDs deberán añadirse al final, no reutilizar valores existentes y permanecer estables. La versión permitirá rechazar estados incompatibles y migrar representaciones futuras sin interpretar datos antiguos como válidos.
+
+Al duplicar una capa, After Effects copiará los valores transportados, pero la nueva capa o sus streams pueden recibir otros IDs; el locator debe invalidar el estado hasta que CEP capture nuevamente el objetivo. Copiar el efecto dentro de la misma capa puede conservar una identidad válida, siempre sujeta a verificación. Tras reabrir el proyecto, los parámetros persistirán, pero Layer ID y Unique Stream ID deberán validarse porque el SDK no garantiza explícitamente la persistencia del Unique Stream ID entre sesiones.
+
+`Render()` continúa construyendo `CF_GeometryTargetIdentity` con `isValid = FALSE`. Por ello no ejecuta el recorrido normal del locator, Rectangle Source permanece desactivado y Layer Bounds continúa siendo el fallback.
+
 #### Geometry Target Locator
 
 Identity, Location y Geometry Source representan responsabilidades distintas:
@@ -277,6 +297,7 @@ Actualmente están implementados:
 - `CF_RectangleGeometry`;
 - `CF_CornerRadii`;
 - `CF_GeometryTargetIdentity`;
+- `CF_GeometryTargetState`;
 - `CF_GeometryTargetLocation`;
 - `CF_RectangleSourceData`;
 - `CF_GeometryResolveRequest`;
