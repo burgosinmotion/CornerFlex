@@ -108,6 +108,15 @@ typedef short int			int16;
 
 	} CF_Rect;
 
+	typedef struct
+	{
+		PF_FpLong topLeft;
+		PF_FpLong topRight;
+		PF_FpLong bottomRight;
+		PF_FpLong bottomLeft;
+
+	} CF_CornerRadii;
+
 	// May include Rectangle Path, Bézier Path, and other geometry sources in the future.
 	typedef enum
 	{
@@ -130,6 +139,7 @@ typedef short int			int16;
 	typedef struct
 	{
 		CF_Rect geometryBounds;
+		CF_CornerRadii cornerRadii;
 		CF_GeometrySource source;
 		CF_PrimitiveType primitiveType;
 		A_Boolean isFallback;

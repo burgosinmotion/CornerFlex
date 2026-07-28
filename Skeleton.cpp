@@ -341,6 +341,11 @@ BuildGeometryContext(
 	geometryContext.geometryBounds.right = inputWidth;
 	geometryContext.geometryBounds.bottom = inputHeight;
 
+	geometryContext.cornerRadii.topLeft = 0;
+	geometryContext.cornerRadii.topRight = 0;
+	geometryContext.cornerRadii.bottomRight = 0;
+	geometryContext.cornerRadii.bottomLeft = 0;
+
 	geometryContext.source =
 		CF_GEOMETRY_SOURCE_LAYER_BOUNDS;
 

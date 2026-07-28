@@ -87,6 +87,10 @@ La geometría de CornerFlex debe calcularse respecto al objeto objetivo. Por eje
 
 `CF_PrimitiveType` describe la naturaleza geométrica de la entrada. No contiene geometría ni lógica de renderizado. Mientras Layer Bounds sea la fuente temporal o fallback, se utiliza `CF_PRIMITIVE_UNKNOWN`. En el futuro permitirá distinguir Rectangle, Ellipse, Bézier, Polygon, Star y Custom Path.
 
+### Radius Foundation
+
+`CF_CornerRadii` representa los radios top-left, top-right, bottom-right y bottom-left como parte de la descripción geométrica. `CF_GeometryContext` conserva estos valores junto a `geometryBounds`, pero actualmente todos se inicializan en cero y no afectan al pipeline ni al rasterizado. Todavía no existe una operación Radius.
+
 ### Geometry Operation Pipeline
 
 El flujo geométrico sigue `BuildGeometryContext()` → `ExecuteGeometryPipeline()` → `BuildRenderContext()` → render. `BuildGeometryContext()` crea la geometría base y `ExecuteTrimOperation()` es la primera operación real: transforma sus `geometryBounds` mediante `BuildTrimRectangle()`. El renderer permanece independiente del pipeline y solo consume `CF_RenderContext`.
@@ -174,6 +178,7 @@ Actualmente están implementados:
 - Trim independiente por lado;
 - `CornerFlexSettings`;
 - `CF_Rect`;
+- `CF_CornerRadii`;
 - `CF_GeometryContext`;
 - `CF_RenderContext`;
 - `ReadCornerFlexSettings()`;
