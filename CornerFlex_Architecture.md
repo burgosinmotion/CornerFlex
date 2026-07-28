@@ -91,7 +91,23 @@ La geometría de CornerFlex debe calcularse respecto al objeto objetivo. Por eje
 
 `CF_RectangleGeometry` representa una primitiva rectangular mediante bounds, ancho, alto y centro. Es información geométrica independiente de APIs, selecciones o streams de After Effects. `BuildGeometryContext()` construye actualmente esta representación a partir de los Layer Bounds resueltos.
 
-La representación rectangular describe la geometría base previa a las operaciones. `geometryBounds` continúa siendo el dato transformable del pipeline. Mientras Layer Bounds sea solo un fallback y no una Rectangle Path identificada, `primitiveType` permanece en `CF_PRIMITIVE_UNKNOWN`. Ningún dato de `CF_RectangleGeometry` afecta todavía al rasterizado.
+#### Base Primitive Geometry
+
+`BuildRectangleGeometry()` construye `CF_RectangleGeometry` exclusivamente desde un `CF_Rect`. Esta representación es una instantánea estable de la primitiva base previa a las operaciones. Las operaciones geométricas no deben modificarla.
+
+#### Working Geometry
+
+`geometryBounds` se inicializa desde `rectangleGeometry.bounds` y representa el estado transformable. El Geometry Operation Pipeline modifica únicamente Working Geometry; actualmente `ExecuteTrimOperation()` actualiza `geometryBounds` sin alterar la primitiva base.
+
+```text
+CF_GeometrySourceData
+→ BuildRectangleGeometry()
+→ CF_RectangleGeometry base
+→ geometryBounds iniciales
+→ Geometry Operation Pipeline
+```
+
+Mientras Layer Bounds sea solo un fallback y no una Rectangle Path identificada, `primitiveType` permanece en `CF_PRIMITIVE_UNKNOWN`. Ningún dato de `CF_RectangleGeometry` afecta todavía al rasterizado.
 
 ### Radius Foundation
 
@@ -196,6 +212,7 @@ Actualmente están implementados:
 - `CF_GeometryContext`;
 - `CF_RenderContext`;
 - `ResolveLayerBoundsGeometry()`;
+- `BuildRectangleGeometry()`;
 - `ReadCornerFlexSettings()`;
 - `BuildTrimRectangle()`;
 - `BuildGeometryContext()`;

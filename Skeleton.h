@@ -181,6 +181,11 @@ typedef short int			int16;
 		A_long inputWidth,
 		A_long inputHeight);
 
+	// Builds an immutable rectangle description from resolved bounds.
+	CF_RectangleGeometry
+	BuildRectangleGeometry(
+		const CF_Rect& bounds);
+
 	// Validates geometry data without modifying it or accessing the host.
 	A_Boolean
 	IsGeometryContextValid(

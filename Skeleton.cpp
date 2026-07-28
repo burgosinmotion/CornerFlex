@@ -352,6 +352,31 @@ ResolveLayerBoundsGeometry(
 	return sourceData;
 }
 
+CF_RectangleGeometry
+BuildRectangleGeometry(
+	const CF_Rect& bounds)
+{
+	CF_RectangleGeometry rectangleGeometry;
+
+	rectangleGeometry.bounds = bounds;
+
+	rectangleGeometry.width =
+		bounds.right - bounds.left;
+
+	rectangleGeometry.height =
+		bounds.bottom - bounds.top;
+
+	rectangleGeometry.centerX =
+		bounds.left +
+		(rectangleGeometry.width / 2.0);
+
+	rectangleGeometry.centerY =
+		bounds.top +
+		(rectangleGeometry.height / 2.0);
+
+	return rectangleGeometry;
+}
+
 static CF_GeometryContext
 BuildGeometryContext(
 	const CF_GeometrySourceData& sourceData)
@@ -359,27 +384,11 @@ BuildGeometryContext(
 	CF_GeometryContext geometryContext;
 	AEFX_CLR_STRUCT(geometryContext);
 
+	geometryContext.rectangleGeometry =
+		BuildRectangleGeometry(sourceData.bounds);
+
 	geometryContext.geometryBounds =
-		sourceData.bounds;
-
-	geometryContext.rectangleGeometry.bounds =
-		sourceData.bounds;
-
-	geometryContext.rectangleGeometry.width =
-		sourceData.bounds.right -
-		sourceData.bounds.left;
-
-	geometryContext.rectangleGeometry.height =
-		sourceData.bounds.bottom -
-		sourceData.bounds.top;
-
-	geometryContext.rectangleGeometry.centerX =
-		sourceData.bounds.left +
-		(geometryContext.rectangleGeometry.width / 2.0);
-
-	geometryContext.rectangleGeometry.centerY =
-		sourceData.bounds.top +
-		(geometryContext.rectangleGeometry.height / 2.0);
+		geometryContext.rectangleGeometry.bounds;
 
 	geometryContext.cornerRadii.topLeft = 0;
 	geometryContext.cornerRadii.topRight = 0;
