@@ -36,6 +36,10 @@ research/output/RectangleSourceCoordinateSpaceFrames_Phase59Validated_1144BD89/
 research/output/RectangleSourceCoordinateSpaceFrames_ProgramFilesOriginal/
 research/output/RectangleSourceCoordinateSpaceFrames_PreFix/
 
+# Full layer-translation validation runs; selected evidence is stored separately
+research/output/RectangleLayerTranslationFrames/
+research/output/RectangleLayerTranslationDefensiveFrames/
+
 # Windows
 Thumbs.db
 Desktop.ini

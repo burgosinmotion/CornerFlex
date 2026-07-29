@@ -693,27 +693,37 @@ IsRectangleSnapshotSourceEnabled(
 }
 
 CF_RectangleSourceData
-TransformRectangleBoundsToEffectSpace(
+TransformLocalBoundsToEffectSpace(
 	const CF_Rect& localBounds,
-	const CF_RectangleCoordinateContext& coordinateContext)
+	const CF_RectangleCoordinateContext& coordinateContext,
+	const CF_LayerTranslationContext& layerTranslationContext)
 {
 	CF_RectangleSourceData sourceData;
 	AEFX_CLR_STRUCT(sourceData);
 
 	sourceData.isAvailable = FALSE;
 
-	if (!coordinateContext.isValid) {
+	if (!coordinateContext.isValid ||
+		!layerTranslationContext.isValid) {
 		return sourceData;
 	}
 
 	const PF_FpLong left =
-		localBounds.left + coordinateContext.originX;
+		localBounds.left +
+		coordinateContext.originX +
+		layerTranslationContext.translationX;
 	const PF_FpLong top =
-		localBounds.top + coordinateContext.originY;
+		localBounds.top +
+		coordinateContext.originY +
+		layerTranslationContext.translationY;
 	const PF_FpLong right =
-		localBounds.right + coordinateContext.originX;
+		localBounds.right +
+		coordinateContext.originX +
+		layerTranslationContext.translationX;
 	const PF_FpLong bottom =
-		localBounds.bottom + coordinateContext.originY;
+		localBounds.bottom +
+		coordinateContext.originY +
+		layerTranslationContext.translationY;
 
 	if (!std::isfinite(left) ||
 		!std::isfinite(top) ||
@@ -763,10 +773,34 @@ BuildRectangleCoordinateContext(
 	return coordinateContext;
 }
 
+CF_Rect
+ConvertRectangleSnapshotToLocalBounds(
+	const CF_RectangleGeometrySnapshot& snapshot)
+{
+	const PF_FpLong halfWidth =
+		snapshot.sizeX * 0.5;
+
+	const PF_FpLong halfHeight =
+		snapshot.sizeY * 0.5;
+
+	CF_Rect localBounds;
+	localBounds.left =
+		snapshot.positionX - halfWidth;
+	localBounds.top =
+		snapshot.positionY - halfHeight;
+	localBounds.right =
+		snapshot.positionX + halfWidth;
+	localBounds.bottom =
+		snapshot.positionY + halfHeight;
+
+	return localBounds;
+}
+
 CF_RectangleSourceData
 ConvertRectangleGeometrySnapshotToSourceData(
 	const CF_RectangleGeometrySnapshot& snapshot,
-	const CF_RectangleCoordinateContext& coordinateContext)
+	const CF_RectangleCoordinateContext& coordinateContext,
+	const CF_LayerTranslationContext& layerTranslationContext)
 {
 	CF_RectangleSourceData sourceData;
 	AEFX_CLR_STRUCT(sourceData);
@@ -774,22 +808,15 @@ ConvertRectangleGeometrySnapshotToSourceData(
 	sourceData.isAvailable = FALSE;
 
 	if (!ValidateRectangleGeometrySnapshot(snapshot) ||
-		!coordinateContext.isValid) {
+		!coordinateContext.isValid ||
+		!layerTranslationContext.isValid) {
 		return sourceData;
 	}
 
-	const PF_FpLong halfWidth = snapshot.sizeX * 0.5;
-	const PF_FpLong halfHeight = snapshot.sizeY * 0.5;
+	const CF_Rect localBounds =
+		ConvertRectangleSnapshotToLocalBounds(snapshot);
 
-	CF_Rect localBounds;
-	localBounds.left = snapshot.positionX - halfWidth;
-	localBounds.top = snapshot.positionY - halfHeight;
-	localBounds.right = snapshot.positionX + halfWidth;
-	localBounds.bottom = snapshot.positionY + halfHeight;
-
-	if (!std::isfinite(halfWidth) ||
-		!std::isfinite(halfHeight) ||
-		!std::isfinite(localBounds.left) ||
+	if (!std::isfinite(localBounds.left) ||
 		!std::isfinite(localBounds.top) ||
 		!std::isfinite(localBounds.right) ||
 		!std::isfinite(localBounds.bottom) ||
@@ -798,9 +825,10 @@ ConvertRectangleGeometrySnapshotToSourceData(
 		return sourceData;
 	}
 
-	return TransformRectangleBoundsToEffectSpace(
+	return TransformLocalBoundsToEffectSpace(
 		localBounds,
-		coordinateContext);
+		coordinateContext,
+		layerTranslationContext);
 }
 
 CF_RectangleSourceData
@@ -1083,6 +1111,262 @@ DiscoverRectangleSourceFromAfterEffects(
 	return rectangleSource;
 }
 
+static A_Boolean
+ReadLayerSpatialValue(
+	AEGP_StreamSuite6* streamSuite,
+	AEGP_LayerH layerH,
+	AEGP_LayerStream layerStream,
+	const A_Time& compTime,
+	PF_FpLong& valueX,
+	PF_FpLong& valueY)
+{
+	AEGP_StreamVal2 streamValue;
+	AEFX_CLR_STRUCT(streamValue);
+
+	AEGP_StreamType streamType =
+		AEGP_StreamType_NO_DATA;
+
+	const A_Err err =
+		streamSuite->AEGP_GetLayerStreamValue(
+			layerH,
+			layerStream,
+			AEGP_LTimeMode_CompTime,
+			&compTime,
+			FALSE,
+			&streamValue,
+			&streamType);
+
+	if (err) {
+		return FALSE;
+	}
+
+	if (streamType == AEGP_StreamType_ThreeD_SPATIAL ||
+		streamType == AEGP_StreamType_ThreeD) {
+
+		valueX = streamValue.three_d.x;
+		valueY = streamValue.three_d.y;
+
+	}
+	else if (
+		streamType == AEGP_StreamType_TwoD_SPATIAL ||
+		streamType == AEGP_StreamType_TwoD) {
+
+		valueX = streamValue.two_d.x;
+		valueY = streamValue.two_d.y;
+
+	}
+	else {
+		return FALSE;
+	}
+
+	return std::isfinite(valueX) &&
+		std::isfinite(valueY)
+			? TRUE
+			: FALSE;
+}
+
+static CF_LayerTranslationContext
+ResolveLayerTranslationFromAfterEffects(
+	PF_InData* in_data)
+{
+	CF_LayerTranslationContext translationContext;
+	AEFX_CLR_STRUCT(translationContext);
+
+	translationContext.isValid = FALSE;
+
+	if (!in_data ||
+		!in_data->effect_ref ||
+		!in_data->pica_basicP ||
+		in_data->downsample_x.den == 0 ||
+		in_data->downsample_y.den == 0 ||
+		in_data->downsample_x.num !=
+			static_cast<A_long>(in_data->downsample_x.den) ||
+		in_data->downsample_y.num !=
+			static_cast<A_long>(in_data->downsample_y.den) ||
+		in_data->output_origin_x != 0 ||
+		in_data->output_origin_y != 0 ||
+		in_data->pre_effect_source_origin_x != 0 ||
+		in_data->pre_effect_source_origin_y != 0) {
+
+		return translationContext;
+	}
+
+	AEGP_PFInterfaceSuite1* pfInterfaceSuite = NULL;
+	AEGP_LayerSuite9* layerSuite = NULL;
+	AEGP_CompSuite12* compSuite = NULL;
+	AEGP_ItemSuite9* itemSuite = NULL;
+	AEGP_StreamSuite6* streamSuite = NULL;
+
+	AEGP_SuiteHandler suites(in_data->pica_basicP);
+
+	try {
+		pfInterfaceSuite = suites.PFInterfaceSuite1();
+		layerSuite = suites.LayerSuite9();
+		compSuite = suites.CompSuite12();
+		itemSuite = suites.ItemSuite9();
+		streamSuite = suites.StreamSuite6();
+	}
+	catch (...) {
+		return translationContext;
+	}
+
+	AEGP_LayerH effectLayerH = NULL;
+	AEGP_LayerH parentLayerH = NULL;
+	AEGP_CompH compH = NULL;
+	AEGP_ItemH compItemH = NULL;
+	A_Boolean isLayer3D = FALSE;
+	A_Time compTime;
+	AEFX_CLR_STRUCT(compTime);
+
+	A_Err err =
+		pfInterfaceSuite->AEGP_GetEffectLayer(
+			in_data->effect_ref,
+			&effectLayerH);
+
+	if (err || !effectLayerH) {
+		return translationContext;
+	}
+
+	err = layerSuite->AEGP_IsLayer3D(
+		effectLayerH,
+		&isLayer3D);
+
+	if (err || isLayer3D) {
+		return translationContext;
+	}
+
+	err = layerSuite->AEGP_GetLayerParent(
+		effectLayerH,
+		&parentLayerH);
+
+	if (err || parentLayerH) {
+		return translationContext;
+	}
+
+	err = layerSuite->AEGP_GetLayerParentComp(
+		effectLayerH,
+		&compH);
+
+	if (err || !compH) {
+		return translationContext;
+	}
+
+	err = compSuite->AEGP_GetItemFromComp(
+		compH,
+		&compItemH);
+
+	if (err || !compItemH) {
+		return translationContext;
+	}
+
+	err = itemSuite->AEGP_GetItemDimensions(
+		compItemH,
+		&translationContext.compWidth,
+		&translationContext.compHeight);
+
+	if (err) {
+		return translationContext;
+	}
+
+	err = pfInterfaceSuite->AEGP_ConvertEffectToCompTime(
+		in_data->effect_ref,
+		in_data->current_time,
+		in_data->time_scale,
+		&compTime);
+
+	PF_FpLong scaleX = 0;
+	PF_FpLong scaleY = 0;
+
+	if (!err &&
+		!ReadLayerSpatialValue(
+			streamSuite,
+			effectLayerH,
+			AEGP_LayerStream_ANCHORPOINT,
+			compTime,
+			translationContext.anchorX,
+			translationContext.anchorY)) {
+
+		err = A_Err_GENERIC;
+	}
+
+	if (!err &&
+		!ReadLayerSpatialValue(
+			streamSuite,
+			effectLayerH,
+			AEGP_LayerStream_POSITION,
+			compTime,
+			translationContext.positionX,
+			translationContext.positionY)) {
+
+		err = A_Err_GENERIC;
+	}
+
+	if (!err &&
+		!ReadLayerSpatialValue(
+			streamSuite,
+			effectLayerH,
+			AEGP_LayerStream_SCALE,
+			compTime,
+			scaleX,
+			scaleY)) {
+
+		err = A_Err_GENERIC;
+	}
+
+	AEGP_StreamVal2 rotationValue;
+	AEFX_CLR_STRUCT(rotationValue);
+
+	AEGP_StreamType rotationType =
+		AEGP_StreamType_NO_DATA;
+
+	if (!err) {
+		err = streamSuite->AEGP_GetLayerStreamValue(
+			effectLayerH,
+			AEGP_LayerStream_ROTATION,
+			AEGP_LTimeMode_CompTime,
+			&compTime,
+			FALSE,
+			&rotationValue,
+			&rotationType);
+	}
+
+	const A_Boolean supportedTransform =
+		!err &&
+		translationContext.compWidth > 0 &&
+		translationContext.compHeight > 0 &&
+		std::isfinite(scaleX) &&
+		std::isfinite(scaleY) &&
+		rotationType == AEGP_StreamType_OneD &&
+		std::isfinite(rotationValue.one_d) &&
+		std::fabs(scaleX - 100.0) <= 0.0001 &&
+		std::fabs(scaleY - 100.0) <= 0.0001 &&
+		std::fabs(rotationValue.one_d) <= 0.0001;
+
+	if (!supportedTransform) {
+		return translationContext;
+	}
+
+	translationContext.translationX =
+		translationContext.positionX -
+		(static_cast<PF_FpLong>(
+			translationContext.compWidth) * 0.5) -
+		translationContext.anchorX;
+
+	translationContext.translationY =
+		translationContext.positionY -
+		(static_cast<PF_FpLong>(
+			translationContext.compHeight) * 0.5) -
+		translationContext.anchorY;
+
+	translationContext.isValid =
+		std::isfinite(translationContext.translationX) &&
+		std::isfinite(translationContext.translationY)
+			? TRUE
+			: FALSE;
+
+	return translationContext;
+}
+
 CF_GeometrySourceData
 ResolveLayerBoundsGeometry(
 	A_long inputWidth,
@@ -1321,10 +1605,22 @@ Render(
 			inputWidth,
 			inputHeight);
 
+	CF_LayerTranslationContext layerTranslationContext;
+	AEFX_CLR_STRUCT(layerTranslationContext);
+
+	layerTranslationContext.isValid = FALSE;
+
+	if (snapshotSourceEnabled) {
+		layerTranslationContext =
+			ResolveLayerTranslationFromAfterEffects(
+				in_data);
+	}
+
 	const CF_RectangleSourceData convertedRectangleSource =
 		ConvertRectangleGeometrySnapshotToSourceData(
 			rectangleSnapshot,
-			coordinateContext);
+			coordinateContext,
+			layerTranslationContext);
 
 	const CF_GeometryTargetState storedTargetState =
 		ReadGeometryTargetState(params);

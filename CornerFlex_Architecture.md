@@ -811,7 +811,7 @@ effectRight  = localRight  + originX
 effectBottom = localBottom + originY
 ```
 
-`inputWidth` e `inputHeight` proceden de `params[CORNERFLEX_INPUT]->u.ld`. No se utilizan automáticamente las dimensiones de composición. `TransformRectangleBoundsToEffectSpace()` aplica el desplazamiento y `ConvertRectangleGeometrySnapshotToSourceData()` permanece pura al recibir el contexto explícitamente.
+`inputWidth` e `inputHeight` proceden de `params[CORNERFLEX_INPUT]->u.ld`. No se utilizan automáticamente las dimensiones de composición. `TransformLocalBoundsToEffectSpace()` aplica el desplazamiento y `ConvertRectangleGeometrySnapshotToSourceData()` permanece pura al recibir los contextos explícitamente.
 
 La evidencia directa del caso A en After Effects `26.3x87` utilizó una composición y un input de `1920 × 1080`, Rectangle Size `500 × 500`, Position `[0, 0]` y Roundness `97`. Antes de corregir la conversión, el resolver partía de los bounds locales `[-250, -250, 250, 250]` y Trim los reconstruía como un rectángulo local `[50, 50, 450, 450]`, sin trasladarlos al buffer ni conservar su origen. El frame Rectangle Source quedó completamente transparente. Layer Bounds y la desactivación del gate conservaron el shape visible en `[710, 290, 1210, 790]`. Esto descarta usar directamente el origen local y respalda el desplazamiento `[960, 540]` para el caso base.
 
@@ -878,11 +878,88 @@ Una segunda ejecución instaló temporalmente el build Phase 5.9 en esa ruta. An
 
 Los casos A–F validan la suma de `inputWidth / 2` e `inputHeight / 2`, Rectangle Position positiva y negativa, dimensiones fraccionarias y el anchor point predeterminado. Sus alpha bounding boxes coinciden exactamente con los bounds esperados después de Trim, lo que también confirma que `ExecuteTrimOperation()` conserva `baseBounds.left` y `baseBounds.top`.
 
-El caso G demuestra que modificar el anchor point desplaza el raster de la Shape Layer dentro del buffer, pero el snapshot actual no transporta ni aplica ese offset. El caso H demuestra el mismo límite para Layer Position: el shape se desplaza, mientras que `geometryBounds` permanece en la posición calculada para transform de capa en identidad. Ambos casos requieren una futura transformación de coordenadas y no deben corregirse modificando la fórmula mínima validada.
+El caso G demostró que modificar el anchor point desplaza el raster de la Shape Layer dentro del buffer, pero Phase 5.9 no aplicaba ese offset. El caso H demostró el mismo límite para Layer Position: el shape se desplazaba, mientras que `geometryBounds` permanecía en la posición calculada para transform de capa en identidad. Phase 5.10 resuelve ambos casos mediante el contrato traslacional documentado a continuación, sin modificar la fórmula local validada.
 
 Rectangle Source dejó de producir frames completamente transparentes en A–F. En G y H produjo intersecciones parciales desalineadas, no una geometría correcta. El fallback coincidió píxel a píxel con Layer Bounds en los ocho casos. El binario original fue restaurado después de la prueba.
 
-Las transformaciones de Shape Groups y capas, anchor distinto del predeterminado, Layer Position no identitaria, grupos anidados, rotación, escala, skew, pixel aspect ratio distinto de uno, downsampling, SmartFX, Stroke y efectos previos que redimensionen buffers permanecen fuera de alcance.
+### Layer Transform Coordinate Contract
+
+Phase 5.10 separa explícitamente tres pasos:
+
+```text
+Rectangle Geometry Snapshot
+→ ConvertRectangleSnapshotToLocalBounds()
+→ TransformLocalBoundsToEffectSpace()
+→ CF_RectangleSourceData
+```
+
+Los bounds locales mantienen sin cambios la fórmula validada de Size y Rectangle Position:
+
+```text
+localLeft   = rectanglePositionX - sizeX / 2
+localTop    = rectanglePositionY - sizeY / 2
+localRight  = rectanglePositionX + sizeX / 2
+localBottom = rectanglePositionY + sizeY / 2
+```
+
+`CF_LayerTranslationContext` contiene únicamente datos simples: validez, Anchor Point, Layer Position, dimensiones de composición y traslación resultante. No contiene suites, handles, punteros ni referencias del host.
+
+La capa de integración obtiene la capa del efecto mediante `AEGP_GetEffectLayer()`, convierte `PF_InData.current_time` al tiempo de composición mediante `AEGP_ConvertEffectToCompTime()` y evalúa `AEGP_LayerStream_ANCHORPOINT` y `AEGP_LayerStream_POSITION` post-expresión mediante `AEGP_GetLayerStreamValue()`. Anchor se interpreta en layer space y Position en comp space. Las dimensiones se obtienen desde la composición padre mediante `AEGP_GetLayerParentComp()`, `AEGP_GetItemFromComp()` y `AEGP_GetItemDimensions()`.
+
+La fórmula validada para traslación 2D es:
+
+```text
+translationX = layerPositionX - compWidth  / 2 - anchorX
+translationY = layerPositionY - compHeight / 2 - anchorY
+
+effectLeft   = localLeft   + inputWidth  / 2 + translationX
+effectTop    = localTop    + inputHeight / 2 + translationY
+effectRight  = localRight  + inputWidth  / 2 + translationX
+effectBottom = localBottom + inputHeight / 2 + translationY
+```
+
+El centro del input ya estaba incorporado por `CF_RectangleCoordinateContext`; por eso no forma parte de `translationX/Y`. La traslación no se añade al snapshot persistente y no altera `CF_RectangleGeometrySnapshot`.
+
+`ResolveLayerTranslationFromAfterEffects()` solo marca el contexto como válido para una capa 2D sin parent, Scale `100 %`, Rotation `0`, resolución completa y orígenes `output_origin` y `pre_effect_source_origin` iguales a cero. Si una suite, stream, tiempo, dimensión o condición no puede resolverse con certeza, `ConvertRectangleGeometrySnapshotToSourceData()` deja Rectangle Source indisponible y `ResolveGeometrySource()` selecciona Layer Bounds. CornerFlex no intenta una transformación parcial.
+
+La matriz automatizada `research/ValidateRectangleLayerTranslation.jsx` se ejecutó en After Effects `26.3x87` con el build Debug x64 final Phase 5.10 de 83.968 bytes y SHA-256 `8C2EFA7099162950CC4310B0947AEBEF6881147A2EAE7C0550E473F2DB2D3243`. La enumeración de módulos del proceso confirmó que After Effects cargó exactamente ese binario desde `Support Files\Plug-ins\CornerFlex\CornerFlex.aex`. `research/AnalyzeRectangleLayerTranslationFrames.py` comparó alpha bounding boxes y la igualdad RGBA completa entre Layer Bounds y fallback.
+
+| Caso | Condición | Rectangle Source observado | Esperado | Resultado |
+| --- | --- | --- | --- | --- |
+| A | Anchor/Position default | `(760, 340, 1160, 740)` | `(760, 340, 1160, 740)` | PASS |
+| B | Anchor `+100,+50` | `(660, 290, 1060, 690)` | `(660, 290, 1060, 690)` | PASS |
+| C | Anchor `-100,-50` | `(860, 390, 1260, 790)` | `(860, 390, 1260, 790)` | PASS |
+| D | Position `+200,+100` | `(960, 440, 1360, 840)` | `(960, 440, 1360, 840)` | PASS |
+| E | Position `-200,-100` | `(560, 240, 960, 640)` | `(560, 240, 960, 640)` | PASS |
+| F | Anchor y Position combinados | `(860, 390, 1260, 790)` | `(860, 390, 1260, 790)` | PASS |
+| G | Position igual al centro | `(760, 340, 1160, 740)` | `(760, 340, 1160, 740)` | PASS |
+| H | Position `[1200,700]` | `(1000, 500, 1400, 900)` | `(1000, 500, 1400, 900)` | PASS |
+| I | Comp `1280 × 720` | `(552, 196, 888, 404)` | `(552, 196, 888, 404)` | PASS |
+| J | Rectangle Position y capa trasladados | `(1015, 436, 1415, 724)` | `(1015, 436, 1415, 724)` | PASS |
+
+La diferencia de bbox fue `(0, 0, 0, 0)` en A–J. El fallback coincidió píxel a píxel con Layer Bounds en todos los casos. La regresión completa de Phase 5.9 A–F también pasó, incluido Size/Position fraccionario. Trim `10 %` conservó el origen final transformado.
+
+La validación defensiva final se conserva en `research/ValidateRectangleLayerTranslationDefensive.jsx`, `research/AnalyzeRectangleLayerTranslationDefensiveFrames.py` y `research/output/RectangleLayerTranslationDefensiveReport.txt`:
+
+| Caso | Condición | Resultado |
+| --- | --- | --- |
+| K | Shape Layer 3D | PASS; Rectangle Source coincidió píxel a píxel con Layer Bounds |
+| L | Shape Layer con parent | PASS; Rectangle Source coincidió píxel a píxel con Layer Bounds |
+| M | After Effects Null Layer | Inconcluso; tiene un `AEGP_LayerH` válido y raster transparente |
+| N | Scale distinta de `100 %` | PASS; Rectangle Source coincidió píxel a píxel con Layer Bounds |
+| O | Rotation distinta de cero | PASS; Rectangle Source coincidió píxel a píxel con Layer Bounds |
+
+Un efecto en ejecución siempre pertenece a una capa válida; ExtendScript no puede provocar de forma segura que `AEGP_GetEffectLayer()` retorne un handle nulo. El AE Null Layer probado no es equivalente a ese error: es una capa válida y su raster transparente impide observar qué fuente se seleccionó. El caso no produjo crash ni output inesperado, pero el branch de handle nulo permanece cubierto solo por el retorno defensivo del código.
+
+La prueba temporal utilizó la expresión de Position `[thisComp.width / 2 + time * 120, thisComp.height / 2 + time * 60]`. Rectangle Source produjo `(760, 340, 1160, 740)` en T0 y `(880, 400, 1280, 800)` en T1: el delta observado `(120, 60, 120, 60)` coincide exactamente con el valor post-expresión. Esto valida conjuntamente `AEGP_ConvertEffectToCompTime()` y `AEGP_GetLayerStreamValue()` para el flujo probado.
+
+Downsampling distinto de uno y un origen de buffer desplazado no pudieron reproducirse de manera fiable mediante `saveFrameToPng()` y el DOM sin introducir efectos auxiliares o cambiar el pipeline. Permanecen como limitaciones no validadas y activan el fallback cuando `PF_InData` expone esas condiciones.
+
+La evidencia PNG mínima seleccionada se conserva en `research/output/RectangleLayerTranslationEvidence/`. Las carpetas completas generadas por futuras ejecuciones permanecen ignoradas.
+
+El plugin no declara `PF_OutFlag2_SUPPORTS_THREADED_RENDERING`; After Effects serializa sus llamadas de render. Antes de habilitar MFR explícito deberá revisarse la seguridad concurrente de las suites AEGP, que no debe asumirse salvo documentación específica.
+
+Permanecen fuera de alcance Scale, Rotation, parenting, 3D, transformaciones de Shape Groups, grupos anidados transformados, skew, downsampling, SmartFX, pixel aspect ratio distinto de uno, Stroke y efectos previos que redimensionen o desplacen buffers. Esos casos usan el fallback cuando la capa de integración puede detectarlos; los transforms internos de Shape Groups todavía no forman parte del snapshot y deberán resolverse en una fase independiente.
 
 ## 9. Estado actual
 
@@ -906,6 +983,7 @@ Actualmente están implementados:
 - `CF_RectangleGeometrySnapshot`;
 - `CF_RectangleSourceData`;
 - `CF_RectangleCoordinateContext`;
+- `CF_LayerTranslationContext`;
 - `CF_GeometryResolveRequest`;
 - `CF_GeometrySourceData`;
 - `CF_GeometryContext`;
@@ -921,7 +999,8 @@ Actualmente están implementados:
 - `ReadRectangleGeometrySnapshot()`;
 - `IsRectangleSnapshotSourceEnabled()`;
 - `BuildRectangleCoordinateContext()`;
-- `TransformRectangleBoundsToEffectSpace()`;
+- `ConvertRectangleSnapshotToLocalBounds()`;
+- `TransformLocalBoundsToEffectSpace()`;
 - `ConvertRectangleGeometrySnapshotToSourceData()`;
 - `SelectRectangleSourceData()`;
 - `BuildRectangleGeometry()`;
@@ -936,7 +1015,7 @@ Actualmente están implementados:
 - `TrimFunc16()`;
 - render de 8 y 16 bpc.
 
-Por defecto, `BuildGeometryContext()` crea Layer Bounds a partir de Input Bounds como fallback y `ExecuteTrimOperation()` aplica Trim sobre esa geometría base sin perder su origen. La acción manual del panel CEP puede capturar el Rectangle Path seleccionado, escribir un snapshot válido y habilitar sus bounds convertidos al espacio del buffer del efecto; la acción secundaria desactiva el snapshot y restaura Layer Bounds. Todavía no se aplican transformaciones de grupos o capa, no existe sincronización automática y la integración con Bézier paths continúa pendiente.
+Por defecto, `BuildGeometryContext()` crea Layer Bounds a partir de Input Bounds como fallback y `ExecuteTrimOperation()` aplica Trim sobre esa geometría base sin perder su origen. La acción manual del panel CEP puede capturar el Rectangle Path seleccionado, escribir un snapshot válido y habilitar sus bounds convertidos al espacio del buffer del efecto; la acción secundaria desactiva el snapshot y restaura Layer Bounds. Rectangle Source soporta ahora la traslación 2D de Layer Anchor Point y Layer Position. Scale, Rotation, parenting, 3D y transformaciones internas de Shape Groups continúan fuera de alcance; tampoco existe sincronización automática y la integración con Bézier paths continúa pendiente.
 
 ## 10. Hoja de ruta técnica
 
