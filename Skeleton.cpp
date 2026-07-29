@@ -186,6 +186,76 @@ ParamsSetup(
 		0,
 		TRIM_BOTTOM_DISK_ID);
 
+	AEFX_CLR_STRUCT(def);
+
+	def.flags =
+		PF_ParamFlag_CANNOT_TIME_VARY |
+		PF_ParamFlag_CANNOT_INTERP |
+		PF_ParamFlag_USE_VALUE_FOR_OLD_PROJECTS;
+
+	def.ui_flags = PF_PUI_INVISIBLE;
+
+	PF_ADD_SLIDER(
+		CF_TARGET_STATE_VERSION_MATCH_NAME,
+		0,
+		INT32_MAX,
+		0,
+		1,
+		CF_GEOMETRY_TARGET_STATE_VERSION,
+		TARGET_STATE_VERSION_DISK_ID);
+
+	AEFX_CLR_STRUCT(def);
+
+	def.flags =
+		PF_ParamFlag_CANNOT_TIME_VARY |
+		PF_ParamFlag_CANNOT_INTERP |
+		PF_ParamFlag_USE_VALUE_FOR_OLD_PROJECTS;
+
+	def.ui_flags = PF_PUI_INVISIBLE;
+
+	PF_ADD_CHECKBOX(
+		CF_TARGET_IDENTITY_VALID_MATCH_NAME,
+		"",
+		FALSE,
+		0,
+		TARGET_IDENTITY_VALID_DISK_ID);
+
+	AEFX_CLR_STRUCT(def);
+
+	def.flags =
+		PF_ParamFlag_CANNOT_TIME_VARY |
+		PF_ParamFlag_CANNOT_INTERP |
+		PF_ParamFlag_USE_VALUE_FOR_OLD_PROJECTS;
+
+	def.ui_flags = PF_PUI_INVISIBLE;
+
+	PF_ADD_SLIDER(
+		CF_TARGET_LAYER_ID_MATCH_NAME,
+		INT32_MIN,
+		INT32_MAX,
+		INT32_MIN,
+		INT32_MAX,
+		0,
+		TARGET_LAYER_ID_DISK_ID);
+
+	AEFX_CLR_STRUCT(def);
+
+	def.flags =
+		PF_ParamFlag_CANNOT_TIME_VARY |
+		PF_ParamFlag_CANNOT_INTERP |
+		PF_ParamFlag_USE_VALUE_FOR_OLD_PROJECTS;
+
+	def.ui_flags = PF_PUI_INVISIBLE;
+
+	PF_ADD_SLIDER(
+		CF_TARGET_UNIQUE_STREAM_ID_MATCH_NAME,
+		INT32_MIN,
+		INT32_MAX,
+		INT32_MIN,
+		INT32_MAX,
+		0,
+		TARGET_UNIQUE_STREAM_ID_DISK_ID);
+
 	out_data->num_params = CORNERFLEX_NUM_PARAMS;
 
 	return err;
@@ -314,6 +384,46 @@ ReadCornerFlexSettings(
 		settings.trimBottom =
 			params[CORNERFLEX_TRIM_BOTTOM]->u.fs_d.value;
 	}
+}
+
+CF_GeometryTargetState
+ReadGeometryTargetState(
+	PF_ParamDef* params[])
+{
+	CF_GeometryTargetState targetState;
+	AEFX_CLR_STRUCT(targetState);
+
+	targetState.version =
+		params[CORNERFLEX_TARGET_STATE_VERSION]->u.sd.value;
+
+	targetState.targetIdentity.layerId =
+		params[CORNERFLEX_TARGET_LAYER_ID]->u.sd.value;
+
+	targetState.targetIdentity.uniqueStreamId =
+		params[CORNERFLEX_TARGET_UNIQUE_STREAM_ID]->u.sd.value;
+
+	const A_Boolean versionIsSupported =
+		targetState.version ==
+		CF_GEOMETRY_TARGET_STATE_VERSION;
+
+	const A_Boolean validityWasRequested =
+		params[CORNERFLEX_TARGET_IDENTITY_VALID]->u.bd.value
+			? TRUE
+			: FALSE;
+
+	const A_Boolean identifiersAreAcceptable =
+		targetState.targetIdentity.layerId !=
+			AEGP_LayerIDVal_NONE &&
+		targetState.targetIdentity.uniqueStreamId != 0;
+
+	targetState.targetIdentity.isValid =
+		versionIsSupported &&
+		validityWasRequested &&
+		identifiersAreAcceptable
+			? TRUE
+			: FALSE;
+
+	return targetState;
 }
 
 static CF_Rect
@@ -750,6 +860,11 @@ Render(
 
 	CornerFlexSettings settings;
 	ReadCornerFlexSettings(params, settings);
+
+	const CF_GeometryTargetState storedTargetState =
+		ReadGeometryTargetState(params);
+
+	static_cast<void>(storedTargetState);
 
 	const A_long inputWidth =
 		params[CORNERFLEX_INPUT]->u.ld.width;

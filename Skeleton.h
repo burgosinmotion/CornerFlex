@@ -67,6 +67,12 @@ typedef short int			int16;
 #define	STAGE_VERSION	PF_Stage_DEVELOP
 #define	BUILD_VERSION	1
 
+#define CF_TARGET_STATE_VERSION_MATCH_NAME		"Target State Version"
+#define CF_TARGET_IDENTITY_VALID_MATCH_NAME		"Target Identity Valid"
+#define CF_TARGET_LAYER_ID_MATCH_NAME			"Target Layer ID"
+#define CF_TARGET_UNIQUE_STREAM_ID_MATCH_NAME	"Target Unique Stream ID"
+
+#define CF_GEOMETRY_TARGET_STATE_VERSION		1
 
 /* Parameter IDs */
 
@@ -78,6 +84,10 @@ typedef short int			int16;
 		CORNERFLEX_TRIM_TOP,
 		CORNERFLEX_TRIM_RIGHT,
 		CORNERFLEX_TRIM_BOTTOM,
+		CORNERFLEX_TARGET_STATE_VERSION,
+		CORNERFLEX_TARGET_IDENTITY_VALID,
+		CORNERFLEX_TARGET_LAYER_ID,
+		CORNERFLEX_TARGET_UNIQUE_STREAM_ID,
 		CORNERFLEX_NUM_PARAMS
 	};
 
@@ -87,7 +97,11 @@ typedef short int			int16;
 		TRIM_LEFT_DISK_ID,
 		TRIM_TOP_DISK_ID,
 		TRIM_RIGHT_DISK_ID,
-		TRIM_BOTTOM_DISK_ID
+		TRIM_BOTTOM_DISK_ID,
+		TARGET_STATE_VERSION_DISK_ID = 7,
+		TARGET_IDENTITY_VALID_DISK_ID,
+		TARGET_LAYER_ID_DISK_ID,
+		TARGET_UNIQUE_STREAM_ID_DISK_ID
 	};
 
 	typedef struct {
@@ -259,6 +273,10 @@ typedef short int			int16;
 		const CF_GeometryContext& geometryContext,
 		A_long inputWidth,
 		A_long inputHeight);
+
+	CF_GeometryTargetState
+	ReadGeometryTargetState(
+		PF_ParamDef* params[]);
 
 
 extern "C" {

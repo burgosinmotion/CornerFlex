@@ -191,6 +191,30 @@ Al duplicar una capa, After Effects copiará los valores transportados, pero la 
 
 `Render()` continúa construyendo `CF_GeometryTargetIdentity` con `isValid = FALSE`. Por ello no ejecuta el recorrido normal del locator, Rectangle Source permanece desactivado y Layer Bounds continúa siendo el fallback.
 
+#### Hidden Target Parameters
+
+El transporte por instancia dispone de cuatro parámetros nativos añadidos al final del contrato:
+
+| Índice | Nombre interno estable | Disk ID | Tipo | Valor inicial |
+|---|---|---:|---|---:|
+| `CORNERFLEX_TARGET_STATE_VERSION` | `Target State Version` | 7 | `PF_Param_SLIDER` | 1 |
+| `CORNERFLEX_TARGET_IDENTITY_VALID` | `Target Identity Valid` | 8 | `PF_Param_CHECKBOX` | 0 |
+| `CORNERFLEX_TARGET_LAYER_ID` | `Target Layer ID` | 9 | `PF_Param_SLIDER` | 0 |
+| `CORNERFLEX_TARGET_UNIQUE_STREAM_ID` | `Target Unique Stream ID` | 10 | `PF_Param_SLIDER` | 0 |
+
+Los cuatro parámetros utilizan `PF_PUI_INVISIBLE`, `PF_ParamFlag_CANNOT_TIME_VARY`, `PF_ParamFlag_CANNOT_INTERP` y `PF_ParamFlag_USE_VALUE_FOR_OLD_PROJECTS`. De esta forma no aparecen en Effect Controls ni Timeline, no son animables y los proyectos anteriores reciben defaults inactivos. El SDK de efectos no expone en `PF_ParamDef` un campo independiente para Match Name de parámetro; por ello estos nombres exactos, no localizados, constituyen los identificadores internos estables que deberá validar la integración CEP.
+
+`A_long` y `AEGP_LayerIDVal` son alias de `int32_t`; `PF_ParamValue`, usado por `PF_Param_SLIDER`, también es `A_long`. Los sliders de IDs admiten el rango completo `INT32_MIN` a `INT32_MAX`, por lo que no truncan ni convierten los identificadores. La versión utiliza el rango no negativo y el checkbox normaliza validez a `TRUE` o `FALSE`.
+
+`ReadGeometryTargetState()` limpia el resultado, lee los cuatro parámetros y considera válida la identidad únicamente si:
+
+1. `version == CF_GEOMETRY_TARGET_STATE_VERSION`;
+2. `Target Identity Valid` está activado;
+3. `layerId != AEGP_LayerIDVal_NONE`;
+4. `uniqueStreamId != 0`.
+
+La función no consulta suites, no localiza streams y no produce efectos secundarios. `Render()` ya construye el estado almacenado, pero lo mantiene desconectado: continúa creando por separado una identidad con `isValid = FALSE` para el discovery adapter. En consecuencia, el Target Locator no recorre streams durante la ejecución normal, Rectangle Source sigue desactivado y Layer Bounds permanece como ruta activa.
+
 #### Geometry Target Locator
 
 Identity, Location y Geometry Source representan responsabilidades distintas:
