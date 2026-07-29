@@ -394,6 +394,18 @@ ParamsSetup(
 		0,
 		RECTANGLE_SNAPSHOT_DIRECTION_DISK_ID);
 
+	AEFX_CLR_STRUCT(def);
+
+	def.flags = snapshotParamFlags;
+	def.ui_flags = PF_PUI_INVISIBLE;
+
+	PF_ADD_CHECKBOX(
+		CF_RECTANGLE_SNAPSHOT_ENABLED_MATCH_NAME,
+		"",
+		FALSE,
+		0,
+		RECTANGLE_SNAPSHOT_ENABLED_DISK_ID);
+
 	out_data->num_params = CORNERFLEX_NUM_PARAMS;
 
 	return err;
@@ -671,6 +683,15 @@ ReadRectangleGeometrySnapshot(
 	return snapshot;
 }
 
+A_Boolean
+IsRectangleSnapshotSourceEnabled(
+	PF_ParamDef* params[])
+{
+	return params[CORNERFLEX_RECTANGLE_SNAPSHOT_ENABLED]->u.bd.value
+		? TRUE
+		: FALSE;
+}
+
 CF_RectangleSourceData
 ConvertRectangleGeometrySnapshotToSourceData(
 	const CF_RectangleGeometrySnapshot& snapshot)
@@ -710,6 +731,29 @@ ConvertRectangleGeometrySnapshotToSourceData(
 	sourceData.isAvailable = TRUE;
 
 	return sourceData;
+}
+
+CF_RectangleSourceData
+SelectRectangleSourceData(
+	A_Boolean snapshotSourceEnabled,
+	const CF_RectangleSourceData& snapshotSource,
+	const CF_RectangleSourceData& discoveredSource)
+{
+	CF_RectangleSourceData selectedSource;
+	AEFX_CLR_STRUCT(selectedSource);
+
+	selectedSource.isAvailable = FALSE;
+
+	if (snapshotSourceEnabled == TRUE &&
+		snapshotSource.isAvailable == TRUE) {
+		return snapshotSource;
+	}
+
+	if (discoveredSource.isAvailable == TRUE) {
+		return discoveredSource;
+	}
+
+	return selectedSource;
 }
 
 static CF_Rect
@@ -1185,12 +1229,12 @@ Render(
 	const CF_RectangleGeometrySnapshot rectangleSnapshot =
 		ReadRectangleGeometrySnapshot(params);
 
+	const A_Boolean snapshotSourceEnabled =
+		IsRectangleSnapshotSourceEnabled(params);
+
 	const CF_RectangleSourceData convertedRectangleSource =
 		ConvertRectangleGeometrySnapshotToSourceData(
 			rectangleSnapshot);
-
-	// Snapshot conversion is observational until Rectangle Source activation.
-	static_cast<void>(convertedRectangleSource);
 
 	const CF_GeometryTargetState storedTargetState =
 		ReadGeometryTargetState(params);
@@ -1211,10 +1255,20 @@ Render(
 	resolveRequest.inputWidth = inputWidth;
 	resolveRequest.inputHeight = inputHeight;
 
-	resolveRequest.rectangleSource =
+	const CF_RectangleSourceData discoveredRectangleSource =
 		DiscoverRectangleSourceFromAfterEffects(
 			in_data,
 			targetIdentity);
+
+	const CF_RectangleSourceData selectedRectangleSource =
+		SelectRectangleSourceData(
+			snapshotSourceEnabled,
+			convertedRectangleSource,
+			discoveredRectangleSource);
+
+	// First activation point where an enabled snapshot can modify geometryBounds.
+	resolveRequest.rectangleSource =
+		selectedRectangleSource;
 
 	const CF_GeometrySourceData sourceData =
 		ResolveGeometrySource(resolveRequest);

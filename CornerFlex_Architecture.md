@@ -142,7 +142,7 @@ CF_GeometryResolveRequest
 Ambas rutas → CF_GeometrySourceData → BuildGeometryContext()
 ```
 
-La disponibilidad de Rectangle Source permanece desactivada explícitamente en `Render()` hasta integrar una fuente real. Por ello, `ResolveLayerBoundsGeometry()` sigue siendo la única ruta activa. Las fuentes futuras deberán cumplir el mismo contrato y devolver `CF_GeometrySourceData`. Las operaciones geométricas permanecen independientes del resolver y del origen.
+`Render()` puede entregar un Rectangle Source derivado del snapshot únicamente detrás de `Rectangle Snapshot Enabled`, una compuerta persistente y desactivada por defecto. Cuando la compuerta o el snapshot no son válidos, `ResolveLayerBoundsGeometry()` continúa siendo el fallback automático. Las fuentes futuras deberán cumplir el mismo contrato y devolver `CF_GeometrySourceData`. Las operaciones geométricas permanecen independientes del selector, del resolver y del origen.
 
 #### After Effects Geometry Adapter
 
@@ -154,7 +154,7 @@ El SDK incluido expone `AEGP_PFInterfaceSuite1::AEGP_GetEffectLayer()` durante `
 
 El SDK también permite obtener la selección de una composición mediante `AEGP_GetNewCollectionFromCompSelection()` y representar elementos `STREAMREF` en `AEGP_CollectionSuite2`. Sin embargo, esa selección pertenece a la composición activa de la interfaz y no constituye una identidad estable ni fiable del path objetivo durante el render. `AEGP_LayerSuite9::AEGP_GetActiveLayer()` solo informa una capa activa y una Shape Layer puede contener varios grupos y Rectangle Paths. Para evitar una elección implícita, el adaptador no adquiere suites ni recorre streams en esta fase.
 
-`DiscoverRectangleSourceFromAfterEffects()` devuelve actualmente `isAvailable = FALSE`; no genera bounds simulados, no retiene referencias del SDK y no participa en el render. En consecuencia, `ResolveGeometrySource()` continúa seleccionando Layer Bounds. Para activar una fuente real será necesario proporcionar una identidad estable del path objetivo —por ejemplo, capturada explícitamente por la extensión— y definir su sistema de coordenadas y tiempo de evaluación.
+`DiscoverRectangleSourceFromAfterEffects()` devuelve actualmente `isAvailable = FALSE`; no genera bounds simulados ni retiene referencias del SDK. Por sí solo no puede activar Rectangle Source: cuando el Snapshot Source tampoco está habilitado y disponible, `ResolveGeometrySource()` selecciona Layer Bounds. Para activar el proveedor de discovery será necesario proporcionar una identidad estable del path objetivo —por ejemplo, capturada explícitamente por la extensión— y definir su sistema de coordenadas y tiempo de evaluación.
 
 #### Geometry Target Identity
 
@@ -223,7 +223,7 @@ La función no consulta suites, no localiza streams y no produce efectos secunda
 
 Cuando los parámetros contienen un estado válido, la compuerta permite que el discovery adapter ejecute el Locator. La localización resultante continúa siendo metadata observacional: no se convierte en `CF_RectangleSourceData`, no se leen propiedades y `rectangleSource.isAvailable` permanece en `FALSE`. Activar identidad no significa activar geometría.
 
-El Locator no añade estado global mutable: todas las suites y referencias son locales a la llamada, y el Plugin ID existente se inicializa en `GlobalSetup()` y después se usa como dato inmutable. CornerFlex no declara actualmente `PF_OutFlag2_SUPPORTS_THREADED_RENDERING`; la futura habilitación explícita de MFR requerirá confirmar con Adobe la seguridad concurrente de las suites AEGP usadas por el recorrido. Layer Bounds continúa siendo la única fuente geométrica activa.
+El Locator no añade estado global mutable: todas las suites y referencias son locales a la llamada, y el Plugin ID existente se inicializa en `GlobalSetup()` y después se usa como dato inmutable. CornerFlex no declara actualmente `PF_OutFlag2_SUPPORTS_THREADED_RENDERING`; la futura habilitación explícita de MFR requerirá confirmar con Adobe la seguridad concurrente de las suites AEGP usadas por el recorrido. El Locator no activa geometría; con la compuerta del snapshot en su default, Layer Bounds continúa siendo la fuente activa.
 
 #### Geometry Target Locator
 
@@ -239,7 +239,7 @@ CornerFlex registra un `AEGP_PluginID` durante `GlobalSetup()` porque las APIs q
 
 Al encontrar el Unique Stream ID se consulta el Match Name mediante `AEGP_GetMatchName()`. Los headers y ejemplos del SDK 2025 revisados no exponen una constante oficial para el Match Name de Rectangle Path. Por ello CornerFlex no introduce un literal no verificado: el target puede marcarse como encontrado, pero `isRectanglePath` permanece en `FALSE`. Esta limitación impide validar o leer la geometría en esta fase.
 
-`DiscoverRectangleSourceFromAfterEffects()` llama al localizador, pero continúa devolviendo `isAvailable = FALSE`. Layer Bounds sigue siendo la única fuente activa y no se leen Size, Position, Roundness, dirección, transformaciones ni valores temporales.
+`DiscoverRectangleSourceFromAfterEffects()` llama al localizador, pero continúa devolviendo `isAvailable = FALSE`. Esta ruta no activa Rectangle Source ni lee Size, Position, Roundness, dirección, transformaciones o valores temporales. Con Snapshot Source deshabilitado, el resolver utiliza Layer Bounds.
 
 #### Rectangle Geometry Reader
 
@@ -257,7 +257,7 @@ Cuando existan Match Names oficiales verificados, el Reader deberá volver a loc
 
 Durante `PF_Cmd_RENDER`, `AEGP_GetLayerCurrentTime()` no es apropiado porque el header indica que no se actualiza durante render. La evaluación futura deberá construir el tiempo de capa con `PF_InData::current_time` y `PF_InData::time_scale` y usar `AEGP_LTimeMode_LayerTime`; solo deberá convertir a tiempo de composición con `AEGP_ConvertEffectToCompTime()` si una operación posterior requiere explícitamente ese espacio temporal. En esta fase no se evalúa ningún valor.
 
-Los valores previstos son locales y crudos al Rectangle Path. No incluyen transformaciones del grupo o capa, anchor, escala, rotación, skew ni conversión a composición o mundo. `DiscoverRectangleSourceFromAfterEffects()` descarta el resultado del Reader y mantiene `rectangleSource.isAvailable = FALSE`; Layer Bounds continúa siendo la única ruta activa.
+Los valores previstos son locales y crudos al Rectangle Path. No incluyen transformaciones del grupo o capa, anchor, escala, rotación, skew ni conversión a composición o mundo. `DiscoverRectangleSourceFromAfterEffects()` descarta el resultado del Reader y mantiene `rectangleSource.isAvailable = FALSE`; por esta ruta no entra geometría y, con Snapshot Source deshabilitado, Layer Bounds continúa activo.
 
 ### Geometry Operation Pipeline
 
@@ -515,7 +515,7 @@ Los valores pertenecen al sistema de coordenadas crudo del Rectangle Path y toda
 
 #### Snapshot Transport Parameters
 
-El efecto reserva ocho parámetros persistentes al final del contrato existente:
+El efecto reserva nueve parámetros persistentes al final del contrato existente:
 
 | Índice | Nombre interno estable | Disk ID | Tipo | Rango válido | Default |
 | ---: | --- | ---: | --- | --- | ---: |
@@ -527,16 +527,17 @@ El efecto reserva ocho parámetros persistentes al final del contrato existente:
 | 16 | `Rectangle Snapshot Position Y` | 16 | `PF_Param_FLOAT_SLIDER` | `-FLT_MAX`–`FLT_MAX` | `0` |
 | 17 | `Rectangle Snapshot Roundness` | 17 | `PF_Param_FLOAT_SLIDER` | `0`–`FLT_MAX` | `0` |
 | 18 | `Rectangle Snapshot Direction` | 18 | `PF_Param_SLIDER` | `INT32_MIN`–`INT32_MAX` | `0` |
+| 19 | `Rectangle Snapshot Enabled` | 19 | `PF_Param_CHECKBOX` | booleano | `0` |
 
-Todos usan `PF_PUI_INVISIBLE`, `PF_ParamFlag_CANNOT_TIME_VARY`, `PF_ParamFlag_CANNOT_INTERP` y `PF_ParamFlag_USE_VALUE_FOR_OLD_PROJECTS`. No aparecen en Effect Controls, no se animan ni interpolan y los proyectos anteriores reciben `version = 1`, valores geométricos en cero e `isValid = FALSE`.
+Todos usan `PF_PUI_INVISIBLE`, `PF_ParamFlag_CANNOT_TIME_VARY`, `PF_ParamFlag_CANNOT_INTERP` y `PF_ParamFlag_USE_VALUE_FOR_OLD_PROJECTS`. No aparecen en Effect Controls, no se animan ni interpolan y los proyectos anteriores reciben `version = 1`, valores geométricos en cero, `isValid = FALSE` y `Rectangle Snapshot Enabled = FALSE`.
 
 `PF_FloatSliderDef::value` utiliza `PF_FpLong`, que en el SDK local es `double`; por ello Size, Position y Roundness se leen sin convertirlos a entero o `float`. Los límites descriptivos de `PF_FloatSliderDef` son `PF_FpShort`, equivalente a `float`, y usan su rango completo mediante `FLT_MAX`. `PF_Precision_TEN_THOUSANDTHS` solo controla la presentación y no modifica el valor almacenado.
 
-`ReadRectangleGeometrySnapshot()` comienza con `MakeInvalidRectangleGeometrySnapshot()`, lee los ocho parámetros, normaliza únicamente el checkbox a `TRUE` o `FALSE` y conserva los demás valores crudos. Después `Render()` entrega el snapshot a la conversión pura, que lo valida antes de derivar bounds, y descarta el resultado de forma explícita.
+`ReadRectangleGeometrySnapshot()` comienza con `MakeInvalidRectangleGeometrySnapshot()`, lee los ocho campos del snapshot, normaliza únicamente su checkbox de validez a `TRUE` o `FALSE` y conserva los demás valores crudos. `IsRectangleSnapshotSourceEnabled()` lee y normaliza por separado la novena propiedad, que controla la activación. Después `Render()` entrega el snapshot a la conversión pura, que lo valida antes de derivar bounds.
 
 El almacenamiento pertenece a la instancia del efecto y se conserva al guardar el proyecto. Al duplicar una capa o copiar el efecto, After Effects copia también sus parámetros; el snapshot duplicado continúa sujeto a la misma versión y validación.
 
-El resultado convertido no se conecta con discovery, resolvers, contextos geométricos, operaciones o renderer. Incluso un snapshot válido introducido manualmente se descarta: `Rectangle Source` permanece desactivado y Layer Bounds continúa siendo la única fuente geométrica activa.
+La validez del snapshot no activa por sí sola Rectangle Source. El resultado convertido solo puede llegar al resolver cuando `Rectangle Snapshot Enabled` está activado; con el valor predeterminado se ignora y Layer Bounds continúa como fallback.
 
 #### Snapshot-to-Source Conversion
 
@@ -559,9 +560,34 @@ Size cero es válido: produce bordes coincidentes en el eje correspondiente y pu
 
 La conversión opera exclusivamente en el espacio local inmediato y crudo del Rectangle Path. No aplica transformaciones del Shape Group, grupos ancestros o capa; tampoco anchor, scale, rotation, skew, Stroke, pixel aspect ratio, efectos, expresiones ni conversiones a composición o mundo.
 
-`Render()` construye localmente el resultado de la conversión, que ahora puede quedar disponible, y lo descarta de forma explícita. No lo asigna a `resolveRequest.rectangleSource`, que continúa recibiendo el resultado indisponible de `DiscoverRectangleSourceFromAfterEffects()`. En consecuencia, Rectangle Source permanece desactivado y Layer Bounds sigue siendo la única fuente activa.
+`Render()` construye localmente el resultado de la conversión y lo entrega al selector junto al resultado de `DiscoverRectangleSourceFromAfterEffects()`. Solo el proveedor seleccionado se asigna a `resolveRequest.rectangleSource`; el resolver continúa siendo ajeno al origen de los datos.
 
 Referencia oficial revisada: [Create and customize shapes and masks in After Effects](https://helpx.adobe.com/after-effects/desktop/drawing-painting-and-paths/shapes-and-shape-attributes/creating-shapes-masks.html).
+
+#### Rectangle Snapshot Activation Gate
+
+`Rectangle Snapshot Enabled` es un `PF_Param_CHECKBOX` oculto, persistente, no animable y no interpolable. Ocupa el índice `19`, usa el Disk ID `19`, conserva ese nombre interno estable y tiene default `0`. `PF_ParamFlag_USE_VALUE_FOR_OLD_PROJECTS` garantiza que proyectos antiguos e instancias existentes mantengan la compuerta desactivada y continúen usando Layer Bounds.
+
+`IsRectangleSnapshotSourceEnabled()` normaliza el checkbox a `TRUE` o `FALSE`. La validez del snapshot nunca habilita la compuerta automáticamente.
+
+`SelectRectangleSourceData()` es una selección pura y no mezcla bounds entre proveedores. Aplica esta prioridad:
+
+1. Snapshot Source cuando la compuerta está habilitada y el source convertido está disponible.
+2. Discovery Source cuando está disponible.
+3. Source indisponible, que provoca el fallback a Layer Bounds dentro de `ResolveGeometrySource()`.
+
+```text
+Rectangle Geometry Snapshot
+→ ConvertRectangleGeometrySnapshotToSourceData()
+→ Rectangle Snapshot Enabled
+→ SelectRectangleSourceData()
+→ resolveRequest.rectangleSource
+→ ResolveGeometrySource()
+```
+
+Un snapshot inválido produce un source indisponible incluso con la compuerta habilitada. Una compuerta deshabilitada ignora el source convertido aunque sea válido. En ambos casos, el discovery provider conserva su prioridad secundaria y, mientras este continúe indisponible, el flujo termina de forma determinista en Layer Bounds.
+
+Este es el primer punto donde un snapshot puede modificar realmente `geometryBounds`, por lo que habilitar manualmente la compuerta con datos válidos puede cambiar el resultado visual. Las coordenadas continúan siendo locales al Rectangle Path y no incluyen transformaciones de grupos, ancestros o capa. `roundness` y `direction` siguen sin consumirse en `CF_GeometryContext`. CEP todavía no escribe estos parámetros.
 
 #### Rectangle Coordinate Semantics Validation
 
@@ -622,7 +648,7 @@ bottom = positionY + sizeY / 2
 
 Por tanto, la fórmula queda confirmada como contrato empíricamente validado para After Effects `26.3x87` bajo esta configuración controlada. No constituye una garantía oficial para otras versiones, espacios transformados, Stroke, expresiones, efectos, motion blur o `sourceRectAtTime()` con extents habilitados.
 
-El reporte completo se conserva en `research/output/RectanglePathSemanticsReport.txt`. Phase 5.4 no modificó el AEX; Phase 5.5 utiliza esa evidencia para completar la conversión pura. Aunque la conversión puede retornar `isAvailable = TRUE`, `Render()` todavía descarta su resultado y no lo conecta al resolver. Rectangle Source permanece desactivado y Layer Bounds sigue siendo la única fuente activa.
+El reporte completo se conserva en `research/output/RectanglePathSemanticsReport.txt`. Phase 5.4 no modificó el AEX y Phase 5.5 utilizó esa evidencia para completar la conversión pura. Phase 5.6 conecta el resultado al resolver únicamente mediante la compuerta explícita, que permanece desactivada por defecto.
 
 ## 9. Estado actual
 
@@ -656,7 +682,9 @@ Actualmente están implementados:
 - `MakeInvalidRectangleGeometrySnapshot()`;
 - `ValidateRectangleGeometrySnapshot()`;
 - `ReadRectangleGeometrySnapshot()`;
+- `IsRectangleSnapshotSourceEnabled()`;
 - `ConvertRectangleGeometrySnapshotToSourceData()`;
+- `SelectRectangleSourceData()`;
 - `BuildRectangleGeometry()`;
 - `ReadCornerFlexSettings()`;
 - `BuildTrimRectangle()`;
@@ -669,7 +697,7 @@ Actualmente están implementados:
 - `TrimFunc16()`;
 - render de 8 y 16 bpc.
 
-Actualmente, `BuildGeometryContext()` crea Layer Bounds a partir de Input Bounds como fallback y `ExecuteTrimOperation()` aplica Trim sobre esa geometría base. Por ello, el efecto aún opera visualmente respecto a la composición o al buffer completo. Este comportamiento es temporal y no representa el objetivo final del producto, que consiste en operar respecto al shape o Bézier path seleccionado.
+Por defecto, `BuildGeometryContext()` crea Layer Bounds a partir de Input Bounds como fallback y `ExecuteTrimOperation()` aplica Trim sobre esa geometría base. Cuando `Rectangle Snapshot Enabled` se activa manualmente y el snapshot es válido, el contexto puede recibir sus bounds locales. Todavía no se aplican transformaciones de grupos o capa ni existe escritura desde CEP; la integración completa con el shape o Bézier path seleccionado continúa pendiente.
 
 ## 10. Hoja de ruta técnica
 

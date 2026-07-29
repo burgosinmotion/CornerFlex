@@ -79,6 +79,7 @@ typedef short int			int16;
 #define CF_RECTANGLE_SNAPSHOT_POSITION_Y_MATCH_NAME	"Rectangle Snapshot Position Y"
 #define CF_RECTANGLE_SNAPSHOT_ROUNDNESS_MATCH_NAME	"Rectangle Snapshot Roundness"
 #define CF_RECTANGLE_SNAPSHOT_DIRECTION_MATCH_NAME	"Rectangle Snapshot Direction"
+#define CF_RECTANGLE_SNAPSHOT_ENABLED_MATCH_NAME		"Rectangle Snapshot Enabled"
 
 #define CF_GEOMETRY_TARGET_STATE_VERSION		1
 #define CF_RECTANGLE_GEOMETRY_SNAPSHOT_VERSION	1
@@ -105,6 +106,7 @@ typedef short int			int16;
 		CORNERFLEX_RECTANGLE_SNAPSHOT_POSITION_Y,
 		CORNERFLEX_RECTANGLE_SNAPSHOT_ROUNDNESS,
 		CORNERFLEX_RECTANGLE_SNAPSHOT_DIRECTION,
+		CORNERFLEX_RECTANGLE_SNAPSHOT_ENABLED,
 		CORNERFLEX_NUM_PARAMS
 	};
 
@@ -126,7 +128,8 @@ typedef short int			int16;
 		RECTANGLE_SNAPSHOT_POSITION_X_DISK_ID,
 		RECTANGLE_SNAPSHOT_POSITION_Y_DISK_ID,
 		RECTANGLE_SNAPSHOT_ROUNDNESS_DISK_ID,
-		RECTANGLE_SNAPSHOT_DIRECTION_DISK_ID
+		RECTANGLE_SNAPSHOT_DIRECTION_DISK_ID,
+		RECTANGLE_SNAPSHOT_ENABLED_DISK_ID
 	};
 
 	typedef struct {
@@ -343,9 +346,19 @@ typedef short int			int16;
 	ReadRectangleGeometrySnapshot(
 		PF_ParamDef* params[]);
 
+	A_Boolean
+	IsRectangleSnapshotSourceEnabled(
+		PF_ParamDef* params[]);
+
 	CF_RectangleSourceData
 	ConvertRectangleGeometrySnapshotToSourceData(
 		const CF_RectangleGeometrySnapshot& snapshot);
+
+	CF_RectangleSourceData
+	SelectRectangleSourceData(
+		A_Boolean snapshotSourceEnabled,
+		const CF_RectangleSourceData& snapshotSource,
+		const CF_RectangleSourceData& discoveredSource);
 
 
 extern "C" {
