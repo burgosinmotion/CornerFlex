@@ -73,6 +73,7 @@ typedef short int			int16;
 #define CF_TARGET_UNIQUE_STREAM_ID_MATCH_NAME	"Target Unique Stream ID"
 
 #define CF_GEOMETRY_TARGET_STATE_VERSION		1
+#define CF_RECTANGLE_GEOMETRY_SNAPSHOT_VERSION	1
 
 /* Parameter IDs */
 
@@ -188,6 +189,31 @@ typedef short int			int16;
 
 	typedef struct
 	{
+		A_Boolean wasRead;
+		PF_FpLong sizeX;
+		PF_FpLong sizeY;
+		PF_FpLong positionX;
+		PF_FpLong positionY;
+		PF_FpLong roundness;
+
+	} CF_RectanglePathProperties;
+
+	// Versioned, host-independent Rectangle Path values supplied by CEP.
+	typedef struct
+	{
+		A_long version;
+		A_Boolean isValid;
+		PF_FpLong sizeX;
+		PF_FpLong sizeY;
+		PF_FpLong positionX;
+		PF_FpLong positionY;
+		PF_FpLong roundness;
+		A_long direction;
+
+	} CF_RectangleGeometrySnapshot;
+
+	typedef struct
+	{
 		CF_Rect bounds;
 		A_Boolean isAvailable;
 
@@ -277,6 +303,17 @@ typedef short int			int16;
 	CF_GeometryTargetState
 	ReadGeometryTargetState(
 		PF_ParamDef* params[]);
+
+	CF_GeometryTargetIdentity
+	GetActiveGeometryTargetIdentity(
+		const CF_GeometryTargetState& targetState);
+
+	CF_RectangleGeometrySnapshot
+	MakeInvalidRectangleGeometrySnapshot();
+
+	A_Boolean
+	ValidateRectangleGeometrySnapshot(
+		const CF_RectangleGeometrySnapshot& snapshot);
 
 
 extern "C" {

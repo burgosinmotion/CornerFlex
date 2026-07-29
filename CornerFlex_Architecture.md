@@ -169,27 +169,27 @@ Estrategias evaluadas:
 - **Layer ID + Unique Stream ID:** resiste renombrado y reordenamiento durante el contexto en que el ID es válido; no existe búsqueda inversa directa por ID y su persistencia entre sesiones no está documentada.
 - **Datos capturados por CEP:** permiten una selección explícita y transportar una identidad compuesta, pero duplicaciones y reapertura exigen volver a validar el objetivo contra el proyecto.
 
-La estrategia recomendada para la siguiente fase es que CEP capture explícitamente el objetivo y entregue `layerId + uniqueStreamId`, acompañado por una ruta de índices y Match Names como información de validación o recuperación. La integración deberá resolver y verificar esa identidad en el host antes de producir `CF_RectangleSourceData`; ninguna ruta deberá elegir automáticamente el primer path, el visible o el aparentemente único.
+La investigación posterior del DOM confirmó que CEP no puede obtener `uniqueStreamId`. Por ello `CF_GeometryTargetIdentity`, el Locator y el Reader permanecen como infraestructura secundaria de validación, pero dejan de ser el camino principal propuesto. Ninguna ruta deberá elegir automáticamente el primer path, el visible o el aparentemente único.
 
 #### Geometry Target Identity Transport
 
-`CF_GeometryTargetState` define el payload lógico que deberá viajar entre el workflow externo y una instancia del efecto. Contiene una versión de esquema y `CF_GeometryTargetIdentity`; es un bloque de datos simples, serializable y libre de handles, punteros o referencias del SDK. La estructura todavía no está conectada a parámetros, sequence data ni `Render()`.
+`CF_GeometryTargetState` define el payload lógico que viaja entre el almacenamiento por instancia y la integración nativa. Contiene una versión de esquema y `CF_GeometryTargetIdentity`; es un bloque de datos simples, serializable y libre de handles, punteros o referencias del SDK. Los parámetros ocultos alimentan este estado y una compuerta explícita controla si puede llegar al discovery adapter.
 
 Alternativas evaluadas con el SDK local:
 
-- **Parámetros nativos ocultos:** After Effects guarda los valores con la instancia, los incluye al duplicar o copiar el efecto y los entrega como snapshots de render compatibles con MFR. Parámetros escalares pueden transportar versión, validez, Layer ID y Unique Stream ID. CEP puede dirigirse a propiedades del efecto mediante scripting, sujeto a validar el acceso a parámetros invisibles. Añadirlos cambia el contrato publicado: requiere nuevos índices, Match Names internos y Disk IDs permanentes.
+- **Parámetros nativos ocultos:** After Effects guarda los valores con la instancia, los incluye al duplicar o copiar el efecto y los entrega como snapshots de render compatibles con MFR. Parámetros escalares pueden transportar versión, validez, Layer ID y Unique Stream ID cuando otra integración ya dispone de esos valores. CEP puede dirigirse a propiedades del efecto mediante scripting, pero el DOM no le proporciona el Unique Stream ID.
 - **Parámetro de datos arbitrarios:** `PF_Param_ARBITRARY_DATA` admite copia, flatten, unflatten, comparación, impresión y lectura mediante `PF_Cmd_ARBITRARY_CALLBACK`. Es persistente y versionable, pero exige implementar el ciclo completo de callbacks y los datos opacos no ofrecen un canal sencillo y oficialmente confirmado para escritura desde CEP.
 - **Sequence data:** pertenece a una instancia y su contenido puede escribirse al proyecto. Para MFR debe tratarse como solo lectura durante render mediante `PF_EffectSequenceDataSuite` y soportar flatten/resetup, incluyendo `PF_OutFlag2_SUPPORTS_GET_FLATTENED_SEQUENCE_DATA` cuando corresponda. CEP no dispone en el SDK revisado de acceso directo a ese bloque; sincronizarlo desde scripting necesitaría otro canal.
 - **AEGP Persistent Data Suite:** `AEGP_PersistentDataSuite4` guarda strings, enteros y datos binarios, pero el propio header indica que el host persistente actual es la aplicación. No representa estado por instancia y produciría colisiones entre efectos, capas o proyectos.
 - **Scripting o CEP sin almacenamiento nativo:** puede capturar y enviar datos durante una sesión, pero no garantiza disponibilidad en render, Render Queue, reapertura o cuando la extensión está cerrada.
 
-La estrategia recomendada es transportar el estado mediante parámetros nativos escalares ocultos, no animables y con Match Names internos estables. El esquema futuro debería reservar cuatro valores: `version`, `isValid`, `layerId` y `uniqueStreamId`. CEP escribiría esos parámetros; el AEX construiría un `CF_GeometryTargetState` inmutable desde el snapshot recibido y el Target Locator consumiría únicamente `targetIdentity`.
+El estado de identidad se transporta mediante parámetros nativos escalares ocultos, no animables y con Match Names internos estables: `version`, `isValid`, `layerId` y `uniqueStreamId`. El AEX construye un `CF_GeometryTargetState` inmutable y el Target Locator consume únicamente `targetIdentity`. Tras la investigación CEP, este canal permanece como infraestructura secundaria porque ExtendScript no puede completar `uniqueStreamId`.
 
-Esta estrategia requiere nuevos parámetros y Disk IDs, por lo que no se implementa en esta fase. Cuando se publique, los IDs deberán añadirse al final, no reutilizar valores existentes y permanecer estables. La versión permitirá rechazar estados incompatibles y migrar representaciones futuras sin interpretar datos antiguos como válidos.
+Los parámetros y Disk IDs de identidad ya fueron añadidos al final del contrato y deben permanecer estables. La versión permite rechazar estados incompatibles y migrar representaciones futuras sin interpretar datos antiguos como válidos. Phase 5.1 no añade ni modifica parámetros.
 
 Al duplicar una capa, After Effects copiará los valores transportados, pero la nueva capa o sus streams pueden recibir otros IDs; el locator debe invalidar el estado hasta que CEP capture nuevamente el objetivo. Copiar el efecto dentro de la misma capa puede conservar una identidad válida, siempre sujeta a verificación. Tras reabrir el proyecto, los parámetros persistirán, pero Layer ID y Unique Stream ID deberán validarse porque el SDK no garantiza explícitamente la persistencia del Unique Stream ID entre sesiones.
 
-`Render()` continúa construyendo `CF_GeometryTargetIdentity` con `isValid = FALSE`. Por ello no ejecuta el recorrido normal del locator, Rectangle Source permanece desactivado y Layer Bounds continúa siendo el fallback.
+Con los valores predeterminados, `Render()` obtiene una identidad inválida y el Locator retorna antes de adquirir suites. Rectangle Source permanece desactivado y Layer Bounds continúa siendo el fallback.
 
 #### Hidden Target Parameters
 
@@ -213,7 +213,17 @@ Los cuatro parámetros utilizan `PF_PUI_INVISIBLE`, `PF_ParamFlag_CANNOT_TIME_VA
 3. `layerId != AEGP_LayerIDVal_NONE`;
 4. `uniqueStreamId != 0`.
 
-La función no consulta suites, no localiza streams y no produce efectos secundarios. `Render()` ya construye el estado almacenado, pero lo mantiene desconectado: continúa creando por separado una identidad con `isValid = FALSE` para el discovery adapter. En consecuencia, el Target Locator no recorre streams durante la ejecución normal, Rectangle Source sigue desactivado y Layer Bounds permanece como ruta activa.
+La función no consulta suites, no localiza streams y no produce efectos secundarios. `Render()` construye el estado almacenado y lo entrega a la compuerta de activación. Con los defaults, el Target Locator no recorre streams; Rectangle Source sigue desactivado y Layer Bounds permanece como ruta activa.
+
+#### Target State Activation Gate
+
+`GetActiveGeometryTargetIdentity()` es la frontera explícita entre almacenamiento y ejecución. Es una función pura: limpia inicialmente su resultado y solo devuelve una identidad activa cuando la versión coincide con `CF_GEOMETRY_TARGET_STATE_VERSION`, `targetState.targetIdentity.isValid` es `TRUE`, `layerId` no es `AEGP_LayerIDVal_NONE` y `uniqueStreamId` no es cero.
+
+`Render()` sigue el flujo `ReadGeometryTargetState()` → `GetActiveGeometryTargetIdentity()` → `DiscoverRectangleSourceFromAfterEffects()`. Ya no crea una identidad artificial independiente. Con los defaults (`version = 1`, `isValid = 0`, IDs en cero), la compuerta devuelve una identidad inválida y `LocateGeometryTargetInAfterEffects()` retorna inmediatamente sin adquirir suites ni recorrer streams.
+
+Cuando los parámetros contienen un estado válido, la compuerta permite que el discovery adapter ejecute el Locator. La localización resultante continúa siendo metadata observacional: no se convierte en `CF_RectangleSourceData`, no se leen propiedades y `rectangleSource.isAvailable` permanece en `FALSE`. Activar identidad no significa activar geometría.
+
+El Locator no añade estado global mutable: todas las suites y referencias son locales a la llamada, y el Plugin ID existente se inicializa en `GlobalSetup()` y después se usa como dato inmutable. CornerFlex no declara actualmente `PF_OutFlag2_SUPPORTS_THREADED_RENDERING`; la futura habilitación explícita de MFR requerirá confirmar con Adobe la seguridad concurrente de las suites AEGP usadas por el recorrido. Layer Bounds continúa siendo la única fuente geométrica activa.
 
 #### Geometry Target Locator
 
@@ -230,6 +240,24 @@ CornerFlex registra un `AEGP_PluginID` durante `GlobalSetup()` porque las APIs q
 Al encontrar el Unique Stream ID se consulta el Match Name mediante `AEGP_GetMatchName()`. Los headers y ejemplos del SDK 2025 revisados no exponen una constante oficial para el Match Name de Rectangle Path. Por ello CornerFlex no introduce un literal no verificado: el target puede marcarse como encontrado, pero `isRectanglePath` permanece en `FALSE`. Esta limitación impide validar o leer la geometría en esta fase.
 
 `DiscoverRectangleSourceFromAfterEffects()` llama al localizador, pero continúa devolviendo `isAvailable = FALSE`. Layer Bounds sigue siendo la única fuente activa y no se leen Size, Position, Roundness, dirección, transformaciones ni valores temporales.
+
+#### Rectangle Geometry Reader
+
+Location, Raw Properties y Rectangle Source son contratos distintos:
+
+- `CF_GeometryTargetLocation` indica si el stream objetivo fue encontrado y validado.
+- `CF_RectanglePathProperties` representa exclusivamente valores crudos: `sizeX`, `sizeY`, `positionX`, `positionY` y `roundness`, además de `wasRead`.
+- `CF_RectangleSourceData` representa una fuente geométrica utilizable. Las propiedades crudas no contienen bounds y no activan esta fuente.
+
+`ReadRectanglePathPropertiesFromAfterEffects()` es el punto de entrada interno del Reader. Recibe el contexto de render, la identidad y la localización, inicializa siempre un resultado limpio y exige identidad válida, localización encontrada, validación Rectangle Path y coincidencia de Unique Stream ID. No almacena `AEGP_StreamRefH`, handles ni punteros.
+
+La búsqueda en todos los headers y ejemplos oficiales locales del SDK 2025 no encontró constantes ni literales oficiales para el grupo Rectangle Path, Size, Position, Roundness o Direction. Por ello el Locator no puede establecer `isRectanglePath = TRUE` de forma verificable y el Reader mantiene `wasRead = FALSE`. No vuelve a recorrer streams, no interpreta propiedades por índice y no usa nombres visibles o localizados.
+
+Cuando existan Match Names oficiales verificados, el Reader deberá volver a localizar temporalmente el stream —o compartir un helper de recorrido acotado—, encontrar cada propiedad por Match Name, comprobar `AEGP_StreamType_TwoD` o `AEGP_StreamType_TwoD_SPATIAL` para Size y Position, y `AEGP_StreamType_OneD` para Roundness. Después deberá evaluar mediante `AEGP_StreamSuite6::AEGP_GetNewStreamValue()` y balancear `AEGP_DisposeStreamValue()` y `AEGP_DisposeStream()` dentro de la misma llamada.
+
+Durante `PF_Cmd_RENDER`, `AEGP_GetLayerCurrentTime()` no es apropiado porque el header indica que no se actualiza durante render. La evaluación futura deberá construir el tiempo de capa con `PF_InData::current_time` y `PF_InData::time_scale` y usar `AEGP_LTimeMode_LayerTime`; solo deberá convertir a tiempo de composición con `AEGP_ConvertEffectToCompTime()` si una operación posterior requiere explícitamente ese espacio temporal. En esta fase no se evalúa ningún valor.
+
+Los valores previstos son locales y crudos al Rectangle Path. No incluyen transformaciones del grupo o capa, anchor, escala, rotación, skew ni conversión a composición o mundo. `DiscoverRectangleSourceFromAfterEffects()` descarta el resultado del Reader y mantiene `rectangleSource.isAvailable = FALSE`; Layer Bounds continúa siendo la única ruta activa.
 
 ### Geometry Operation Pipeline
 
@@ -305,6 +333,188 @@ Flujo previsto:
 
 Una Shape Layer puede contener varios grupos y el AEX no puede inferir automáticamente cuál es el objetivo. La extensión deberá utilizar el path seleccionado o una acción explícita como **Capture Geometry**.
 
+### CEP Geometry Discovery
+
+Esta fase separa el descubrimiento realizado por CEP/ExtendScript de la resolución nativa. El SDK local 2025 no incluye scripts `.jsx` ni documentación del DOM de ExtendScript con los Match Names de Shape Layers; esos datos se contrastaron con la guía pública de scripting de After Effects. Antes de conectar el transporte con After Effects 2026 deberá ejecutarse una prueba de inspección en la aplicación objetivo para confirmar los tipos de valor y la equivalencia entre `Layer.id` y cualquier identificador de capa usado por AEGP.
+
+CEP y ExtendScript se ejecutan en contextos distintos. El panel debe invocar una función JSX mediante `CSInterface.evalScript()`; esa función accede al DOM de After Effects, valida la selección y devuelve únicamente datos serializables.
+
+#### Jerarquía y Match Names
+
+Una Rectangle Path puede existir directamente en `Contents` o dentro de uno o más Shape Groups:
+
+```text
+Shape Layer                         ADBE Vector Layer
+└─ Contents                         ADBE Root Vectors Group
+   ├─ Rectangle Path                ADBE Vector Shape - Rect
+   └─ Group                         ADBE Vector Group
+      └─ Contents                   ADBE Vectors Group
+         └─ Rectangle Path          ADBE Vector Shape - Rect
+            ├─ Direction            ADBE Vector Shape Direction
+            ├─ Size                 ADBE Vector Rect Size
+            ├─ Position             ADBE Vector Rect Position
+            └─ Roundness            ADBE Vector Rect Roundness
+```
+
+Los Match Names confirmados son:
+
+| Elemento | Match Name |
+| --- | --- |
+| Shape Layer | `ADBE Vector Layer` |
+| Contents raíz | `ADBE Root Vectors Group` |
+| Shape Group | `ADBE Vector Group` |
+| Contents de un grupo | `ADBE Vectors Group` |
+| Rectangle Path | `ADBE Vector Shape - Rect` |
+| Direction | `ADBE Vector Shape Direction` |
+| Size | `ADBE Vector Rect Size` |
+| Position | `ADBE Vector Rect Position` |
+| Roundness | `ADBE Vector Rect Roundness` |
+
+`matchName` es estable y no localizado, por lo que debe usarse en lugar del nombre visible. `Size` y `Position` exponen valores bidimensionales; `Roundness` y `Direction`, valores escalares. La integración debe comprobar `propertyValueType` antes de interpretar cada valor. Para capturar el estado evaluado en el tiempo actual, debe usar `valueAtTime(comp.time, false)`; `comp.time` está expresado en segundos y `false` incluye el resultado de expresiones.
+
+#### Descubrimiento desde la selección
+
+El flujo recomendado es:
+
+1. Obtener `app.project.activeItem` y verificar que sea una `CompItem`.
+2. Exigir una única capa seleccionada y comprobar que su `matchName` sea `ADBE Vector Layer`.
+3. Examinar `layer.selectedProperties`.
+4. Para cada propiedad seleccionada, recorrer sus ancestros mediante `propertyGroup(1)` hasta encontrar `ADBE Vector Shape - Rect`.
+5. Deduplicar los resultados por su ruta jerárquica.
+6. Continuar únicamente si existe un Rectangle Path objetivo inequívoco.
+7. Localizar `Size`, `Position`, `Roundness` y, si se necesita, `Direction` por Match Name, nunca por nombre visible ni por una posición fija entre sus propiedades.
+
+Prototipo conceptual del recorrido:
+
+```javascript
+function findRectangleAncestor(propertyBase) {
+    var current = propertyBase;
+
+    while (current) {
+        if (current.matchName === "ADBE Vector Shape - Rect") {
+            return current;
+        }
+        current = current.propertyDepth > 0
+            ? current.propertyGroup(1)
+            : null;
+    }
+
+    return null;
+}
+```
+
+`selectedProperties` sirve para capturar la intención actual del usuario, pero no es identidad persistente. CornerFlex no debe elegir automáticamente el primer Rectangle Path, el visible o el único aparente cuando la selección sea ambigua.
+
+#### Identidad y serialización
+
+El DOM ofrece `Layer.id`, persistente al guardar y reabrir el proyecto, y `app.project.layerByID()` para recuperar la capa. Al importar el proyecto dentro de otro proyecto, After Effects asigna nuevos IDs. Para propiedades, el DOM no expone un UUID, Persistent ID ni el `Unique Stream ID` utilizado por AEGP.
+
+Dos Rectangle Paths hermanos tienen los mismos Match Names. Se distinguen en el estado actual mediante sus `propertyIndex` dentro de cada grupo indexado. La ruta debe registrar tanto el índice como el Match Name esperado y validarlos al resolverla:
+
+```text
+schemaVersion
+layerId
+rootMatchName
+propertyPath[]
+    propertyIndex
+    matchName
+```
+
+Los grupos nombrados se resuelven por Match Name; el índice se conserva para los elementos contenidos en grupos indexados. Una representación serializable conceptual es:
+
+```json
+{
+  "schemaVersion": 1,
+  "layerId": 42,
+  "rootMatchName": "ADBE Root Vectors Group",
+  "propertyPath": [
+    { "propertyIndex": 2, "matchName": "ADBE Vector Group" },
+    { "matchName": "ADBE Vectors Group" },
+    { "propertyIndex": 3, "matchName": "ADBE Vector Shape - Rect" }
+  ]
+}
+```
+
+| Estrategia | Ventaja | Limitación |
+| --- | --- | --- |
+| `Layer.id` | Persiste al guardar y reabrir; no depende del nombre | No identifica una propiedad y cambia al importar el proyecto |
+| Cadena de Match Names | Resiste renombrado y localización | No distingue hermanos del mismo tipo |
+| Cadena de `propertyIndex` | Distingue hermanos en el estado actual | Cambia al insertar, eliminar o reordenar grupos |
+| `Layer.id` + índices + Match Names | Mejor identidad disponible en el DOM; permite validar cada segmento | Es una ruta validable, no un ID permanente de propiedad |
+| `selectedProperties` | Representa directamente la intención del usuario al capturar | No persiste y no está disponible como selección fiable durante render |
+| Nombres visibles | Ninguna ventaja técnica para identidad | Son renombrables y localizados; no deben utilizarse |
+
+La estrategia recomendada para CEP es `Layer.id` más una cadena jerárquica de índices y Match Names. Si un segmento ya no coincide, la identidad debe considerarse obsoleta; no debe buscarse automáticamente otro Rectangle Path.
+
+#### Transporte propuesto hacia el AEX
+
+El panel puede proporcionar dos clases de datos simples:
+
+- identidad DOM versionada: `layerId` y ruta jerárquica validada;
+- propiedades crudas evaluadas: `Size`, `Position`, `Roundness`, `Direction` y tiempo de captura.
+
+El contrato oculto actual del AEX (`layerId` + `uniqueStreamId`) no puede completarse de forma fiable solo con ExtendScript porque el DOM no expone `uniqueStreamId`. Por tanto, no debe realizarse una conversión inventada entre `propertyIndex` y `uniqueStreamId`.
+
+Phase 5.1 adopta como dirección principal un snapshot versionado de propiedades evaluadas. En esta fase se define únicamente su estructura y validación; el transporte mediante parámetros nativos y la sincronización con propiedades animadas quedan pendientes. La ruta DOM y el Locator permanecen disponibles como mecanismos secundarios de validación.
+
+Limitaciones actuales:
+
+- la jerarquía por índices deja de ser válida al reordenar, insertar, eliminar o duplicar grupos;
+- duplicar una capa o un Shape Group produce una identidad distinta o ambigua que debe recapturarse;
+- `Layer.id` debe validarse experimentalmente contra el identificador de capa usado por AEGP antes de cruzar ambos APIs;
+- los valores crudos de Rectangle Path todavía no incluyen transformaciones de grupo o capa;
+- la selección múltiple requiere una decisión explícita del usuario;
+- `Rectangle Source` continúa desactivado y `Layer Bounds` sigue siendo la fuente activa.
+
+Referencias consultadas: [Shape Layer Match Names](https://ae-scripting.docsforadobe.dev/matchnames/layer/shapelayer/), [PropertyBase](https://ae-scripting.docsforadobe.dev/property/propertybase/), [PropertyGroup](https://ae-scripting.docsforadobe.dev/property/propertygroup/), [Property](https://ae-scripting.docsforadobe.dev/property/property/), [Layer](https://ae-scripting.docsforadobe.dev/layer/layer/), [CompItem](https://ae-scripting.docsforadobe.dev/item/compitem/), [Project](https://ae-scripting.docsforadobe.dev/general/project/) y [Adobe CEP HTML Extension Cookbook](https://github.com/Adobe-CEP/CEP-Resources/blob/master/CEP_12.x/Documentation/CEP%2012%20HTML%20Extension%20Cookbook.md).
+
+### Geometry Snapshot Provider
+
+CEP es el proveedor primario propuesto para la geometría objetivo: identifica el Rectangle Path seleccionado, evalúa sus propiedades mediante el DOM y prepara un snapshot de datos simples. El AEX será el consumidor y validador de ese snapshot. CornerFlex Core recibirá geometría resuelta, nunca objetos DOM, handles, punteros ni referencias AEGP.
+
+Identity y Geometry Snapshot cumplen contratos diferentes:
+
+- **Identity** describe qué propiedad se desea localizar y puede utilizarse para validación secundaria.
+- **Geometry Snapshot** contiene el estado evaluado de la primitiva en un instante y no requiere volver a descubrir la propiedad durante render.
+
+#### Rectangle Geometry Snapshot
+
+`CF_RectangleGeometrySnapshot` es un payload versionado, serializable y libre de referencias del host:
+
+| Campo | Semántica |
+| --- | --- |
+| `version` | Versión del contrato; la versión inicial soportada es `CF_RECTANGLE_GEOMETRY_SNAPSHOT_VERSION = 1`. |
+| `isValid` | Indica que CEP obtuvo un snapshot completo y coherente. |
+| `sizeX`, `sizeY` | Dimensiones crudas evaluadas de Rectangle Path. |
+| `positionX`, `positionY` | Posición cruda evaluada dentro del Shape Group inmediato. |
+| `roundness` | Valor crudo evaluado de Roundness. |
+| `direction` | Entero transportado desde `ADBE Vector Shape Direction`. |
+
+La estructura no contiene bounds derivados, `propertyIndex`, Match Names, punteros, handles ni referencias del SDK. Tampoco depende del DOM o de AEGP y podrá transportarse mediante parámetros nativos en una fase posterior.
+
+`MakeInvalidRectangleGeometrySnapshot()` limpia todos los campos, asigna la versión soportada y mantiene `isValid = FALSE`. `ValidateRectangleGeometrySnapshot()` es una función pura que exige:
+
+- versión compatible;
+- `isValid = TRUE`;
+- valores finitos para Size, Position y Roundness;
+- `sizeX >= 0` y `sizeY >= 0`.
+
+La validación utiliza `std::isfinite` de la biblioteca estándar de C++. No normaliza, limita ni corrige valores. Los headers locales y la documentación oficial revisada no publican un rango numérico verificable para `ADBE Vector Shape Direction`; por ello `direction` se conserva como entero y todavía no participa en la decisión de validez. Ese rango deberá confirmarse mediante una fuente oficial o una prueba controlada antes de imponerlo.
+
+Los valores pertenecen al sistema de coordenadas crudo del Rectangle Path y todavía no incluyen:
+
+- transformaciones del Shape Group inmediato;
+- transformaciones de grupos ancestros;
+- transformaciones de capa;
+- anchor;
+- scale;
+- rotation;
+- skew;
+- coordenadas de composición;
+- coordenadas de mundo.
+
+El snapshot todavía no dispone de parámetros de transporte, no se lee ni escribe y no se conecta con `Render()`, discovery, resolvers o `CF_RectangleSourceData`. `Rectangle Source` permanece desactivado y Layer Bounds continúa siendo la única fuente geométrica activa.
+
 ## 9. Estado actual
 
 Actualmente están implementados:
@@ -323,6 +533,8 @@ Actualmente están implementados:
 - `CF_GeometryTargetIdentity`;
 - `CF_GeometryTargetState`;
 - `CF_GeometryTargetLocation`;
+- `CF_RectanglePathProperties`;
+- `CF_RectangleGeometrySnapshot`;
 - `CF_RectangleSourceData`;
 - `CF_GeometryResolveRequest`;
 - `CF_GeometrySourceData`;
@@ -332,6 +544,8 @@ Actualmente están implementados:
 - `ResolveRectangleGeometry()`;
 - `ResolveGeometrySource()`;
 - `DiscoverRectangleSourceFromAfterEffects()` como adaptador seguro todavía desactivado;
+- `MakeInvalidRectangleGeometrySnapshot()`;
+- `ValidateRectangleGeometrySnapshot()`;
 - `BuildRectangleGeometry()`;
 - `ReadCornerFlexSettings()`;
 - `BuildTrimRectangle()`;

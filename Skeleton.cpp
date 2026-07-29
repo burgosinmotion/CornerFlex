@@ -44,6 +44,8 @@
 
 #include "Skeleton.h"
 
+#include <cmath>
+
 static AEGP_PluginID S_cornerFlexPluginId = 0;
 
 static PF_Err 
@@ -426,6 +428,77 @@ ReadGeometryTargetState(
 	return targetState;
 }
 
+CF_GeometryTargetIdentity
+GetActiveGeometryTargetIdentity(
+	const CF_GeometryTargetState& targetState)
+{
+	CF_GeometryTargetIdentity targetIdentity;
+	AEFX_CLR_STRUCT(targetIdentity);
+
+	const A_Boolean versionIsSupported =
+		targetState.version ==
+		CF_GEOMETRY_TARGET_STATE_VERSION;
+
+	const A_Boolean identifiersAreAcceptable =
+		targetState.targetIdentity.layerId !=
+			AEGP_LayerIDVal_NONE &&
+		targetState.targetIdentity.uniqueStreamId != 0;
+
+	if (versionIsSupported &&
+		targetState.targetIdentity.isValid &&
+		identifiersAreAcceptable) {
+
+		targetIdentity =
+			targetState.targetIdentity;
+
+		targetIdentity.isValid = TRUE;
+	}
+
+	return targetIdentity;
+}
+
+CF_RectangleGeometrySnapshot
+MakeInvalidRectangleGeometrySnapshot()
+{
+	CF_RectangleGeometrySnapshot snapshot;
+	AEFX_CLR_STRUCT(snapshot);
+
+	snapshot.version =
+		CF_RECTANGLE_GEOMETRY_SNAPSHOT_VERSION;
+
+	snapshot.isValid = FALSE;
+
+	return snapshot;
+}
+
+A_Boolean
+ValidateRectangleGeometrySnapshot(
+	const CF_RectangleGeometrySnapshot& snapshot)
+{
+	const A_Boolean versionIsSupported =
+		snapshot.version ==
+		CF_RECTANGLE_GEOMETRY_SNAPSHOT_VERSION;
+
+	const A_Boolean valuesAreFinite =
+		std::isfinite(snapshot.sizeX) &&
+		std::isfinite(snapshot.sizeY) &&
+		std::isfinite(snapshot.positionX) &&
+		std::isfinite(snapshot.positionY) &&
+		std::isfinite(snapshot.roundness);
+
+	const A_Boolean dimensionsAreNonNegative =
+		snapshot.sizeX >= 0 &&
+		snapshot.sizeY >= 0;
+
+	// No official numeric range for Shape Direction is confirmed yet.
+	return versionIsSupported &&
+		snapshot.isValid &&
+		valuesAreFinite &&
+		dimensionsAreNonNegative
+			? TRUE
+			: FALSE;
+}
+
 static CF_Rect
 BuildTrimRectangle(
 	const CornerFlexSettings& settings,
@@ -627,6 +700,35 @@ LocateGeometryTargetInAfterEffects(
 	return location;
 }
 
+static CF_RectanglePathProperties
+ReadRectanglePathPropertiesFromAfterEffects(
+	PF_InData* in_data,
+	const CF_GeometryTargetIdentity& targetIdentity,
+	const CF_GeometryTargetLocation& targetLocation)
+{
+	CF_RectanglePathProperties properties;
+	AEFX_CLR_STRUCT(properties);
+
+	const A_Boolean targetCanBeRead =
+		in_data &&
+		targetIdentity.isValid &&
+		targetLocation.wasFound &&
+		targetLocation.isRectanglePath &&
+		targetLocation.uniqueStreamId ==
+			targetIdentity.uniqueStreamId;
+
+	properties.wasRead = FALSE;
+
+	if (!targetCanBeRead) {
+		return properties;
+	}
+
+	// The local SDK exposes no official Rectangle Path property Match Names.
+	// Keep raw-property reading disabled instead of interpreting localized names or indices.
+
+	return properties;
+}
+
 // After Effects integration boundary. Property selection is not reliable in Render.
 static CF_RectangleSourceData
 DiscoverRectangleSourceFromAfterEffects(
@@ -643,7 +745,13 @@ DiscoverRectangleSourceFromAfterEffects(
 			in_data,
 			targetIdentity);
 
-	static_cast<void>(targetLocation);
+	const CF_RectanglePathProperties rectangleProperties =
+		ReadRectanglePathPropertiesFromAfterEffects(
+			in_data,
+			targetIdentity,
+			targetLocation);
+
+	static_cast<void>(rectangleProperties);
 
 	return rectangleSource;
 }
@@ -864,7 +972,9 @@ Render(
 	const CF_GeometryTargetState storedTargetState =
 		ReadGeometryTargetState(params);
 
-	static_cast<void>(storedTargetState);
+	const CF_GeometryTargetIdentity targetIdentity =
+		GetActiveGeometryTargetIdentity(
+			storedTargetState);
 
 	const A_long inputWidth =
 		params[CORNERFLEX_INPUT]->u.ld.width;
@@ -877,11 +987,6 @@ Render(
 
 	resolveRequest.inputWidth = inputWidth;
 	resolveRequest.inputHeight = inputHeight;
-
-	CF_GeometryTargetIdentity targetIdentity;
-	AEFX_CLR_STRUCT(targetIdentity);
-
-	targetIdentity.isValid = FALSE;
 
 	resolveRequest.rectangleSource =
 		DiscoverRectangleSourceFromAfterEffects(
