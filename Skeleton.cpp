@@ -693,29 +693,29 @@ IsRectangleSnapshotSourceEnabled(
 }
 
 CF_RectangleSourceData
-ConvertRectangleGeometrySnapshotToSourceData(
-	const CF_RectangleGeometrySnapshot& snapshot)
+TransformRectangleBoundsToEffectSpace(
+	const CF_Rect& localBounds,
+	const CF_RectangleCoordinateContext& coordinateContext)
 {
 	CF_RectangleSourceData sourceData;
 	AEFX_CLR_STRUCT(sourceData);
 
 	sourceData.isAvailable = FALSE;
 
-	if (!ValidateRectangleGeometrySnapshot(snapshot)) {
+	if (!coordinateContext.isValid) {
 		return sourceData;
 	}
 
-	const PF_FpLong halfWidth = snapshot.sizeX * 0.5;
-	const PF_FpLong halfHeight = snapshot.sizeY * 0.5;
+	const PF_FpLong left =
+		localBounds.left + coordinateContext.originX;
+	const PF_FpLong top =
+		localBounds.top + coordinateContext.originY;
+	const PF_FpLong right =
+		localBounds.right + coordinateContext.originX;
+	const PF_FpLong bottom =
+		localBounds.bottom + coordinateContext.originY;
 
-	const PF_FpLong left = snapshot.positionX - halfWidth;
-	const PF_FpLong top = snapshot.positionY - halfHeight;
-	const PF_FpLong right = snapshot.positionX + halfWidth;
-	const PF_FpLong bottom = snapshot.positionY + halfHeight;
-
-	if (!std::isfinite(halfWidth) ||
-		!std::isfinite(halfHeight) ||
-		!std::isfinite(left) ||
+	if (!std::isfinite(left) ||
 		!std::isfinite(top) ||
 		!std::isfinite(right) ||
 		!std::isfinite(bottom) ||
@@ -731,6 +731,76 @@ ConvertRectangleGeometrySnapshotToSourceData(
 	sourceData.isAvailable = TRUE;
 
 	return sourceData;
+}
+
+CF_RectangleCoordinateContext
+BuildRectangleCoordinateContext(
+	A_long inputWidth,
+	A_long inputHeight)
+{
+	CF_RectangleCoordinateContext coordinateContext;
+	AEFX_CLR_STRUCT(coordinateContext);
+
+	coordinateContext.inputWidth = inputWidth;
+	coordinateContext.inputHeight = inputHeight;
+
+	if (inputWidth <= 0 ||
+		inputHeight <= 0) {
+		return coordinateContext;
+	}
+
+	coordinateContext.originX =
+		static_cast<PF_FpLong>(inputWidth) * 0.5;
+	coordinateContext.originY =
+		static_cast<PF_FpLong>(inputHeight) * 0.5;
+
+	coordinateContext.isValid =
+		std::isfinite(coordinateContext.originX) &&
+		std::isfinite(coordinateContext.originY)
+			? TRUE
+			: FALSE;
+
+	return coordinateContext;
+}
+
+CF_RectangleSourceData
+ConvertRectangleGeometrySnapshotToSourceData(
+	const CF_RectangleGeometrySnapshot& snapshot,
+	const CF_RectangleCoordinateContext& coordinateContext)
+{
+	CF_RectangleSourceData sourceData;
+	AEFX_CLR_STRUCT(sourceData);
+
+	sourceData.isAvailable = FALSE;
+
+	if (!ValidateRectangleGeometrySnapshot(snapshot) ||
+		!coordinateContext.isValid) {
+		return sourceData;
+	}
+
+	const PF_FpLong halfWidth = snapshot.sizeX * 0.5;
+	const PF_FpLong halfHeight = snapshot.sizeY * 0.5;
+
+	CF_Rect localBounds;
+	localBounds.left = snapshot.positionX - halfWidth;
+	localBounds.top = snapshot.positionY - halfHeight;
+	localBounds.right = snapshot.positionX + halfWidth;
+	localBounds.bottom = snapshot.positionY + halfHeight;
+
+	if (!std::isfinite(halfWidth) ||
+		!std::isfinite(halfHeight) ||
+		!std::isfinite(localBounds.left) ||
+		!std::isfinite(localBounds.top) ||
+		!std::isfinite(localBounds.right) ||
+		!std::isfinite(localBounds.bottom) ||
+		localBounds.right < localBounds.left ||
+		localBounds.bottom < localBounds.top) {
+		return sourceData;
+	}
+
+	return TransformRectangleBoundsToEffectSpace(
+		localBounds,
+		coordinateContext);
 }
 
 CF_RectangleSourceData
@@ -759,8 +829,8 @@ SelectRectangleSourceData(
 static CF_Rect
 BuildTrimRectangle(
 	const CornerFlexSettings& settings,
-	A_long width,
-	A_long height)
+	PF_FpLong width,
+	PF_FpLong height)
 {
 	CF_Rect rect;
 
@@ -1156,21 +1226,29 @@ ExecuteTrimOperation(
 	CF_GeometryContext geometryContext,
 	const CornerFlexSettings& settings)
 {
-	const A_long geometryWidth =
-		static_cast<A_long>(
-			geometryContext.geometryBounds.right -
-			geometryContext.geometryBounds.left);
+	const CF_Rect baseBounds =
+		geometryContext.geometryBounds;
 
-	const A_long geometryHeight =
-		static_cast<A_long>(
-			geometryContext.geometryBounds.bottom -
-			geometryContext.geometryBounds.top);
+	const PF_FpLong geometryWidth =
+		baseBounds.right - baseBounds.left;
 
-	geometryContext.geometryBounds =
+	const PF_FpLong geometryHeight =
+		baseBounds.bottom - baseBounds.top;
+
+	const CF_Rect localTrimBounds =
 		BuildTrimRectangle(
 			settings,
 			geometryWidth,
 			geometryHeight);
+
+	geometryContext.geometryBounds.left =
+		baseBounds.left + localTrimBounds.left;
+	geometryContext.geometryBounds.top =
+		baseBounds.top + localTrimBounds.top;
+	geometryContext.geometryBounds.right =
+		baseBounds.left + localTrimBounds.right;
+	geometryContext.geometryBounds.bottom =
+		baseBounds.top + localTrimBounds.bottom;
 
 	return geometryContext;
 }
@@ -1232,9 +1310,21 @@ Render(
 	const A_Boolean snapshotSourceEnabled =
 		IsRectangleSnapshotSourceEnabled(params);
 
+	const A_long inputWidth =
+		params[CORNERFLEX_INPUT]->u.ld.width;
+
+	const A_long inputHeight =
+		params[CORNERFLEX_INPUT]->u.ld.height;
+
+	const CF_RectangleCoordinateContext coordinateContext =
+		BuildRectangleCoordinateContext(
+			inputWidth,
+			inputHeight);
+
 	const CF_RectangleSourceData convertedRectangleSource =
 		ConvertRectangleGeometrySnapshotToSourceData(
-			rectangleSnapshot);
+			rectangleSnapshot,
+			coordinateContext);
 
 	const CF_GeometryTargetState storedTargetState =
 		ReadGeometryTargetState(params);
@@ -1242,12 +1332,6 @@ Render(
 	const CF_GeometryTargetIdentity targetIdentity =
 		GetActiveGeometryTargetIdentity(
 			storedTargetState);
-
-	const A_long inputWidth =
-		params[CORNERFLEX_INPUT]->u.ld.width;
-
-	const A_long inputHeight =
-		params[CORNERFLEX_INPUT]->u.ld.height;
 
 	CF_GeometryResolveRequest resolveRequest;
 	AEFX_CLR_STRUCT(resolveRequest);

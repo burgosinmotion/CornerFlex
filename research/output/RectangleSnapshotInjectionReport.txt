@@ -1,0 +1,93 @@
+CornerFlex Rectangle Snapshot Injection Test
+After Effects version: 26.3x87
+Operating system: Windows/64 10.0
+Mode: automated-test
+Rectangle snapshot contract version: 1
+Float read-back tolerance: 0.000100
+
+Controlled scene:
+  Composition: 1000 x 1000
+  Pixel aspect ratio: 1
+  Rectangle Size: [400, 300]
+  Rectangle Position: [400, 300]
+  Roundness: 0
+  Direction: 1
+  Fill: white, no Stroke
+  Shape Group and layer transforms: identity
+  Post-effect sample point: [500, 300]
+  Rectangle Snapshot Version | DOM name=Rectangle Snapshot Version | matchName=BurgosInMotion CornerFlex-0011
+  Rectangle Snapshot Valid | DOM name=Rectangle Snapshot Valid | matchName=BurgosInMotion CornerFlex-0012
+  Rectangle Snapshot Size X | DOM name=Rectangle Snapshot Size X | matchName=BurgosInMotion CornerFlex-0013
+  Rectangle Snapshot Size Y | DOM name=Rectangle Snapshot Size Y | matchName=BurgosInMotion CornerFlex-0014
+  Rectangle Snapshot Position X | DOM name=Rectangle Snapshot Position X | matchName=BurgosInMotion CornerFlex-0015
+  Rectangle Snapshot Position Y | DOM name=Rectangle Snapshot Position Y | matchName=BurgosInMotion CornerFlex-0016
+  Rectangle Snapshot Roundness | DOM name=Rectangle Snapshot Roundness | matchName=BurgosInMotion CornerFlex-0017
+  Rectangle Snapshot Direction | DOM name=Rectangle Snapshot Direction | matchName=BurgosInMotion CornerFlex-0018
+  Rectangle Snapshot Enabled | DOM name=Rectangle Snapshot Enabled | matchName=BurgosInMotion CornerFlex-0019
+Initial gate: 0.000000
+Initial valid flag: 0.000000
+CaseA: frame captured, expected visible: gate disabled, Layer Bounds at [500, 300] — E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\RectangleSnapshotInjectionFrames\CaseA.png
+CornerFlex effect Match Name: BurgosInMotion CornerFlex
+CornerFlex effect display name: Renamed CornerFlex Test Instance
+CornerFlex parameters accessible through DOM:
+Layer: CF Snapshot Test Shape
+Rectangle Path: Rectangle Path 1 (ADBE Vector Shape - Rect)
+Evaluation time: 0.000000
+Captured Size: [400.000000, 300.000000]
+Captured Position: [400.000000, 300.000000]
+Captured Roundness: 0.000000
+Captured Direction: 1.000000
+Read-back validation:
+  Version: expected=1.000000, read=1.000000, difference=0.000000, PASS
+  Valid: expected=1.000000, read=1.000000, difference=0.000000, PASS
+  Size X: expected=400.000000, read=400.000000, difference=0.000000, PASS
+  Size Y: expected=300.000000, read=300.000000, difference=0.000000, PASS
+  Position X: expected=400.000000, read=400.000000, difference=0.000000, PASS
+  Position Y: expected=300.000000, read=300.000000, difference=0.000000, PASS
+  Roundness: expected=0.000000, read=0.000000, difference=0.000000, PASS
+  Direction: expected=1.000000, read=1.000000, difference=0.000000, PASS
+  Enabled: expected=1.000000, read=1.000000, difference=0.000000, PASS
+CaseB: frame captured, expected transparent: valid enabled Rectangle Source at [500, 300] — E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\RectangleSnapshotInjectionFrames\CaseB.png
+CaseC: frame captured, expected visible: invalid snapshot, Layer Bounds fallback at [500, 300] — E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\RectangleSnapshotInjectionFrames\CaseC.png
+CaseD: frame captured, expected visible: gate disabled, Layer Bounds fallback at [500, 300] — E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\RectangleSnapshotInjectionFrames\CaseD.png
+CornerFlex effect Match Name: BurgosInMotion CornerFlex
+CornerFlex effect display name: Renamed CornerFlex Test Instance
+CornerFlex parameters accessible through DOM:
+Layer: CF Snapshot Test Shape
+Rectangle Path: Rectangle Path 1 (ADBE Vector Shape - Rect)
+Evaluation time: 0.000000
+Captured Size: [800.000000, 600.000000]
+Captured Position: [400.000000, 300.000000]
+Captured Roundness: 0.000000
+Captured Direction: 1.000000
+Read-back validation:
+  Version: expected=1.000000, read=1.000000, difference=0.000000, PASS
+  Valid: expected=1.000000, read=1.000000, difference=0.000000, PASS
+  Size X: expected=800.000000, read=800.000000, difference=0.000000, PASS
+  Size Y: expected=600.000000, read=600.000000, difference=0.000000, PASS
+  Position X: expected=400.000000, read=400.000000, difference=0.000000, PASS
+  Position Y: expected=300.000000, read=300.000000, difference=0.000000, PASS
+  Roundness: expected=0.000000, read=0.000000, difference=0.000000, PASS
+  Direction: expected=1.000000, read=1.000000, difference=0.000000, PASS
+  Enabled: expected=1.000000, read=1.000000, difference=0.000000, PASS
+CaseE: frame captured, expected visible: Size updated to [800, 600] and reinjected at [500, 300] — E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\RectangleSnapshotInjectionFrames\CaseE.png
+Case E stored Size: [800.000000, 600.000000]
+Final gate after safe disable: 0.000000
+Final valid flag after safe disable: 0.000000
+Controlled temporary composition removed.
+
+SCRIPT RESULT: PASS
+Visual frame result: pending external PNG pixel analysis.
+Snapshot semantics: static at injection time; later Rectangle Path changes require reinjection.
+Animated properties and expressions are captured only at the composition time used by this execution.
+No Shape Group, ancestor, layer, composition, or world transform is applied by this prototype.
+
+External PNG pixel analysis
+Pillow version: 12.2.0
+Sample point: [500, 300]
+CaseA: rgba=(255, 255, 255, 255), expected=visible, observed=visible, PASS
+CaseB: rgba=(0, 0, 0, 0), expected=transparent, observed=transparent, PASS
+CaseC: rgba=(255, 255, 255, 255), expected=visible, observed=visible, PASS
+CaseD: rgba=(255, 255, 255, 255), expected=visible, observed=visible, PASS
+CaseE: rgba=(255, 255, 255, 255), expected=visible, observed=visible, PASS
+END-TO-END RESULT: PASS

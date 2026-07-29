@@ -89,7 +89,7 @@ La geometría de CornerFlex debe calcularse respecto al objeto objetivo. Por eje
 
 ### Rectangle Primitive Foundation
 
-`CF_RectangleGeometry` representa una primitiva rectangular mediante bounds, ancho, alto y centro. Es información geométrica independiente de APIs, selecciones o streams de After Effects. `BuildGeometryContext()` construye actualmente esta representación a partir de los Layer Bounds resueltos.
+`CF_RectangleGeometry` representa una primitiva rectangular mediante bounds, ancho, alto y centro. Es información geométrica independiente de APIs, selecciones o streams de After Effects. `BuildGeometryContext()` construye esta representación a partir de la fuente resuelta; Layer Bounds continúa siendo la fuente predeterminada cuando no existe un snapshot rectangular habilitado y válido.
 
 #### Base Primitive Geometry
 
@@ -117,7 +117,7 @@ Mientras Layer Bounds sea solo un fallback y no una Rectangle Path identificada,
 
 Resolver una fuente y construir el contexto son responsabilidades distintas. `ResolveLayerBoundsGeometry()` produce `CF_GeometrySourceData` con bounds, tipo de fuente, tipo de primitiva y estado de fallback. Después, `BuildGeometryContext()` construye el contexto desde esos datos resueltos e inicializa el resto de su descripción geométrica.
 
-Layer Bounds continúa siendo el fallback actual, con `CF_GEOMETRY_SOURCE_LAYER_BOUNDS`, `CF_PRIMITIVE_UNKNOWN` e `isFallback = TRUE`. Esta separación prepara el Core para recibir futuras fuentes reales sin implementar todavía acceso a Rectangle Path, Ellipse Path, Bézier Path o selecciones de After Effects. Las operaciones geométricas consumen `CF_GeometryContext` y permanecen independientes del origen de la geometría.
+Layer Bounds continúa siendo el fallback actual, con `CF_GEOMETRY_SOURCE_LAYER_BOUNDS`, `CF_PRIMITIVE_UNKNOWN` e `isFallback = TRUE`. El proveedor CEP puede suministrar manualmente un snapshot de Rectangle Path; Ellipse Path, Bézier Path y otras fuentes todavía no están integradas. Las operaciones geométricas consumen `CF_GeometryContext` y permanecen independientes del origen de la geometría.
 
 #### Geometry Resolve Request
 
@@ -587,7 +587,143 @@ Rectangle Geometry Snapshot
 
 Un snapshot inválido produce un source indisponible incluso con la compuerta habilitada. Una compuerta deshabilitada ignora el source convertido aunque sea válido. En ambos casos, el discovery provider conserva su prioridad secundaria y, mientras este continúe indisponible, el flujo termina de forma determinista en Layer Bounds.
 
-Este es el primer punto donde un snapshot puede modificar realmente `geometryBounds`, por lo que habilitar manualmente la compuerta con datos válidos puede cambiar el resultado visual. Las coordenadas continúan siendo locales al Rectangle Path y no incluyen transformaciones de grupos, ancestros o capa. `roundness` y `direction` siguen sin consumirse en `CF_GeometryContext`. CEP todavía no escribe estos parámetros.
+Este es el primer punto donde un snapshot puede modificar realmente `geometryBounds`, por lo que habilitar la compuerta con datos válidos puede cambiar el resultado visual. Las coordenadas continúan siendo locales al Rectangle Path y no incluyen transformaciones de grupos, ancestros o capa. `roundness` y `direction` siguen sin consumirse en `CF_GeometryContext`. Desde Phase 5.8, el proveedor CEP puede escribir y verificar estos parámetros mediante una acción manual explícita.
+
+#### End-to-End Snapshot Injection Test
+
+`research/InjectRectangleSnapshotIntoCornerFlex.jsx` es una herramienta independiente del CEP productivo. La prueba usó el `CornerFlex.aex` de Phase 5.6 ya compilado, que After Effects cargó correctamente; Phase 5.7 no recompiló ni modificó el binario. Su modo interactivo exige una composición activa, una única Shape Layer seleccionada, una única propiedad seleccionada perteneciente a Rectangle Path y una única instancia de CornerFlex en esa capa. Asciende desde la propiedad mediante `propertyGroup(1)` hasta `ADBE Vector Shape - Rect` y lee en el tiempo actual, preferentemente mediante `valueAtTime(time, false)`:
+
+- `ADBE Vector Rect Size`;
+- `ADBE Vector Rect Position`;
+- `ADBE Vector Rect Roundness`;
+- `ADBE Vector Shape Direction`.
+
+CornerFlex se localiza exclusivamente mediante el Match Name estable `BurgosInMotion CornerFlex`, no por su nombre visible. La prueba renombró deliberadamente la instancia a `Renamed CornerFlex Test Instance` y aun así la encontró. After Effects `26.3x87`, Windows 64 bits, expuso los nueve parámetros `PF_PUI_INVISIBLE` mediante el DOM. Sus nombres internos coincidieron y sus Match Names generados fueron `BurgosInMotion CornerFlex-0011` a `BurgosInMotion CornerFlex-0019`.
+
+La herramienta valida todos los datos y parámetros antes de escribir. La inyección se realiza dentro de un undo group y usa este orden transaccional:
+
+1. `Rectangle Snapshot Enabled = FALSE`;
+2. `Rectangle Snapshot Valid = FALSE`;
+3. versión;
+4. Size X/Y;
+5. Position X/Y;
+6. Roundness;
+7. Direction;
+8. `Rectangle Snapshot Valid = TRUE`;
+9. `Rectangle Snapshot Enabled = TRUE`.
+
+Después relee los nueve parámetros. En las dos inyecciones de la prueba, todos los valores coincidieron exactamente con los solicitados; las diferencias numéricas fueron `0`, por debajo de la tolerancia `0.0001`. El mismo script ofrece un modo seguro de desactivación que escribe primero `Enabled = FALSE` y después `Valid = FALSE`.
+
+La suite automatizada creó una composición temporal de `1000 × 1000`, Rectangle Path inicial de `400 × 300` en Position `[400, 300]`, Fill blanco sin Stroke y transformaciones de grupo y capa en identidad. Antes de cada inyección seleccionó explícitamente esa capa y Rectangle Path y reutilizó la misma rutina del modo interactivo. After Effects guardó capturas PNG post-efecto y `research/AnalyzeRectangleSnapshotInjectionFrames.py` comprobó el píxel `[500, 300]`:
+
+| Caso | Estado | RGBA observado | Resultado |
+| --- | --- | --- | --- |
+| A | Gate deshabilitado; Layer Bounds | `(255, 255, 255, 255)` | PASS |
+| B | Snapshot válido y gate habilitado | `(0, 0, 0, 0)` | PASS |
+| C | Gate habilitado y snapshot inválido; fallback | `(255, 255, 255, 255)` | PASS |
+| D | Snapshot válido y gate deshabilitado; fallback | `(255, 255, 255, 255)` | PASS |
+| E | Size actualizado a `800 × 600` y reinyección | `(255, 255, 255, 255)` | PASS |
+
+El cambio entre A y B confirma que Rectangle Source altera realmente `geometryBounds`. C y D confirman el fallback a Layer Bounds, y E confirma que una reinyección actualiza el resultado visual. La suite terminó con `Enabled = FALSE`, `Valid = FALSE`, eliminó la composición temporal y obtuvo `END-TO-END RESULT: PASS`.
+
+`sampleImage()` produjo un error interno al evaluarse desde el arranque automatizado; por ello la evidencia visual usa `CompItem.saveFrameToPng()` y análisis RGBA externo. Las capturas se conservan en `research/output/RectangleSnapshotInjectionFrames/` y el reporte completo en `research/output/RectangleSnapshotInjectionReport.txt`.
+
+El snapshot sigue siendo estático: cambios posteriores del Rectangle Path no actualizan CornerFlex hasta ejecutar otra captura manual. Las propiedades animadas o expresiones se capturan únicamente en el tiempo de la operación. No se aplican transformaciones de Shape Group, grupos ancestros o capa, ni conversiones a composición o mundo. La sincronización continua permanece fuera del alcance actual.
+
+#### CEP Geometry Snapshot Provider
+
+La extensión CEP incorpora un proveedor productivo independiente de los prototipos de `research`. `jsx/CornerFlexGeometryProvider.jsx` se carga desde `jsx/main.jsx` y expone dos funciones globales estables:
+
+```text
+CornerFlexGeometryProvider.captureSelectedRectangleSnapshot()
+CornerFlexGeometryProvider.disableRectangleSnapshot()
+```
+
+Ambas se invocan mediante `CSInterface.evalScript()` y siempre retornan un string JSON con este contrato:
+
+```json
+{
+  "ok": true,
+  "code": "SNAPSHOT_CAPTURED",
+  "message": "Rectangle Path capturado.",
+  "data": {
+    "layerId": 1,
+    "layerName": "Shape Layer 1",
+    "rectangleName": "Rectangle Path 1",
+    "sizeX": 400,
+    "sizeY": 300,
+    "positionX": 120,
+    "positionY": -80,
+    "roundness": 24,
+    "direction": 1,
+    "snapshotVersion": 1,
+    "enabled": true
+  }
+}
+```
+
+Los errores usan `ok = false`, un código estable, un mensaje específico y `data = null`. Los códigos definidos son:
+
+- `SNAPSHOT_CAPTURED`;
+- `SNAPSHOT_DISABLED`;
+- `NO_ACTIVE_COMP`;
+- `INVALID_LAYER_SELECTION`;
+- `INVALID_PROPERTY_SELECTION`;
+- `RECTANGLE_PATH_NOT_FOUND`;
+- `CORNERFLEX_EFFECT_NOT_FOUND`;
+- `CORNERFLEX_EFFECT_AMBIGUOUS`;
+- `SNAPSHOT_PARAMETERS_NOT_FOUND`;
+- `INVALID_RECTANGLE_VALUES`;
+- `SNAPSHOT_WRITE_FAILED`;
+- `SNAPSHOT_VERIFY_FAILED`;
+- `INTERNAL_ERROR`.
+
+La captura exige una composición activa, exactamente una Shape Layer seleccionada, exactamente una propiedad seleccionada perteneciente a Rectangle Path y una única instancia CornerFlex en esa capa. No elige automáticamente otra capa, propiedad o instancia. El Rectangle Path se localiza ascendiendo mediante `propertyGroup(1)` hasta `ADBE Vector Shape - Rect`; CornerFlex se localiza mediante `BurgosInMotion CornerFlex`, con independencia de su nombre visible.
+
+En el tiempo actual de la composición se leen, mediante `valueAtTime(comp.time, false)` y `value` como fallback para propiedades no temporales:
+
+- `ADBE Vector Rect Size`;
+- `ADBE Vector Rect Position`;
+- `ADBE Vector Rect Roundness`;
+- `ADBE Vector Shape Direction`.
+
+`RECTANGLE_SNAPSHOT_VERSION = 1` debe permanecer sincronizada con `CF_RECTANGLE_GEOMETRY_SNAPSHOT_VERSION`. El mapeo de parámetros usa exclusivamente los Match Names DOM internos:
+
+| Campo | Match Name DOM |
+| --- | --- |
+| Version | `BurgosInMotion CornerFlex-0011` |
+| Valid | `BurgosInMotion CornerFlex-0012` |
+| Size X | `BurgosInMotion CornerFlex-0013` |
+| Size Y | `BurgosInMotion CornerFlex-0014` |
+| Position X | `BurgosInMotion CornerFlex-0015` |
+| Position Y | `BurgosInMotion CornerFlex-0016` |
+| Roundness | `BurgosInMotion CornerFlex-0017` |
+| Direction | `BurgosInMotion CornerFlex-0018` |
+| Enabled | `BurgosInMotion CornerFlex-0019` |
+
+Antes de escribir se validan la existencia de los nueve destinos, Size y Position como pares finitos, dimensiones no negativas, Roundness finito y no negativo, y Direction como entero transportable de 32 bits. La escritura se ejecuta dentro de `CornerFlex: Capture Rectangle Geometry` y conserva este orden:
+
+1. `Enabled = FALSE`;
+2. `Valid = FALSE`;
+3. Version;
+4. Size X;
+5. Size Y;
+6. Position X;
+7. Position Y;
+8. Roundness;
+9. Direction;
+10. `Valid = TRUE`;
+11. `Enabled = TRUE`.
+
+Después se releen los nueve parámetros: Version, Valid, Enabled y Direction se comparan exactamente; los valores de coma flotante usan tolerancia `0.0001`. Solo una verificación completa produce `SNAPSHOT_CAPTURED`. Cualquier error intenta desactivar primero `Enabled` y después `Valid`, evitando dejar intencionadamente un snapshot parcial activo.
+
+`disableRectangleSnapshot()` localiza la instancia y los parámetros por los mismos Match Names, escribe `Enabled = FALSE` y `Valid = FALSE` dentro de `CornerFlex: Return to Layer Bounds`, relee ambos valores y retorna `SNAPSHOT_DISABLED` únicamente si la desactivación se confirma. Con ello `ResolveGeometrySource()` vuelve de forma determinista a Layer Bounds.
+
+El panel ofrece las acciones manuales **Usar Rectangle Path seleccionado** y **Volver a Layer Bounds**. El adaptador JavaScript deshabilita ambas mientras una llamada está en curso, parsea y valida el JSON, y muestra feedback inline con capa, Size y Position o con el mensaje y código de error. No replica lógica del DOM de After Effects.
+
+`tests/CornerFlexGeometryProviderTests.jsx` ejercitó el módulo productivo directamente en After Effects `26.3x87`. Pasaron la captura normal, instancia renombrada visualmente, ausencia de propiedad, propiedad ajena a Rectangle Path, capa sin CornerFlex, desactivación, recaptura después de cambiar Size a `800 × 600`, fallo de selección con gate apagado y tres capturas consecutivas. La prueba terminó con `Enabled = FALSE`, `Valid = FALSE` y eliminó la composición temporal. El reporte se conserva en `CornerFlex-CEP/tests/output/CornerFlexGeometryProviderTestReport.txt`.
+
+El snapshot continúa siendo manual y estático. No existe sincronización automática con Size, Position, animaciones, expresiones, tiempo o selección. No se añadieron listeners ni polling específicos del snapshot. Tampoco se aplican transformaciones de grupos o capa, Stroke, coordenadas de composición o mundo, ni se consumen todavía Roundness o Direction en el contexto geométrico. Los scripts de `research` permanecen como evidencia y no son dependencias del proveedor productivo.
 
 #### Rectangle Coordinate Semantics Validation
 
@@ -650,6 +786,104 @@ Por tanto, la fórmula queda confirmada como contrato empíricamente validado pa
 
 El reporte completo se conserva en `research/output/RectanglePathSemanticsReport.txt`. Phase 5.4 no modificó el AEX y Phase 5.5 utilizó esa evidencia para completar la conversión pura. Phase 5.6 conecta el resultado al resolver únicamente mediante la compuerta explícita, que permanece desactivada por defecto.
 
+### Rectangle Source Coordinate Space Validation
+
+El Rectangle Path entrega Size y Position en su espacio local. Para un Rectangle Path directo en `Contents`, sin transformaciones de grupo, sus bounds locales son:
+
+```text
+localLeft   = positionX - sizeX / 2
+localTop    = positionY - sizeY / 2
+localRight  = positionX + sizeX / 2
+localBottom = positionY + sizeY / 2
+```
+
+Los callbacks `TrimFunc8()` y `TrimFunc16()` reciben `x` e `y` en coordenadas del buffer rasterizado del efecto, con origen en la esquina superior izquierda. Por ello, `geometryBounds` debe expresarse en ese mismo espacio. En el flujo clásico actual, CornerFlex no redimensiona los buffers y construye Layer Bounds como `[0, 0, inputWidth, inputHeight]`.
+
+`CF_RectangleCoordinateContext` formaliza la transformación mínima del caso base:
+
+```text
+originX = inputWidth  * 0.5
+originY = inputHeight * 0.5
+
+effectLeft   = localLeft   + originX
+effectTop    = localTop    + originY
+effectRight  = localRight  + originX
+effectBottom = localBottom + originY
+```
+
+`inputWidth` e `inputHeight` proceden de `params[CORNERFLEX_INPUT]->u.ld`. No se utilizan automáticamente las dimensiones de composición. `TransformRectangleBoundsToEffectSpace()` aplica el desplazamiento y `ConvertRectangleGeometrySnapshotToSourceData()` permanece pura al recibir el contexto explícitamente.
+
+La evidencia directa del caso A en After Effects `26.3x87` utilizó una composición y un input de `1920 × 1080`, Rectangle Size `500 × 500`, Position `[0, 0]` y Roundness `97`. Antes de corregir la conversión, el resolver partía de los bounds locales `[-250, -250, 250, 250]` y Trim los reconstruía como un rectángulo local `[50, 50, 450, 450]`, sin trasladarlos al buffer ni conservar su origen. El frame Rectangle Source quedó completamente transparente. Layer Bounds y la desactivación del gate conservaron el shape visible en `[710, 290, 1210, 790]`. Esto descarta usar directamente el origen local y respalda el desplazamiento `[960, 540]` para el caso base.
+
+`ExecuteTrimOperation()` conserva ahora el origen de la geometría recibida: calcula los offsets porcentuales en un rectángulo local y los suma a `baseBounds.left` y `baseBounds.top`. `CF_RectangleGeometry` continúa siendo la instantánea base sin modificar.
+
+El SDK distingue los siguientes datos:
+
+- `PF_LayerDef.width` y `height`: dimensiones del buffer de píxeles;
+- `extent_hint`: región opaca o región que necesita render; no cambia el origen geométrico;
+- `PF_LayerDef.origin_x` y `origin_y`: origen del buffer en coordenadas de capa para checkouts de Smart Effects;
+- `PF_InData.output_origin_x/y`: posición del input dentro de un output redimensionado;
+- `PF_InData.pre_effect_source_origin_x/y`: origen de la fuente cuando un efecto anterior redimensionó el buffer.
+
+CornerFlex no redimensiona actualmente el output, no usa Smart Render y recorre el buffer completo mediante las suites de iteración. Por tanto, `extent_hint` no participa en la conversión mínima. Los orígenes de SmartFX y de buffers redimensionados deberán incorporarse al contrato antes de soportar esos flujos.
+
+Si `inputWidth` o `inputHeight` no son positivos, si el origen calculado no es finito o si los bounds transformados no son finitos o coherentes, el Rectangle Source queda indisponible. `ResolveGeometrySource()` selecciona entonces Layer Bounds como fallback y no consume una conversión parcial.
+
+La matriz automatizada `research/ValidateRectangleSourceCoordinateSpace.jsx` cubre:
+
+- Position `[0, 0]`, positiva y negativa;
+- Rectangle Size igual al input;
+- tamaños impares y fraccionarios;
+- anchor point por defecto y modificado;
+- Layer Position modificada;
+- activación y desactivación del snapshot;
+- capturas RGBA para Rectangle Source y fallback.
+
+`research/AnalyzeRectangleSourceCoordinateSpaceFrames.py` compara los píxeles centrales, una muestra dentro del margen eliminado por Trim y la igualdad exacta entre Layer Bounds y el fallback.
+
+La matriz A–H se ejecutó en After Effects `26.3x87` el 29 de julio de 2026. El provider capturó y desactivó el snapshot correctamente en los ocho casos y eliminó la composición temporal. Sin embargo, la enumeración de módulos confirmó que After Effects cargó:
+
+```text
+C:\Program Files\Adobe\Adobe After Effects 2026\Support Files\Plug-ins\CornerFlex\CornerFlex.aex
+SHA-256: D192C57A38E2CD3AB844699844FC371EBC00946E105B4D750608144455C42F11
+```
+
+Ese hash corresponde al binario anterior, no al build Phase 5.9. El AEX corregido se había instalado temporalmente en otra ruta autorizada y no participó en el proceso. En consecuencia, esta ejecución reproduce el defecto anterior y no valida ni invalida la transformación nueva.
+
+| Caso | Layer Bounds alpha bbox | Rectangle Source alpha bbox | Fallback alpha bbox | Resultado observado |
+| --- | --- | --- | --- | --- |
+| A | `(710, 290, 1210, 790)` | sin alpha | `(710, 290, 1210, 790)` | FAIL |
+| B | `(910, 390, 1410, 890)` | sin alpha | `(910, 390, 1410, 890)` | FAIL |
+| C | `(510, 190, 1010, 690)` | sin alpha | `(510, 190, 1010, 690)` | FAIL |
+| D | `(192, 108, 1728, 972)` | `(192, 108, 1728, 972)` | `(192, 108, 1728, 972)` | PASS no concluyente |
+| E | `(719, 269, 1221, 769)` | sin alpha | `(719, 269, 1221, 769)` | FAIL |
+| F | `(710, 290, 1210, 790)` | sin alpha | `(710, 290, 1210, 790)` | FAIL |
+| G | `(610, 240, 1110, 740)` | sin alpha | `(610, 240, 1110, 740)` | FAIL |
+| H | `(950, 450, 1450, 950)` | sin alpha | `(950, 450, 1450, 950)` | FAIL |
+
+El caso D es un falso positivo para diagnosticar el origen: Rectangle Size coincide con el input completo y ambos espacios producen los mismos bounds tras Trim. En los demás casos el centro de Rectangle Source fue transparente. El fallback coincidió píxel a píxel con Layer Bounds en los ocho casos.
+
+Una segunda ejecución instaló temporalmente el build Phase 5.9 en esa ruta. Antes de ejecutar la matriz, la enumeración de módulos confirmó la ruta cargada y el SHA-256 `1144BD89D865B169B3B2404B645C173C211DE26D41B35FDC0D9823727CE141E5`.
+
+| Caso | Rectangle Source observado | Rectangle Source esperado | Resultado Phase 5.9 |
+| --- | --- | --- | --- |
+| A | `(760, 340, 1160, 740)` | `(760, 340, 1160, 740)` | PASS |
+| B | `(960, 440, 1360, 840)` | `(960, 440, 1360, 840)` | PASS |
+| C | `(560, 240, 960, 640)` | `(560, 240, 960, 640)` | PASS |
+| D | `(192, 108, 1728, 972)` | `(192, 108, 1728, 972)` | PASS |
+| E | `(770, 320, 1171, 719)` | `(770, 320, 1171, 719)` | PASS |
+| F | `(760, 340, 1160, 740)` | `(760, 340, 1160, 740)` | PASS |
+| G | `(760, 340, 1110, 740)` | `(660, 290, 1060, 690)` | FAIL |
+| H | `(950, 450, 1160, 740)` | `(1000, 500, 1400, 900)` | FAIL |
+
+Los casos A–F validan la suma de `inputWidth / 2` e `inputHeight / 2`, Rectangle Position positiva y negativa, dimensiones fraccionarias y el anchor point predeterminado. Sus alpha bounding boxes coinciden exactamente con los bounds esperados después de Trim, lo que también confirma que `ExecuteTrimOperation()` conserva `baseBounds.left` y `baseBounds.top`.
+
+El caso G demuestra que modificar el anchor point desplaza el raster de la Shape Layer dentro del buffer, pero el snapshot actual no transporta ni aplica ese offset. El caso H demuestra el mismo límite para Layer Position: el shape se desplaza, mientras que `geometryBounds` permanece en la posición calculada para transform de capa en identidad. Ambos casos requieren una futura transformación de coordenadas y no deben corregirse modificando la fórmula mínima validada.
+
+Rectangle Source dejó de producir frames completamente transparentes en A–F. En G y H produjo intersecciones parciales desalineadas, no una geometría correcta. El fallback coincidió píxel a píxel con Layer Bounds en los ocho casos. El binario original fue restaurado después de la prueba.
+
+Las transformaciones de Shape Groups y capas, anchor distinto del predeterminado, Layer Position no identitaria, grupos anidados, rotación, escala, skew, pixel aspect ratio distinto de uno, downsampling, SmartFX, Stroke y efectos previos que redimensionen buffers permanecen fuera de alcance.
+
 ## 9. Estado actual
 
 Actualmente están implementados:
@@ -671,6 +905,7 @@ Actualmente están implementados:
 - `CF_RectanglePathProperties`;
 - `CF_RectangleGeometrySnapshot`;
 - `CF_RectangleSourceData`;
+- `CF_RectangleCoordinateContext`;
 - `CF_GeometryResolveRequest`;
 - `CF_GeometrySourceData`;
 - `CF_GeometryContext`;
@@ -679,10 +914,14 @@ Actualmente están implementados:
 - `ResolveRectangleGeometry()`;
 - `ResolveGeometrySource()`;
 - `DiscoverRectangleSourceFromAfterEffects()` como adaptador seguro todavía desactivado;
+- `CornerFlexGeometryProvider.captureSelectedRectangleSnapshot()` en la extensión CEP;
+- `CornerFlexGeometryProvider.disableRectangleSnapshot()` en la extensión CEP;
 - `MakeInvalidRectangleGeometrySnapshot()`;
 - `ValidateRectangleGeometrySnapshot()`;
 - `ReadRectangleGeometrySnapshot()`;
 - `IsRectangleSnapshotSourceEnabled()`;
+- `BuildRectangleCoordinateContext()`;
+- `TransformRectangleBoundsToEffectSpace()`;
 - `ConvertRectangleGeometrySnapshotToSourceData()`;
 - `SelectRectangleSourceData()`;
 - `BuildRectangleGeometry()`;
@@ -697,7 +936,7 @@ Actualmente están implementados:
 - `TrimFunc16()`;
 - render de 8 y 16 bpc.
 
-Por defecto, `BuildGeometryContext()` crea Layer Bounds a partir de Input Bounds como fallback y `ExecuteTrimOperation()` aplica Trim sobre esa geometría base. Cuando `Rectangle Snapshot Enabled` se activa manualmente y el snapshot es válido, el contexto puede recibir sus bounds locales. Todavía no se aplican transformaciones de grupos o capa ni existe escritura desde CEP; la integración completa con el shape o Bézier path seleccionado continúa pendiente.
+Por defecto, `BuildGeometryContext()` crea Layer Bounds a partir de Input Bounds como fallback y `ExecuteTrimOperation()` aplica Trim sobre esa geometría base sin perder su origen. La acción manual del panel CEP puede capturar el Rectangle Path seleccionado, escribir un snapshot válido y habilitar sus bounds convertidos al espacio del buffer del efecto; la acción secundaria desactiva el snapshot y restaura Layer Bounds. Todavía no se aplican transformaciones de grupos o capa, no existe sincronización automática y la integración con Bézier paths continúa pendiente.
 
 ## 10. Hoja de ruta técnica
 
@@ -707,12 +946,12 @@ Por defecto, `BuildGeometryContext()` crea Layer Bounds a partir de Input Bounds
 4. Definir metadata mínima de la fuente geométrica.
 5. Preparar Geometry Bounds externos.
 6. Mantener Layer Bounds como fallback.
-7. Conectar la captura del shape o Bézier path.
+7. Ampliar la captura manual actual a otras fuentes, incluido Bézier path.
 8. Implementar Radius únicamente cuando pueda consumir Geometry Bounds correctamente.
 9. Implementar radios independientes.
 10. Añadir Curvature y Squircle.
 11. Añadir Feather y Stroke.
-12. Conectar la extensión CEP con el flujo completo del efecto.
+12. Añadir sincronización CEP controlada cuando exista una política temporal y de transformaciones definida.
 13. Incorporar presets, automatizaciones y utilidades.
 
 ## 11. Convenciones

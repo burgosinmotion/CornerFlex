@@ -1,0 +1,189 @@
+CornerFlex Rectangle Source Coordinate Space Validation
+After Effects version: 26.3x87
+Operating system: Windows/64 10.0
+Trim: linked 10%
+Provider: E:\Files\Proyectos\CornerFlexDev\CornerFlex-CEP\jsx\CornerFlexGeometryProvider.jsx
+
+BEGIN CASE A
+CASE A — Centered 500x500
+  Composition / expected input buffer: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Hypothesis 1 effect bounds: [710.0000, 290.0000, 1210.0000, 790.0000]
+  Expected final bounds after Trim: [760.0000, 340.0000, 1160.0000, 740.0000]
+  Expected geometry center: [960.0000, 540.0000]
+  Reference center in comp: [960.0000, 540.0000]
+  Reference left-strip probe in comp: [735.0000, 540.0000]
+  Provider capture/disable: PASS
+
+SAMPLE A center=[960.0000, 540.0000] leftProbe=[735.0000, 540.0000]
+END CASE A
+BEGIN CASE B
+CASE B — Positive Rectangle Position
+  Composition / expected input buffer: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [200.0000, 100.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  sourceRectAtTime: [-50.0000, -150.0000, 450.0000, 350.0000]
+  Snapshot local bounds: [-50.0000, -150.0000, 450.0000, 350.0000]
+  Hypothesis 1 effect bounds: [910.0000, 390.0000, 1410.0000, 890.0000]
+  Expected final bounds after Trim: [960.0000, 440.0000, 1360.0000, 840.0000]
+  Expected geometry center: [1160.0000, 640.0000]
+  Reference center in comp: [1160.0000, 640.0000]
+  Reference left-strip probe in comp: [935.0000, 640.0000]
+  Provider capture/disable: PASS
+
+SAMPLE B center=[1160.0000, 640.0000] leftProbe=[935.0000, 640.0000]
+END CASE B
+BEGIN CASE C
+CASE C — Negative Rectangle Position
+  Composition / expected input buffer: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [-200.0000, -100.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  sourceRectAtTime: [-450.0000, -350.0000, 50.0000, 150.0000]
+  Snapshot local bounds: [-450.0000, -350.0000, 50.0000, 150.0000]
+  Hypothesis 1 effect bounds: [510.0000, 190.0000, 1010.0000, 690.0000]
+  Expected final bounds after Trim: [560.0000, 240.0000, 960.0000, 640.0000]
+  Expected geometry center: [760.0000, 440.0000]
+  Reference center in comp: [760.0000, 440.0000]
+  Reference left-strip probe in comp: [535.0000, 440.0000]
+  Provider capture/disable: PASS
+
+SAMPLE C center=[760.0000, 440.0000] leftProbe=[535.0000, 440.0000]
+END CASE C
+BEGIN CASE D
+CASE D — Full input dimensions
+  Composition / expected input buffer: 1920 x 1080
+  Rectangle Size: [1920.0000, 1080.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  sourceRectAtTime: [-960.0000, -540.0000, 960.0000, 540.0000]
+  Snapshot local bounds: [-960.0000, -540.0000, 960.0000, 540.0000]
+  Hypothesis 1 effect bounds: [0.0000, 0.0000, 1920.0000, 1080.0000]
+  Expected final bounds after Trim: [192.0000, 108.0000, 1728.0000, 972.0000]
+  Expected geometry center: [960.0000, 540.0000]
+  Reference center in comp: [960.0000, 540.0000]
+  Reference left-strip probe in comp: [96.0000, 540.0000]
+  Provider capture/disable: PASS
+
+SAMPLE D center=[960.0000, 540.0000] leftProbe=[96.0000, 540.0000]
+END CASE D
+BEGIN CASE E
+CASE E — Odd fractional geometry
+  Composition / expected input buffer: 1920 x 1080
+  Rectangle Size: [501.5000, 499.2500]
+  Rectangle Position: [10.2500, -20.7500]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  sourceRectAtTime: [-240.5000, -270.3750, 261.0000, 228.8750]
+  Snapshot local bounds: [-240.5000, -270.3750, 261.0000, 228.8750]
+  Hypothesis 1 effect bounds: [719.5000, 269.6250, 1221.0000, 768.8750]
+  Expected final bounds after Trim: [769.6500, 319.5500, 1170.8500, 718.9500]
+  Expected geometry center: [970.2500, 519.2500]
+  Reference center in comp: [970.2500, 519.2500]
+  Reference left-strip probe in comp: [744.5750, 519.2500]
+  Provider capture/disable: PASS
+
+SAMPLE E center=[970.2500, 519.2500] leftProbe=[744.5750, 519.2500]
+END CASE E
+BEGIN CASE F
+CASE F — Default Shape Layer anchor
+  Composition / expected input buffer: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Hypothesis 1 effect bounds: [710.0000, 290.0000, 1210.0000, 790.0000]
+  Expected final bounds after Trim: [760.0000, 340.0000, 1160.0000, 740.0000]
+  Expected geometry center: [960.0000, 540.0000]
+  Reference center in comp: [960.0000, 540.0000]
+  Reference left-strip probe in comp: [735.0000, 540.0000]
+  Provider capture/disable: PASS
+
+SAMPLE F center=[960.0000, 540.0000] leftProbe=[735.0000, 540.0000]
+END CASE F
+BEGIN CASE G
+CASE G — Modified anchor, unchanged Layer Position
+  Composition / expected input buffer: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [100.0000, 50.0000]
+  Layer Position: [960.0000, 540.0000]
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Hypothesis 1 effect bounds: [710.0000, 290.0000, 1210.0000, 790.0000]
+  Expected final bounds after Trim: [760.0000, 340.0000, 1160.0000, 740.0000]
+  Expected geometry center: [960.0000, 540.0000]
+  Reference center in comp: [860.0000, 490.0000]
+  Reference left-strip probe in comp: [635.0000, 490.0000]
+  Provider capture/disable: PASS
+
+SAMPLE G center=[860.0000, 490.0000] leftProbe=[635.0000, 490.0000]
+END CASE G
+BEGIN CASE H
+CASE H — Modified Layer Position
+  Composition / expected input buffer: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [1200.0000, 700.0000]
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Hypothesis 1 effect bounds: [710.0000, 290.0000, 1210.0000, 790.0000]
+  Expected final bounds after Trim: [760.0000, 340.0000, 1160.0000, 740.0000]
+  Expected geometry center: [960.0000, 540.0000]
+  Reference center in comp: [1200.0000, 700.0000]
+  Reference left-strip probe in comp: [975.0000, 700.0000]
+  Provider capture/disable: PASS
+
+SAMPLE H center=[1200.0000, 700.0000] leftProbe=[975.0000, 700.0000]
+END CASE H
+TEMPORARY COMPOSITIONS REMOVED: YES
+SCRIPT RESULT: PASS
+Pixel analysis: pending external RGBA validation.
+
+External RGBA coordinate-space analysis
+Pillow version: 12.2.0
+A: alphaBBoxes layer=(710, 290, 1210, 790) source=(760, 340, 1160, 740) fallback=(710, 290, 1210, 790) expectedSource=(760, 340, 1160, 740)
+A: center=(960, 540) layer=(255, 255, 255, 255) source=(255, 255, 255, 255) fallback=(255, 255, 255, 255)
+A: leftProbe=(735, 540) layer=(255, 255, 255, 255) source=(0, 0, 0, 0) fallback=(255, 255, 255, 255)
+A: fallbackMatchesLayerBounds=True, PASS
+B: alphaBBoxes layer=(910, 390, 1410, 890) source=(960, 440, 1360, 840) fallback=(910, 390, 1410, 890) expectedSource=(960, 440, 1360, 840)
+B: center=(1160, 640) layer=(255, 255, 255, 255) source=(255, 255, 255, 255) fallback=(255, 255, 255, 255)
+B: leftProbe=(935, 640) layer=(255, 255, 255, 255) source=(0, 0, 0, 0) fallback=(255, 255, 255, 255)
+B: fallbackMatchesLayerBounds=True, PASS
+C: alphaBBoxes layer=(510, 190, 1010, 690) source=(560, 240, 960, 640) fallback=(510, 190, 1010, 690) expectedSource=(560, 240, 960, 640)
+C: center=(760, 440) layer=(255, 255, 255, 255) source=(255, 255, 255, 255) fallback=(255, 255, 255, 255)
+C: leftProbe=(535, 440) layer=(255, 255, 255, 255) source=(0, 0, 0, 0) fallback=(255, 255, 255, 255)
+C: fallbackMatchesLayerBounds=True, PASS
+D: alphaBBoxes layer=(192, 108, 1728, 972) source=(192, 108, 1728, 972) fallback=(192, 108, 1728, 972) expectedSource=(192, 108, 1728, 972)
+D: center=(960, 540) layer=(255, 255, 255, 255) source=(255, 255, 255, 255) fallback=(255, 255, 255, 255)
+D: leftProbe=(96, 540) layer=(0, 0, 0, 0) source=(0, 0, 0, 0) fallback=(0, 0, 0, 0)
+D: fallbackMatchesLayerBounds=True, PASS
+E: alphaBBoxes layer=(719, 269, 1221, 769) source=(770, 320, 1171, 719) fallback=(719, 269, 1221, 769) expectedSource=(770, 320, 1171, 719)
+E: center=(970, 519) layer=(255, 255, 255, 255) source=(255, 255, 255, 255) fallback=(255, 255, 255, 255)
+E: leftProbe=(745, 519) layer=(255, 255, 255, 255) source=(0, 0, 0, 0) fallback=(255, 255, 255, 255)
+E: fallbackMatchesLayerBounds=True, PASS
+F: alphaBBoxes layer=(710, 290, 1210, 790) source=(760, 340, 1160, 740) fallback=(710, 290, 1210, 790) expectedSource=(760, 340, 1160, 740)
+F: center=(960, 540) layer=(255, 255, 255, 255) source=(255, 255, 255, 255) fallback=(255, 255, 255, 255)
+F: leftProbe=(735, 540) layer=(255, 255, 255, 255) source=(0, 0, 0, 0) fallback=(255, 255, 255, 255)
+F: fallbackMatchesLayerBounds=True, PASS
+G: alphaBBoxes layer=(610, 240, 1110, 740) source=(760, 340, 1110, 740) fallback=(610, 240, 1110, 740) expectedSource=(660, 290, 1060, 690)
+G: center=(860, 490) layer=(255, 255, 255, 255) source=(255, 255, 255, 255) fallback=(255, 255, 255, 255)
+G: leftProbe=(635, 490) layer=(255, 255, 255, 255) source=(0, 0, 0, 0) fallback=(255, 255, 255, 255)
+G: fallbackMatchesLayerBounds=True, FAIL
+H: alphaBBoxes layer=(950, 450, 1450, 950) source=(950, 450, 1160, 740) fallback=(950, 450, 1450, 950) expectedSource=(1000, 500, 1400, 900)
+H: center=(1200, 700) layer=(255, 255, 255, 255) source=(0, 0, 0, 0) fallback=(255, 255, 255, 255)
+H: leftProbe=(975, 700) layer=(255, 255, 255, 255) source=(255, 255, 255, 255) fallback=(255, 255, 255, 255)
+H: fallbackMatchesLayerBounds=True, FAIL
+COORDINATE-SPACE RESULT: FAIL

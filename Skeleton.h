@@ -246,6 +246,17 @@ typedef short int			int16;
 
 	} CF_RectangleSourceData;
 
+	// Maps Rectangle Path-local coordinates into the effect input buffer.
+	typedef struct
+	{
+		A_long inputWidth;
+		A_long inputHeight;
+		PF_FpLong originX;
+		PF_FpLong originY;
+		A_Boolean isValid;
+
+	} CF_RectangleCoordinateContext;
+
 	typedef struct
 	{
 		A_long inputWidth;
@@ -350,9 +361,20 @@ typedef short int			int16;
 	IsRectangleSnapshotSourceEnabled(
 		PF_ParamDef* params[]);
 
+	CF_RectangleCoordinateContext
+	BuildRectangleCoordinateContext(
+		A_long inputWidth,
+		A_long inputHeight);
+
+	CF_RectangleSourceData
+	TransformRectangleBoundsToEffectSpace(
+		const CF_Rect& localBounds,
+		const CF_RectangleCoordinateContext& coordinateContext);
+
 	CF_RectangleSourceData
 	ConvertRectangleGeometrySnapshotToSourceData(
-		const CF_RectangleGeometrySnapshot& snapshot);
+		const CF_RectangleGeometrySnapshot& snapshot,
+		const CF_RectangleCoordinateContext& coordinateContext);
 
 	CF_RectangleSourceData
 	SelectRectangleSourceData(
