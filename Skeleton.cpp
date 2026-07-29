@@ -44,6 +44,7 @@
 
 #include "Skeleton.h"
 
+#include <cfloat>
 #include <cmath>
 
 static AEGP_PluginID S_cornerFlexPluginId = 0;
@@ -257,6 +258,141 @@ ParamsSetup(
 		INT32_MAX,
 		0,
 		TARGET_UNIQUE_STREAM_ID_DISK_ID);
+
+	const PF_ParamFlags snapshotParamFlags =
+		PF_ParamFlag_CANNOT_TIME_VARY |
+		PF_ParamFlag_CANNOT_INTERP |
+		PF_ParamFlag_USE_VALUE_FOR_OLD_PROJECTS;
+
+	AEFX_CLR_STRUCT(def);
+
+	def.flags = snapshotParamFlags;
+	def.ui_flags = PF_PUI_INVISIBLE;
+
+	PF_ADD_SLIDER(
+		CF_RECTANGLE_SNAPSHOT_VERSION_MATCH_NAME,
+		0,
+		INT32_MAX,
+		0,
+		1,
+		CF_RECTANGLE_GEOMETRY_SNAPSHOT_VERSION,
+		RECTANGLE_SNAPSHOT_VERSION_DISK_ID);
+
+	AEFX_CLR_STRUCT(def);
+
+	def.flags = snapshotParamFlags;
+	def.ui_flags = PF_PUI_INVISIBLE;
+
+	PF_ADD_CHECKBOX(
+		CF_RECTANGLE_SNAPSHOT_VALID_MATCH_NAME,
+		"",
+		FALSE,
+		0,
+		RECTANGLE_SNAPSHOT_VALID_DISK_ID);
+
+	AEFX_CLR_STRUCT(def);
+
+	def.flags = snapshotParamFlags;
+	def.ui_flags = PF_PUI_INVISIBLE;
+
+	PF_ADD_FLOAT_SLIDER(
+		CF_RECTANGLE_SNAPSHOT_SIZE_X_MATCH_NAME,
+		0.0,
+		FLT_MAX,
+		0.0,
+		FLT_MAX,
+		AEFX_DEFAULT_CURVE_TOLERANCE,
+		0.0,
+		PF_Precision_TEN_THOUSANDTHS,
+		0,
+		false,
+		RECTANGLE_SNAPSHOT_SIZE_X_DISK_ID);
+
+	AEFX_CLR_STRUCT(def);
+
+	def.flags = snapshotParamFlags;
+	def.ui_flags = PF_PUI_INVISIBLE;
+
+	PF_ADD_FLOAT_SLIDER(
+		CF_RECTANGLE_SNAPSHOT_SIZE_Y_MATCH_NAME,
+		0.0,
+		FLT_MAX,
+		0.0,
+		FLT_MAX,
+		AEFX_DEFAULT_CURVE_TOLERANCE,
+		0.0,
+		PF_Precision_TEN_THOUSANDTHS,
+		0,
+		false,
+		RECTANGLE_SNAPSHOT_SIZE_Y_DISK_ID);
+
+	AEFX_CLR_STRUCT(def);
+
+	def.flags = snapshotParamFlags;
+	def.ui_flags = PF_PUI_INVISIBLE;
+
+	PF_ADD_FLOAT_SLIDER(
+		CF_RECTANGLE_SNAPSHOT_POSITION_X_MATCH_NAME,
+		-FLT_MAX,
+		FLT_MAX,
+		-FLT_MAX,
+		FLT_MAX,
+		AEFX_DEFAULT_CURVE_TOLERANCE,
+		0.0,
+		PF_Precision_TEN_THOUSANDTHS,
+		0,
+		false,
+		RECTANGLE_SNAPSHOT_POSITION_X_DISK_ID);
+
+	AEFX_CLR_STRUCT(def);
+
+	def.flags = snapshotParamFlags;
+	def.ui_flags = PF_PUI_INVISIBLE;
+
+	PF_ADD_FLOAT_SLIDER(
+		CF_RECTANGLE_SNAPSHOT_POSITION_Y_MATCH_NAME,
+		-FLT_MAX,
+		FLT_MAX,
+		-FLT_MAX,
+		FLT_MAX,
+		AEFX_DEFAULT_CURVE_TOLERANCE,
+		0.0,
+		PF_Precision_TEN_THOUSANDTHS,
+		0,
+		false,
+		RECTANGLE_SNAPSHOT_POSITION_Y_DISK_ID);
+
+	AEFX_CLR_STRUCT(def);
+
+	def.flags = snapshotParamFlags;
+	def.ui_flags = PF_PUI_INVISIBLE;
+
+	PF_ADD_FLOAT_SLIDER(
+		CF_RECTANGLE_SNAPSHOT_ROUNDNESS_MATCH_NAME,
+		0.0,
+		FLT_MAX,
+		0.0,
+		FLT_MAX,
+		AEFX_DEFAULT_CURVE_TOLERANCE,
+		0.0,
+		PF_Precision_TEN_THOUSANDTHS,
+		0,
+		false,
+		RECTANGLE_SNAPSHOT_ROUNDNESS_DISK_ID);
+
+	AEFX_CLR_STRUCT(def);
+
+	def.flags = snapshotParamFlags;
+	def.ui_flags = PF_PUI_INVISIBLE;
+
+	PF_ADD_SLIDER(
+		CF_RECTANGLE_SNAPSHOT_DIRECTION_MATCH_NAME,
+		INT32_MIN,
+		INT32_MAX,
+		INT32_MIN,
+		INT32_MAX,
+		0,
+		RECTANGLE_SNAPSHOT_DIRECTION_DISK_ID);
 
 	out_data->num_params = CORNERFLEX_NUM_PARAMS;
 
@@ -497,6 +633,42 @@ ValidateRectangleGeometrySnapshot(
 		dimensionsAreNonNegative
 			? TRUE
 			: FALSE;
+}
+
+CF_RectangleGeometrySnapshot
+ReadRectangleGeometrySnapshot(
+	PF_ParamDef* params[])
+{
+	CF_RectangleGeometrySnapshot snapshot =
+		MakeInvalidRectangleGeometrySnapshot();
+
+	snapshot.version =
+		params[CORNERFLEX_RECTANGLE_SNAPSHOT_VERSION]->u.sd.value;
+
+	snapshot.isValid =
+		params[CORNERFLEX_RECTANGLE_SNAPSHOT_VALID]->u.bd.value
+			? TRUE
+			: FALSE;
+
+	snapshot.sizeX =
+		params[CORNERFLEX_RECTANGLE_SNAPSHOT_SIZE_X]->u.fs_d.value;
+
+	snapshot.sizeY =
+		params[CORNERFLEX_RECTANGLE_SNAPSHOT_SIZE_Y]->u.fs_d.value;
+
+	snapshot.positionX =
+		params[CORNERFLEX_RECTANGLE_SNAPSHOT_POSITION_X]->u.fs_d.value;
+
+	snapshot.positionY =
+		params[CORNERFLEX_RECTANGLE_SNAPSHOT_POSITION_Y]->u.fs_d.value;
+
+	snapshot.roundness =
+		params[CORNERFLEX_RECTANGLE_SNAPSHOT_ROUNDNESS]->u.fs_d.value;
+
+	snapshot.direction =
+		params[CORNERFLEX_RECTANGLE_SNAPSHOT_DIRECTION]->u.sd.value;
+
+	return snapshot;
 }
 
 static CF_Rect
@@ -968,6 +1140,16 @@ Render(
 
 	CornerFlexSettings settings;
 	ReadCornerFlexSettings(params, settings);
+
+	const CF_RectangleGeometrySnapshot rectangleSnapshot =
+		ReadRectangleGeometrySnapshot(params);
+
+	const A_Boolean rectangleSnapshotIsValid =
+		ValidateRectangleGeometrySnapshot(
+			rectangleSnapshot);
+
+	// Snapshot transport is observational until Rectangle Source activation.
+	static_cast<void>(rectangleSnapshotIsValid);
 
 	const CF_GeometryTargetState storedTargetState =
 		ReadGeometryTargetState(params);

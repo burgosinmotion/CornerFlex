@@ -490,7 +490,7 @@ Identity y Geometry Snapshot cumplen contratos diferentes:
 | `roundness` | Valor crudo evaluado de Roundness. |
 | `direction` | Entero transportado desde `ADBE Vector Shape Direction`. |
 
-La estructura no contiene bounds derivados, `propertyIndex`, Match Names, punteros, handles ni referencias del SDK. Tampoco depende del DOM o de AEGP y podrá transportarse mediante parámetros nativos en una fase posterior.
+La estructura no contiene bounds derivados, `propertyIndex`, Match Names, punteros, handles ni referencias del SDK. Tampoco depende del DOM o de AEGP y se transporta mediante parámetros nativos ocultos.
 
 `MakeInvalidRectangleGeometrySnapshot()` limpia todos los campos, asigna la versión soportada y mantiene `isValid = FALSE`. `ValidateRectangleGeometrySnapshot()` es una función pura que exige:
 
@@ -513,7 +513,30 @@ Los valores pertenecen al sistema de coordenadas crudo del Rectangle Path y toda
 - coordenadas de composición;
 - coordenadas de mundo.
 
-El snapshot todavía no dispone de parámetros de transporte, no se lee ni escribe y no se conecta con `Render()`, discovery, resolvers o `CF_RectangleSourceData`. `Rectangle Source` permanece desactivado y Layer Bounds continúa siendo la única fuente geométrica activa.
+#### Snapshot Transport Parameters
+
+El efecto reserva ocho parámetros persistentes al final del contrato existente:
+
+| Índice | Nombre interno estable | Disk ID | Tipo | Rango válido | Default |
+| ---: | --- | ---: | --- | --- | ---: |
+| 11 | `Rectangle Snapshot Version` | 11 | `PF_Param_SLIDER` | `0`–`INT32_MAX` | `1` |
+| 12 | `Rectangle Snapshot Valid` | 12 | `PF_Param_CHECKBOX` | booleano | `0` |
+| 13 | `Rectangle Snapshot Size X` | 13 | `PF_Param_FLOAT_SLIDER` | `0`–`FLT_MAX` | `0` |
+| 14 | `Rectangle Snapshot Size Y` | 14 | `PF_Param_FLOAT_SLIDER` | `0`–`FLT_MAX` | `0` |
+| 15 | `Rectangle Snapshot Position X` | 15 | `PF_Param_FLOAT_SLIDER` | `-FLT_MAX`–`FLT_MAX` | `0` |
+| 16 | `Rectangle Snapshot Position Y` | 16 | `PF_Param_FLOAT_SLIDER` | `-FLT_MAX`–`FLT_MAX` | `0` |
+| 17 | `Rectangle Snapshot Roundness` | 17 | `PF_Param_FLOAT_SLIDER` | `0`–`FLT_MAX` | `0` |
+| 18 | `Rectangle Snapshot Direction` | 18 | `PF_Param_SLIDER` | `INT32_MIN`–`INT32_MAX` | `0` |
+
+Todos usan `PF_PUI_INVISIBLE`, `PF_ParamFlag_CANNOT_TIME_VARY`, `PF_ParamFlag_CANNOT_INTERP` y `PF_ParamFlag_USE_VALUE_FOR_OLD_PROJECTS`. No aparecen en Effect Controls, no se animan ni interpolan y los proyectos anteriores reciben `version = 1`, valores geométricos en cero e `isValid = FALSE`.
+
+`PF_FloatSliderDef::value` utiliza `PF_FpLong`, que en el SDK local es `double`; por ello Size, Position y Roundness se leen sin convertirlos a entero o `float`. Los límites descriptivos de `PF_FloatSliderDef` son `PF_FpShort`, equivalente a `float`, y usan su rango completo mediante `FLT_MAX`. `PF_Precision_TEN_THOUSANDTHS` solo controla la presentación y no modifica el valor almacenado.
+
+`ReadRectangleGeometrySnapshot()` comienza con `MakeInvalidRectangleGeometrySnapshot()`, lee los ocho parámetros, normaliza únicamente el checkbox a `TRUE` o `FALSE` y conserva los demás valores crudos. Después `Render()` llama a `ValidateRectangleGeometrySnapshot()`, pero descarta el resultado de forma explícita.
+
+El almacenamiento pertenece a la instancia del efecto y se conserva al guardar el proyecto. Al duplicar una capa o copiar el efecto, After Effects copia también sus parámetros; el snapshot duplicado continúa sujeto a la misma versión y validación.
+
+La lectura no se conecta con discovery, `CF_RectangleSourceData`, resolvers, contextos geométricos, operaciones o renderer. Incluso un snapshot válido introducido manualmente se descarta: `Rectangle Source` permanece desactivado y Layer Bounds continúa siendo la única fuente geométrica activa.
 
 ## 9. Estado actual
 
@@ -546,6 +569,7 @@ Actualmente están implementados:
 - `DiscoverRectangleSourceFromAfterEffects()` como adaptador seguro todavía desactivado;
 - `MakeInvalidRectangleGeometrySnapshot()`;
 - `ValidateRectangleGeometrySnapshot()`;
+- `ReadRectangleGeometrySnapshot()`;
 - `BuildRectangleGeometry()`;
 - `ReadCornerFlexSettings()`;
 - `BuildTrimRectangle()`;
