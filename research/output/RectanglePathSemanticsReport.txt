@@ -1,0 +1,125 @@
+CornerFlex Rectangle Coordinate Semantics Validation
+After Effects version: 26.3x87
+Operating system: Windows/64 10.0  
+Fixed evaluation time: 0
+Tolerance: 0.001 pixels
+Tolerance covers floating-point evaluation and subpixel values; it is not used to hide integer offsets.
+Shape Layer Match Name: ADBE Vector Layer
+Root Contents Match Name: ADBE Root Vectors Group
+Rectangle Match Name: ADBE Vector Shape - Rect
+Rectangle parent Match Name: ADBE Root Vectors Group
+Rectangle directly under Root Contents: true
+Fill Match Name: ADBE Vector Graphic - Fill
+Stroke added: false
+Pixel aspect ratio: 1
+sourceRectAtTime() is read in Shape Layer source/layer space. With Rectangle Path directly in root Contents and all transforms at identity, this is the controlled space compared to raw Position.
+Direction property range reported by DOM: 1.000000 to 3.000000
+Verified settable Direction values: 1, 2, 3
+
+CASE: centered-even
+  Size: [200.000000, 100.000000]
+  Position: [0.000000, 0.000000]
+  Roundness: 0.000000
+  Direction requested: 1
+  Direction read: 1
+  Expected: left=-100.000000, top=-50.000000, width=200.000000, height=100.000000, right=100.000000, bottom=50.000000
+  Observed: left=-100.000000, top=-50.000000, width=200.000000, height=100.000000, right=100.000000, bottom=50.000000
+  Difference: left=0.000000, top=0.000000, width=0.000000, height=0.000000, right=0.000000, bottom=0.000000
+  RESULT: PASS
+
+CASE: positive-position
+  Size: [200.000000, 100.000000]
+  Position: [50.000000, 25.000000]
+  Roundness: 0.000000
+  Direction requested: 1
+  Direction read: 1
+  Expected: left=-50.000000, top=-25.000000, width=200.000000, height=100.000000, right=150.000000, bottom=75.000000
+  Observed: left=-50.000000, top=-25.000000, width=200.000000, height=100.000000, right=150.000000, bottom=75.000000
+  Difference: left=0.000000, top=0.000000, width=0.000000, height=0.000000, right=0.000000, bottom=0.000000
+  RESULT: PASS
+
+CASE: negative-position
+  Size: [200.000000, 100.000000]
+  Position: [-50.000000, -25.000000]
+  Roundness: 0.000000
+  Direction requested: 1
+  Direction read: 1
+  Expected: left=-150.000000, top=-75.000000, width=200.000000, height=100.000000, right=50.000000, bottom=25.000000
+  Observed: left=-150.000000, top=-75.000000, width=200.000000, height=100.000000, right=50.000000, bottom=25.000000
+  Difference: left=0.000000, top=0.000000, width=0.000000, height=0.000000, right=0.000000, bottom=0.000000
+  RESULT: PASS
+
+CASE: odd-size
+  Size: [201.000000, 101.000000]
+  Position: [0.000000, 0.000000]
+  Roundness: 0.000000
+  Direction requested: 1
+  Direction read: 1
+  Expected: left=-100.500000, top=-50.500000, width=201.000000, height=101.000000, right=100.500000, bottom=50.500000
+  Observed: left=-100.500000, top=-50.500000, width=201.000000, height=101.000000, right=100.500000, bottom=50.500000
+  Difference: left=0.000000, top=0.000000, width=0.000000, height=0.000000, right=0.000000, bottom=0.000000
+  RESULT: PASS
+
+CASE: fractional-size-position
+  Size: [200.500000, 100.250000]
+  Position: [10.125000, -20.375000]
+  Roundness: 0.000000
+  Direction requested: 1
+  Direction read: 1
+  Expected: left=-90.125000, top=-70.500000, width=200.500000, height=100.250000, right=110.375000, bottom=29.750000
+  Observed: left=-90.125000, top=-70.500000, width=200.500000, height=100.250000, right=110.375000, bottom=29.750000
+  Difference: left=0.000000, top=0.000000, width=0.000000, height=0.000000, right=0.000000, bottom=0.000000
+  RESULT: PASS
+
+CASE: zero-width
+  Size: [0.000000, 100.000000]
+  Position: [12.500000, 3.250000]
+  Roundness: 0.000000
+  Direction requested: 1
+  Direction read: 1
+  Expected: left=12.500000, top=-46.750000, width=0.000000, height=100.000000, right=12.500000, bottom=53.250000
+  Observed: left=12.500000, top=-46.750000, width=0.000000, height=100.000000, right=12.500000, bottom=53.250000
+  Difference: left=0.000000, top=0.000000, width=0.000000, height=0.000000, right=0.000000, bottom=0.000000
+  RESULT: PASS
+
+CASE: rounded
+  Size: [200.000000, 100.000000]
+  Position: [0.000000, 0.000000]
+  Roundness: 25.000000
+  Direction requested: 1
+  Direction read: 1
+  Expected: left=-100.000000, top=-50.000000, width=200.000000, height=100.000000, right=100.000000, bottom=50.000000
+  Observed: left=-100.000000, top=-50.000000, width=200.000000, height=100.000000, right=100.000000, bottom=50.000000
+  Difference: left=0.000000, top=0.000000, width=0.000000, height=0.000000, right=0.000000, bottom=0.000000
+  RESULT: PASS
+
+CASE: direction-2
+  Size: [200.000000, 100.000000]
+  Position: [0.000000, 0.000000]
+  Roundness: 0.000000
+  Direction requested: 2
+  Direction read: 2
+  Expected: left=-100.000000, top=-50.000000, width=200.000000, height=100.000000, right=100.000000, bottom=50.000000
+  Observed: left=-100.000000, top=-50.000000, width=200.000000, height=100.000000, right=100.000000, bottom=50.000000
+  Difference: left=0.000000, top=0.000000, width=0.000000, height=0.000000, right=0.000000, bottom=0.000000
+  RESULT: PASS
+
+CASE: direction-3
+  Size: [200.000000, 100.000000]
+  Position: [0.000000, 0.000000]
+  Roundness: 0.000000
+  Direction requested: 3
+  Direction read: 3
+  Expected: left=-100.000000, top=-50.000000, width=200.000000, height=100.000000, right=100.000000, bottom=50.000000
+  Observed: left=-100.000000, top=-50.000000, width=200.000000, height=100.000000, right=100.000000, bottom=50.000000
+  Difference: left=0.000000, top=0.000000, width=0.000000, height=0.000000, right=0.000000, bottom=0.000000
+  RESULT: PASS
+
+SUMMARY
+  Cases: 9
+  PASS: 9
+  FAIL: 0
+  Roundness changed external bounds: false
+  Direction changed external bounds: false
+  Candidate center formula empirically supported for all cases: true
+Temporary composition removed: true

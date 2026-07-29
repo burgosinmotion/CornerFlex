@@ -532,11 +532,97 @@ Todos usan `PF_PUI_INVISIBLE`, `PF_ParamFlag_CANNOT_TIME_VARY`, `PF_ParamFlag_CA
 
 `PF_FloatSliderDef::value` utiliza `PF_FpLong`, que en el SDK local es `double`; por ello Size, Position y Roundness se leen sin convertirlos a entero o `float`. Los límites descriptivos de `PF_FloatSliderDef` son `PF_FpShort`, equivalente a `float`, y usan su rango completo mediante `FLT_MAX`. `PF_Precision_TEN_THOUSANDTHS` solo controla la presentación y no modifica el valor almacenado.
 
-`ReadRectangleGeometrySnapshot()` comienza con `MakeInvalidRectangleGeometrySnapshot()`, lee los ocho parámetros, normaliza únicamente el checkbox a `TRUE` o `FALSE` y conserva los demás valores crudos. Después `Render()` llama a `ValidateRectangleGeometrySnapshot()`, pero descarta el resultado de forma explícita.
+`ReadRectangleGeometrySnapshot()` comienza con `MakeInvalidRectangleGeometrySnapshot()`, lee los ocho parámetros, normaliza únicamente el checkbox a `TRUE` o `FALSE` y conserva los demás valores crudos. Después `Render()` entrega el snapshot a la conversión pura, que lo valida antes de derivar bounds, y descarta el resultado de forma explícita.
 
 El almacenamiento pertenece a la instancia del efecto y se conserva al guardar el proyecto. Al duplicar una capa o copiar el efecto, After Effects copia también sus parámetros; el snapshot duplicado continúa sujeto a la misma versión y validación.
 
-La lectura no se conecta con discovery, `CF_RectangleSourceData`, resolvers, contextos geométricos, operaciones o renderer. Incluso un snapshot válido introducido manualmente se descarta: `Rectangle Source` permanece desactivado y Layer Bounds continúa siendo la única fuente geométrica activa.
+El resultado convertido no se conecta con discovery, resolvers, contextos geométricos, operaciones o renderer. Incluso un snapshot válido introducido manualmente se descarta: `Rectangle Source` permanece desactivado y Layer Bounds continúa siendo la única fuente geométrica activa.
+
+#### Snapshot-to-Source Conversion
+
+`ConvertRectangleGeometrySnapshotToSourceData()` define la frontera pura entre propiedades crudas y `CF_RectangleSourceData`. Siempre comienza con bounds limpios e `isAvailable = FALSE` y rechaza inmediatamente cualquier snapshot que no supere `ValidateRectangleGeometrySnapshot()`. No consulta suites, handles, parámetros ni estado global.
+
+Para un snapshot válido, interpreta `sizeX` y `sizeY` como dimensiones completas y `positionX` y `positionY` como centro del Rectangle Path en su espacio local inmediato. La fórmula fue validada experimentalmente en After Effects `26.3x87`, Windows 64 bits:
+
+```text
+left   = positionX - sizeX / 2
+top    = positionY - sizeY / 2
+right  = positionX + sizeX / 2
+bottom = positionY + sizeY / 2
+```
+
+La conversión calcula primero `halfWidth` y `halfHeight` y comprueba con `std::isfinite` ambos valores y los cuatro bounds derivados. También exige `right >= left` y `bottom >= top`. Solo después asigna los bounds y establece `isAvailable = TRUE`; cualquier fallo retorna el source original, limpio e indisponible, sin conversión parcial, normalización, saturación ni corrección silenciosa.
+
+Size cero es válido: produce bordes coincidentes en el eje correspondiente y puede generar un source disponible siempre que el resto de las validaciones se cumpla.
+
+`roundness` no participa porque la prueba de Phase 5.4 confirmó que no modifica los bounds externos; una futura fase de Corner Radii o Primitive Metadata deberá consumirlo. `direction` tampoco participa: los valores observados `1`, `2` y `3` no modificaron los bounds y permanecen como metadata sin interpretación semántica oficial.
+
+La conversión opera exclusivamente en el espacio local inmediato y crudo del Rectangle Path. No aplica transformaciones del Shape Group, grupos ancestros o capa; tampoco anchor, scale, rotation, skew, Stroke, pixel aspect ratio, efectos, expresiones ni conversiones a composición o mundo.
+
+`Render()` construye localmente el resultado de la conversión, que ahora puede quedar disponible, y lo descarta de forma explícita. No lo asigna a `resolveRequest.rectangleSource`, que continúa recibiendo el resultado indisponible de `DiscoverRectangleSourceFromAfterEffects()`. En consecuencia, Rectangle Source permanece desactivado y Layer Bounds sigue siendo la única fuente activa.
+
+Referencia oficial revisada: [Create and customize shapes and masks in After Effects](https://helpx.adobe.com/after-effects/desktop/drawing-painting-and-paths/shapes-and-shape-attributes/creating-shapes-masks.html).
+
+#### Rectangle Coordinate Semantics Validation
+
+El prototipo `research/ValidateRectanglePathSemantics.jsx` ejecuta una prueba empírica autocontenida en After Effects. La ejecución documentada se realizó en After Effects `26.3x87`, Windows 64 bits, con tiempo fijo `0` y tolerancia de `0.001` píxeles.
+
+Metodología:
+
+- composición temporal de `1000 × 1000`, pixel aspect ratio `1`, 30 fps y motion blur desactivado;
+- Shape Layer `ADBE Vector Layer`;
+- Rectangle Path añadido directamente a `ADBE Root Vectors Group`;
+- Fill `ADBE Vector Graphic - Fill`, sin Stroke;
+- anchor `[0, 0]`, Position `[0, 0]`, Scale `[100, 100]`, Rotation `0` y Opacity `100`;
+- sin Shape Group, efectos, expresiones ni transformaciones adicionales;
+- lectura mediante `sourceRectAtTime(0, false)`;
+- creación, ejecución y eliminación dentro de un undo group;
+- composición temporal eliminada al finalizar.
+
+Match Names utilizados:
+
+- `ADBE Vector Layer`;
+- `ADBE Root Vectors Group`;
+- `ADBE Vector Shape - Rect`;
+- `ADBE Vector Rect Size`;
+- `ADBE Vector Rect Position`;
+- `ADBE Vector Rect Roundness`;
+- `ADBE Vector Shape Direction`;
+- `ADBE Vector Graphic - Fill`;
+- `ADBE Vector Fill Color`;
+- `ADBE Vector Fill Opacity`;
+- `ADBE Transform Group`, `ADBE Anchor Point`, `ADBE Position`, `ADBE Scale`, `ADBE Rotate Z` y `ADBE Opacity`.
+
+`sourceRectAtTime()` devuelve los límites de la fuente en el espacio de la Shape Layer, antes de las transformaciones de capa. Como Rectangle Path se encuentra directamente en Contents raíz y todas las transformaciones están en identidad, ese espacio coincide con el espacio local crudo utilizado por Size y Position en esta prueba. La comparación dejaría de ser directa al introducir grupos transformados, Stroke, transformaciones de capa u otros modificadores de bounds.
+
+La tolerancia de `0.001` píxeles admite pequeñas diferencias de evaluación en coma flotante y valores subpíxel sin ocultar offsets de píxeles completos. En esta ejecución todas las diferencias observadas fueron exactamente `0`.
+
+| Caso | Size | Position | Roundness | Direction | Resultado |
+| --- | --- | --- | ---: | ---: | --- |
+| Centered even | `200 × 100` | `[0, 0]` | 0 | 1 | PASS |
+| Positive position | `200 × 100` | `[50, 25]` | 0 | 1 | PASS |
+| Negative position | `200 × 100` | `[-50, -25]` | 0 | 1 | PASS |
+| Odd size | `201 × 101` | `[0, 0]` | 0 | 1 | PASS |
+| Fractional | `200.5 × 100.25` | `[10.125, -20.375]` | 0 | 1 | PASS |
+| Zero width | `0 × 100` | `[12.5, 3.25]` | 0 | 1 | PASS |
+| Rounded | `200 × 100` | `[0, 0]` | 25 | 1 | PASS |
+| Direction 2 | `200 × 100` | `[0, 0]` | 0 | 2 | PASS |
+| Direction 3 | `200 × 100` | `[0, 0]` | 0 | 3 | PASS |
+
+El DOM informó para Direction un rango de `1` a `3`; los tres valores pudieron asignarse y leerse. No se asigna significado nominal a esos enteros porque la documentación oficial revisada no lo define. Ninguno alteró los bounds externos. Roundness `25` tampoco modificó left, top, width, height, right o bottom.
+
+Los nueve casos coincidieron con:
+
+```text
+left   = positionX - sizeX / 2
+top    = positionY - sizeY / 2
+right  = positionX + sizeX / 2
+bottom = positionY + sizeY / 2
+```
+
+Por tanto, la fórmula queda confirmada como contrato empíricamente validado para After Effects `26.3x87` bajo esta configuración controlada. No constituye una garantía oficial para otras versiones, espacios transformados, Stroke, expresiones, efectos, motion blur o `sourceRectAtTime()` con extents habilitados.
+
+El reporte completo se conserva en `research/output/RectanglePathSemanticsReport.txt`. Phase 5.4 no modificó el AEX; Phase 5.5 utiliza esa evidencia para completar la conversión pura. Aunque la conversión puede retornar `isAvailable = TRUE`, `Render()` todavía descarta su resultado y no lo conecta al resolver. Rectangle Source permanece desactivado y Layer Bounds sigue siendo la única fuente activa.
 
 ## 9. Estado actual
 
@@ -570,6 +656,7 @@ Actualmente están implementados:
 - `MakeInvalidRectangleGeometrySnapshot()`;
 - `ValidateRectangleGeometrySnapshot()`;
 - `ReadRectangleGeometrySnapshot()`;
+- `ConvertRectangleGeometrySnapshotToSourceData()`;
 - `BuildRectangleGeometry()`;
 - `ReadCornerFlexSettings()`;
 - `BuildTrimRectangle()`;

@@ -671,6 +671,47 @@ ReadRectangleGeometrySnapshot(
 	return snapshot;
 }
 
+CF_RectangleSourceData
+ConvertRectangleGeometrySnapshotToSourceData(
+	const CF_RectangleGeometrySnapshot& snapshot)
+{
+	CF_RectangleSourceData sourceData;
+	AEFX_CLR_STRUCT(sourceData);
+
+	sourceData.isAvailable = FALSE;
+
+	if (!ValidateRectangleGeometrySnapshot(snapshot)) {
+		return sourceData;
+	}
+
+	const PF_FpLong halfWidth = snapshot.sizeX * 0.5;
+	const PF_FpLong halfHeight = snapshot.sizeY * 0.5;
+
+	const PF_FpLong left = snapshot.positionX - halfWidth;
+	const PF_FpLong top = snapshot.positionY - halfHeight;
+	const PF_FpLong right = snapshot.positionX + halfWidth;
+	const PF_FpLong bottom = snapshot.positionY + halfHeight;
+
+	if (!std::isfinite(halfWidth) ||
+		!std::isfinite(halfHeight) ||
+		!std::isfinite(left) ||
+		!std::isfinite(top) ||
+		!std::isfinite(right) ||
+		!std::isfinite(bottom) ||
+		right < left ||
+		bottom < top) {
+		return sourceData;
+	}
+
+	sourceData.bounds.left = left;
+	sourceData.bounds.top = top;
+	sourceData.bounds.right = right;
+	sourceData.bounds.bottom = bottom;
+	sourceData.isAvailable = TRUE;
+
+	return sourceData;
+}
+
 static CF_Rect
 BuildTrimRectangle(
 	const CornerFlexSettings& settings,
@@ -1144,12 +1185,12 @@ Render(
 	const CF_RectangleGeometrySnapshot rectangleSnapshot =
 		ReadRectangleGeometrySnapshot(params);
 
-	const A_Boolean rectangleSnapshotIsValid =
-		ValidateRectangleGeometrySnapshot(
+	const CF_RectangleSourceData convertedRectangleSource =
+		ConvertRectangleGeometrySnapshotToSourceData(
 			rectangleSnapshot);
 
-	// Snapshot transport is observational until Rectangle Source activation.
-	static_cast<void>(rectangleSnapshotIsValid);
+	// Snapshot conversion is observational until Rectangle Source activation.
+	static_cast<void>(convertedRectangleSource);
 
 	const CF_GeometryTargetState storedTargetState =
 		ReadGeometryTargetState(params);

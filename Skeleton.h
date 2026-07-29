@@ -343,6 +343,10 @@ typedef short int			int16;
 	ReadRectangleGeometrySnapshot(
 		PF_ParamDef* params[]);
 
+	CF_RectangleSourceData
+	ConvertRectangleGeometrySnapshotToSourceData(
+		const CF_RectangleGeometrySnapshot& snapshot);
+
 
 extern "C" {
 
