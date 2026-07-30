@@ -58,4 +58,10 @@ Downsampling different from 1: NOT VALIDATED — saveFrameToPng/DOM does not rel
 Shifted buffer origin: NOT VALIDATED — reproducing it requires a buffer-resizing predecessor or SmartFX path outside this phase.
 Validated build SHA-256: 8C2EFA7099162950CC4310B0947AEBEF6881147A2EAE7C0550E473F2DB2D3243
 Loaded module validation: PASS
-Final restored Phase 5.9 SHA-256: 27248E59F21EA31915AEB68C79BEF989FE814D7B9DD65E8C25F157B7A7B740FB
+Installed AEX size: 83,968 bytes
+Installed AEX SHA-256: 8C2EFA7099162950CC4310B0947AEBEF6881147A2EAE7C0550E473F2DB2D3243
+Loaded module: C:\Program Files\Adobe\Adobe After Effects 2026\Support Files\Plug-ins\CornerFlex\CornerFlex.aex
+Scale fallback: Rectangle Source unavailable; Layer Bounds pixel-identical, PASS
+Rotation fallback: Rectangle Source unavailable; Layer Bounds pixel-identical, PASS
+After Effects closed after permanent validation: YES
+PHASE 5.10 PERMANENT DEFENSIVE VALIDATION: PASS

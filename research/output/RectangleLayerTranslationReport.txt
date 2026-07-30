@@ -333,3 +333,15 @@ RF: bboxDifference=(0, 0, 0, 0), fallbackPixelDifference=None, PASS
 TRANSLATION A-J RESULT: PASS
 PHASE 5.9 A-F REGRESSION RESULT: PASS
 LAYER TRANSLATION RESULT: PASS
+
+Phase 5.10 permanent installation validation
+Installed AEX: CornerFlex.aex
+Installed size: 83,968 bytes
+Installed SHA-256: 8C2EFA7099162950CC4310B0947AEBEF6881147A2EAE7C0550E473F2DB2D3243
+Loaded module: C:\Program Files\Adobe\Adobe After Effects 2026\Support Files\Plug-ins\CornerFlex\CornerFlex.aex
+Base case: geometryBounds=(710, 290, 1210, 790), trimmed alphaBBox=(760, 340, 1160, 740), PASS
+Anchor Point [100, 50]: trimmed alphaBBox=(660, 290, 1060, 690), PASS
+Layer Position [1200, 700]: trimmed alphaBBox=(1000, 500, 1400, 900), PASS
+Manual return to Layer Bounds: visual result matches the initial Layer Bounds state, PASS
+After Effects closed after validation: YES
+PERMANENT INSTALLATION RESULT: PASS
