@@ -62,3 +62,6 @@ research/output/Phase511B1UNeg100xNeg100Frames/
 # Python cache artifacts
 __pycache__/
 *.pyc
+
+# Full Phase 5.11B.2 animated/expression validation frames; selected evidence is stored separately
+research/output/Phase511B2ValidationFrames/

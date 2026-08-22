@@ -992,6 +992,15 @@ La matriz funcional B.1 cerró con PASS para A-F, I-P y Q-U: Scale 100x100, 150x
 
 La referencia independiente con `toComp()` quedó inconclusa: los intentos de harness por expresión fallaron antes de producir bounds utilizables. Esa limitación quedó documentada como una brecha de oracle independiente, pero no bloqueó la validación end-to-end porque los resultados cerraron mediante comparación pixel/bounds, retorno a Layer Bounds y regresiones defensivas.
 
+### Phase 5.11B.2 — Animated and Expression-Driven Scale
+
+Phase 5.11B.2 did not require C++ changes. The existing Rectangle Source path evaluates Layer Scale at render time by converting `PF_InData::current_time` with `AEGP_ConvertEffectToCompTime()` and reading the layer transform streams through `AEGP_GetLayerStreamValue()` with `AEGP_LTimeMode_CompTime`.
+
+Scale values driven by keyframes or expressions resolve per frame through the same path used for static positive Scale. There is no special animation route: `CF_LayerTransform2DContext` carries the normalized `scaleX` and `scaleY` values for static Scale, animated Scale and expression-driven Scale alike.
+
+Trim continues to operate after the Rectangle Path bounds are transformed for the current frame. Scale components that resolve to zero or negative values keep Rectangle Source unavailable and select Layer Bounds as fallback. Rotation also continues to activate fallback. Returning manually to Layer Bounds remained RGBA-identical to the Layer Bounds baseline.
+
+The Phase 5.11B.2 validation harness closed A-M with PASS, covering animated uniform, animated non-uniform, decimal, expression-driven uniform, expression-driven non-uniform, Anchor + Scale, Layer Position + Scale, Rectangle Path Position + Scale, Trim 10 %, manual return to Layer Bounds, zero Scale fallback, negative Scale fallback and Rotation fallback. Static regression RA-RG also closed with PASS.
 ## 9. Estado actual
 
 Actualmente están implementados:
@@ -1046,7 +1055,7 @@ Actualmente están implementados:
 - `TrimFunc16()`;
 - render de 8 y 16 bpc.
 
-Por defecto, `BuildGeometryContext()` crea Layer Bounds a partir de Input Bounds como fallback y `ExecuteTrimOperation()` aplica Trim sobre esa geometría base sin perder su origen. La acción manual del panel CEP puede capturar el Rectangle Path seleccionado, escribir un snapshot válido y habilitar sus bounds convertidos al espacio del buffer del efecto; la acción secundaria desactiva el snapshot y restaura Layer Bounds. Rectangle Source soporta ahora la traslación 2D de Layer Anchor Point y Layer Position. Scale, Rotation, parenting, 3D y transformaciones internas de Shape Groups continúan fuera de alcance; tampoco existe sincronización automática y la integración con Bézier paths continúa pendiente.
+Por defecto, `BuildGeometryContext()` crea Layer Bounds a partir de Input Bounds como fallback y `ExecuteTrimOperation()` aplica Trim sobre esa geometría base sin perder su origen. La acción manual del panel CEP puede capturar el Rectangle Path seleccionado, escribir un snapshot válido y habilitar sus bounds convertidos al espacio del buffer del efecto; la acción secundaria desactiva el snapshot y restaura Layer Bounds. Rectangle Source soporta ahora la traslación 2D de Layer Anchor Point y Layer Position, además de Scale 2D positivo estático, animado y controlado mediante expresiones. Rotation, parenting, 3D y transformaciones internas de Shape Groups continúan fuera de alcance; tampoco existe sincronización automática y la integración con Bézier paths continúa pendiente.
 
 ## 10. Hoja de ruta técnica
 
