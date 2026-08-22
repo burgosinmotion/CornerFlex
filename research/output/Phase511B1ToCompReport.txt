@@ -1,0 +1,3 @@
+Phase 5.11B.1 independent layer.toComp() reference
+ERROR: ReferenceError: Function layer.toComp is undefined
+RESULT: FAIL

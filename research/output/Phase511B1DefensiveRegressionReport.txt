@@ -1,0 +1,55 @@
+CornerFlex Phase 5.10 Final Defensive Validation
+After Effects version: 26.3x87
+Operating system: Windows/64 10.0  
+Trim: linked 10%
+Provider: E:\Files\Proyectos\CornerFlexDev\CornerFlex-CEP\jsx\CornerFlexGeometryProvider.jsx
+
+CASE K — 3D Shape Layer
+  Expected: Rectangle Source rejected; Layer Bounds fallback.
+  Capture completed without crash: YES
+
+CASE L — Shape Layer with parent
+  Expected: Rectangle Source rejected; Layer Bounds fallback.
+  Capture completed without crash: YES
+
+CASE N — Scale different from 100 percent
+  Expected: Rectangle Source rejected; Layer Bounds fallback.
+  Capture completed without crash: YES
+
+CASE O — Rotation different from zero
+  Expected: Rectangle Source rejected; Layer Bounds fallback.
+  Capture completed without crash: YES
+
+CASE M — After Effects Null Layer observation
+  AE Null Layer is a valid AEGP layer object; it cannot simulate a null AEGP_LayerH returned by AEGP_GetEffectLayer().
+  Observable result: no crash; transparent input makes source selection non-observable.
+  Null-handle defensive branch: NOT REPRODUCIBLE via DOM.
+
+CASE T — Position expression at render time
+  Expression: [thisComp.width / 2 + time * 120, thisComp.height / 2 + time * 60]
+  T0 Position post-expression: [960.0000, 540.0000]
+  T1 Position post-expression: [1080.0000, 600.0000]
+  Expected source bboxes: T0 [760,340,1160,740], T1 [880,400,1280,800].
+
+TEMPORARY COMPOSITIONS REMOVED: YES
+SCRIPT RESULT: PASS
+Pixel analysis: pending external RGBA validation.
+
+External RGBA defensive and render-time analysis
+Pillow version: 12.2.0
+K: alphaBBoxes layer=(710, 290, 1210, 790), source=(710, 290, 1210, 790), fallback=(710, 290, 1210, 790)
+K: sourceVsLayerDifference=None, fallbackVsLayerDifference=None, PASS
+L: alphaBBoxes layer=(710, 290, 1210, 790), source=(710, 290, 1210, 790), fallback=(710, 290, 1210, 790)
+L: sourceVsLayerDifference=None, fallbackVsLayerDifference=None, PASS
+O: alphaBBoxes layer=(666, 246, 1254, 834), source=(666, 246, 1254, 834), fallback=(666, 246, 1254, 834)
+O: sourceVsLayerDifference=None, fallbackVsLayerDifference=None, PASS
+M: alphaBBoxes layer=None, source=None, fallback=None
+M: sourceVsLayerDifference=None, fallbackVsLayerDifference=None, framesIdentical=True
+M: INCONCLUSIVE — an AE Null Layer has a valid layer handle and transparent raster; a null AEGP_LayerH cannot be produced through the DOM while an effect instance is rendering.
+T: sourceBBoxes T0=(760, 340, 1160, 740), T1=(880, 400, 1280, 800), expectedT0=(760, 340, 1160, 740), expectedT1=(880, 400, 1280, 800)
+T: bboxDeltaObserved=(120, 60, 120, 60), expectedDelta=(120, 60, 120, 60)
+T: fallbackVsLayerDifference=None, PASS
+DEFENSIVE K,L,N,O RESULT: PASS
+DEFENSIVE M RESULT: INCONCLUSIVE (host limitation documented)
+POST-EXPRESSION TIME RESULT: PASS
+FINAL DEFENSIVE RESULT: PASS

@@ -1,0 +1,3 @@
+Phase 5.11B.1 independent expression thisLayer.toComp() reference
+ERROR: Error: invalid numeric result (divide by zero?)
+RESULT: FAIL

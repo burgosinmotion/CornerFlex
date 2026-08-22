@@ -257,7 +257,7 @@ typedef short int			int16;
 
 	} CF_RectangleCoordinateContext;
 
-	// Host-derived translation from layer space into composition space.
+	// Host-derived 2D transform from layer space into composition space.
 	typedef struct
 	{
 		A_Boolean isValid;
@@ -265,12 +265,14 @@ typedef short int			int16;
 		PF_FpLong anchorY;
 		PF_FpLong positionX;
 		PF_FpLong positionY;
+		PF_FpLong scaleX;
+		PF_FpLong scaleY;
 		A_long compWidth;
 		A_long compHeight;
 		PF_FpLong translationX;
 		PF_FpLong translationY;
 
-	} CF_LayerTranslationContext;
+	} CF_LayerTransform2DContext;
 
 	typedef struct
 	{
@@ -385,17 +387,23 @@ typedef short int			int16;
 	ConvertRectangleSnapshotToLocalBounds(
 		const CF_RectangleGeometrySnapshot& snapshot);
 
+	CF_Rect
+	TransformLocalBoundsWithLayerTransform2D(
+		const CF_Rect& localBounds,
+		const CF_RectangleCoordinateContext& coordinateContext,
+		const CF_LayerTransform2DContext& layerTransformContext);
+
 	CF_RectangleSourceData
 	TransformLocalBoundsToEffectSpace(
 		const CF_Rect& localBounds,
 		const CF_RectangleCoordinateContext& coordinateContext,
-		const CF_LayerTranslationContext& layerTranslationContext);
+		const CF_LayerTransform2DContext& layerTransformContext);
 
 	CF_RectangleSourceData
 	ConvertRectangleGeometrySnapshotToSourceData(
 		const CF_RectangleGeometrySnapshot& snapshot,
 		const CF_RectangleCoordinateContext& coordinateContext,
-		const CF_LayerTranslationContext& layerTranslationContext);
+		const CF_LayerTransform2DContext& layerTransformContext);
 
 	CF_RectangleSourceData
 	SelectRectangleSourceData(

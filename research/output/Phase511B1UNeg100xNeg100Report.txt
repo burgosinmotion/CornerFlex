@@ -1,0 +1,29 @@
+CornerFlex Rectangle Layer Translation Validation
+After Effects version: 26.3x87
+Operating system: Windows/64 10.0  
+Trim: linked, configured per case
+Provider: E:\Files\Proyectos\CornerFlexDev\CornerFlex-CEP\jsx\CornerFlexGeometryProvider.jsx
+Formula: effect = local + input/2 + position - comp/2 - anchor
+
+BEGIN CASE U
+CASE U — Negative Scale fallback
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [-100.0000, -100.0000]
+  Layer Rotation: 0.0000
+  Trim: 10.0000 percent
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Layer translation: [0.0000, 0.0000]
+  Calculated geometryBounds before Trim: [1210.0000, 790.0000, 710.0000, 290.0000]
+  Expected bbox after Trim: [1160.0000, 740.0000, 760.0000, 340.0000]
+  Provider capture/disable: PASS
+
+END CASE U
+TEMPORARY COMPOSITIONS REMOVED: YES
+SCRIPT RESULT: PASS
+Pixel analysis: pending external RGBA validation.

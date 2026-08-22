@@ -1,0 +1,106 @@
+CornerFlex Phase 5.11A Visual Regression Validation
+After Effects: 26.3x87
+Temporary build size: 83,968 bytes
+Temporary build SHA-256: 9AA92228CCB374CBCB4F355C4AA4F148C19F11ED9D810C2F420349128DA72108
+Loaded module: C:\Program Files\Adobe\Adobe After Effects 2026\Support Files\Plug-ins\CornerFlex\CornerFlex.aex
+Reference: Phase 5.10 full-frame evidence
+
+CASE A — Base
+  Anchor=[0,0], Position=[960,540], Scale=[100,100], Rotation=0, Trim=10%
+  Rectangle Source alpha bbox: (760,340,1160,740)
+  Expected alpha bbox: (760,340,1160,740)
+  Full RGBA difference from Phase 5.10: NONE
+  Result: PASS
+
+CASE B — Anchor Point
+  Anchor=[100,50], Position=[960,540], Scale=[100,100], Rotation=0, Trim=10%
+  Rectangle Source alpha bbox: (660,290,1060,690)
+  Expected alpha bbox: (660,290,1060,690)
+  Full RGBA difference from Phase 5.10: NONE
+  Result: PASS
+
+CASE C — Layer Position
+  Anchor=[0,0], Position=[1200,700], Scale=[100,100], Rotation=0, Trim=10%
+  Rectangle Source alpha bbox: (1000,500,1400,900)
+  Expected alpha bbox: (1000,500,1400,900)
+  Full RGBA difference from Phase 5.10: NONE
+  Result: PASS
+
+CASE D — Rectangle Path Position
+  Rectangle Position=[200,100], Anchor=[0,0], Position=[960,540], Scale=[100,100], Rotation=0, Trim=10%
+  Rectangle Source alpha bbox: (960,440,1360,840)
+  Expected alpha bbox: (960,440,1360,840)
+  Full RGBA difference from Phase 5.10: NONE
+  Result: PASS
+
+CASE E — Position post-expression
+  Expression=[thisComp.width / 2 + time * 120, thisComp.height / 2 + time * 60]
+  T0 Position=[960,540], alpha bbox=(760,340,1160,740)
+  T1 Position=[1080,600], alpha bbox=(880,400,1280,800)
+  Observed bbox delta=(120,60,120,60)
+  Expected bbox delta=(120,60,120,60)
+  Full RGBA difference from Phase 5.10 at T0/T1: NONE
+  T1 fallback full RGBA difference from Layer Bounds: NONE
+  Result: PASS
+
+CASE F — Unsupported uniform Scale
+  Scale=[150,150], Rotation=0
+  Layer/Rectangle Source/fallback alpha bbox: (585,165,1335,915)
+  Rectangle Source full RGBA difference from Layer Bounds: NONE
+  Fallback full RGBA difference from Layer Bounds: NONE
+  Selected source: Layer Bounds fallback
+  Result: PASS
+
+CASE G — Unsupported non-uniform Scale
+  Scale=[150,75], Rotation=0
+  Layer/Rectangle Source/fallback alpha bbox: (585,352,1335,728)
+  Rectangle Source full RGBA difference from Layer Bounds: NONE
+  Fallback full RGBA difference from Layer Bounds: NONE
+  Selected source: Layer Bounds fallback
+  Result: PASS
+
+CASE H — Unsupported Rotation
+  Scale=[100,100], Rotation=20 degrees
+  Layer/Rectangle Source/fallback alpha bbox: (666,246,1254,834)
+  Rectangle Source full RGBA difference from Layer Bounds: NONE
+  Fallback full RGBA difference from Layer Bounds: NONE
+  Selected source: Layer Bounds fallback
+  Result: PASS
+
+CASE I — Unsupported Rotation plus Scale
+  Scale=[150,150], Rotation=20 degrees
+  Layer/Rectangle Source/fallback alpha bbox: (520,108,1400,972)
+  Rectangle Source full RGBA difference from Layer Bounds: NONE
+  Fallback full RGBA difference from Layer Bounds: NONE
+  Selected source: Layer Bounds fallback
+  Result: PASS
+
+CASE J — Return to Layer Bounds
+  Provider capture and disable completed successfully in every supported case.
+  Restored Layer Bounds frames have no RGBA difference from initial Layer Bounds.
+  Result: PASS
+
+CASE K — Phase 5.9 regression
+  Positive Rectangle Position [200,100]: alpha bbox=(960,440,1360,840), PASS
+  Negative Rectangle Position [-200,-100]: alpha bbox=(560,240,960,640), PASS
+  Fractional Size/Position: alpha bbox=(770,320,1171,719), PASS
+  Full RGBA difference from Phase 5.10 for RA/RB/RC/RE: NONE
+  Center samples: RGBA=(255,255,255,255)
+  Trimmed margin samples: RGBA=(0,0,0,0)
+  Trim preserved transformed left/top bounds.
+  Result: PASS
+
+No crash: YES
+Unexpected empty frame: NO
+Partial misaligned intersection: NO
+Scale different from 100% entered Rectangle Source: NO
+After Effects closed after validation: YES
+
+Backup Phase 5.10:
+E:\Files\Proyectos\CornerFlexDev\Plugins\backup\Phase511AValidation_20260803_235535\CornerFlex.aex
+Backup SHA-256: 8C2EFA7099162950CC4310B0947AEBEF6881147A2EAE7C0550E473F2DB2D3243
+
+Final installed AEX SHA-256 after restoration:
+8C2EFA7099162950CC4310B0947AEBEF6881147A2EAE7C0550E473F2DB2D3243
+
+PHASE 5.11A RESULT: GO

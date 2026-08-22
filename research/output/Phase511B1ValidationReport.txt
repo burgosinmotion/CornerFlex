@@ -1,0 +1,86 @@
+CornerFlex Phase 5.11B.1 Visual Validation
+Date: 2026-08-04
+After Effects: 26.3x87
+Branch: codex/cornerflex-development
+HEAD: 9a6732065b5f554a692ee16ff3118fdef9655512
+
+Build under test
+- Path: E:\Files\Proyectos\CornerFlexDev\Plugins\CornerFlex.aex
+- Size: 83968 bytes
+- SHA-256: 7F88245DDD3FC180EF90BA08E6DD19AF6B76FF42F9B58D3BA5E0741978AA939B
+- Temporarily installed and loaded from:
+  C:\Program Files\Adobe\Adobe After Effects 2026\Support Files\Plug-ins\CornerFlex\CornerFlex.aex
+
+Permanent build backup
+- Path: E:\Files\Proyectos\CornerFlexDev\Plugins\backup\Phase511B1Validation_20260804_020846\CornerFlex.aex
+- Size: 83968 bytes
+- SHA-256: 8C2EFA7099162950CC4310B0947AEBEF6881147A2EAE7C0550E473F2DB2D3243
+
+Static contract review: PASS
+- Scale is normalized with 1.0 == 100 percent.
+- Scale values must be finite and greater than zero.
+- Rotation, parenting and 3D layers remain rejected.
+- Local left, top, right and bottom are scaled independently.
+- Anchor is multiplied by Scale; Layer Position is not scaled.
+- Trim runs after the transformed geometry is built.
+
+Stage 1 — Basic positive Scale: PASS
+- A [100,100]: source alpha bbox (760,340,1160,740).
+- B [150,150]: source alpha bbox (660,240,1260,840).
+- C [50,50]: source alpha bbox (860,440,1060,640).
+- D [150,75]: source alpha bbox (660,390,1260,690).
+- E [75,150]: source alpha bbox (810,240,1110,840).
+- F [123.5,87.25]: mathematical Trim bounds
+  (713,365.5,1207,714.5); raster alpha bbox (713,366,1207,715).
+- Every return to Layer Bounds had a null RGBA difference.
+- Decision gate A-F: CONTINUE.
+
+Stage 2 — Combinations and Trim: PASS
+- I Anchor + Scale: source alpha bbox (510,165,1110,765).
+- J Layer Position + Scale: source alpha bbox (900,400,1500,1000).
+- K Rectangle Position + Scale: source alpha bbox (960,390,1560,990).
+- L combined: mathematical Trim bounds (1050,587.5,1650,887.5);
+  raster alpha bbox (1050,588,1650,888).
+- M Trim 0 percent: alpha bbox (585,165,1335,915).
+- N Trim 10 percent: alpha bbox (660,240,1260,840).
+- O Trim 50 percent: no visible alpha, no crash and no inverted raster bounds.
+- P return to Layer Bounds: null RGBA difference.
+
+Stage 3 — Defensive fallbacks: PASS
+- Q Rotation 20 degrees + Scale: exact Layer Bounds fallback.
+- R parent + Scale: exact Layer Bounds fallback.
+- S 3D + Scale: exact Layer Bounds fallback.
+- T zero Scale [0,100], [100,0] and [0,0]: complete fallback; collapsed
+  host raster where applicable; no crash and null source/fallback RGBA difference.
+- U negative Scale [-100,100], [100,-100] and [-100,-100]: complete
+  fallback; null source/fallback RGBA difference.
+
+Regression: PASS
+- Phase 5.9: positive, negative and fractional Rectangle Position; Trim keeps
+  the transformed left/top origin.
+- Phase 5.10: Anchor, Layer Position, Anchor + Position, 1280x720 composition,
+  render-time Position expression and Rotation fallback.
+- Position expression delta from T0 to T1: (120,60,120,60).
+- Phase 5.11A defensive behavior remains intact except that positive static
+  Scale is intentionally active in Phase 5.11B.1.
+
+Independent toComp reference: INCONCLUSIVE
+- The ExtendScript Layer object does not expose layer.toComp() directly.
+- Three isolated expression-based harness attempts failed before producing
+  usable bounds: invalid numeric result, invalid object reference, and timeout.
+- These harness failures did not alter CornerFlex or invalidate the completed
+  pixel/bounds comparisons, but the requested independent toComp evidence was
+  not obtained.
+
+Restoration status: BLOCKED
+- After Effects is closed.
+- Direct copy to Program Files was denied by Windows.
+- Three UAC restoration requests expired without elevation.
+- At report creation time the installed file remains the temporary B.1 build:
+  7F88245DDD3FC180EF90BA08E6DD19AF6B76FF42F9B58D3BA5E0741978AA939B.
+- Phase 5.10 must be restored and verified before After Effects is opened again.
+
+Final recommendation: NO-GO TO CLOSE PHASE
+- Functional positive static Scale, fallbacks and regressions passed.
+- Closure remains blocked until Phase 5.10 is restored and the independent
+  toComp reference is either completed or explicitly waived.

@@ -1,0 +1,145 @@
+CornerFlex Rectangle Layer Translation Validation
+After Effects version: 26.3x87
+Operating system: Windows/64 10.0  
+Trim: linked, configured per case
+Provider: E:\Files\Proyectos\CornerFlexDev\CornerFlex-CEP\jsx\CornerFlexGeometryProvider.jsx
+Formula: effect = local + input/2 + position - comp/2 - anchor
+
+BEGIN CASE A
+CASE A — Scale 100 percent
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [100.0000, 100.0000]
+  Layer Rotation: 0.0000
+  Trim: 10.0000 percent
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Layer translation: [0.0000, 0.0000]
+  Calculated geometryBounds before Trim: [710.0000, 290.0000, 1210.0000, 790.0000]
+  Expected bbox after Trim: [760.0000, 340.0000, 1160.0000, 740.0000]
+  Provider capture/disable: PASS
+
+END CASE A
+BEGIN CASE B
+CASE B — Uniform Scale 150 percent
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [150.0000, 150.0000]
+  Layer Rotation: 0.0000
+  Trim: 10.0000 percent
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Layer translation: [0.0000, 0.0000]
+  Calculated geometryBounds before Trim: [585.0000, 165.0000, 1335.0000, 915.0000]
+  Expected bbox after Trim: [660.0000, 240.0000, 1260.0000, 840.0000]
+  Provider capture/disable: PASS
+
+END CASE B
+BEGIN CASE C
+CASE C — Uniform Scale 50 percent
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [50.0000, 50.0000]
+  Layer Rotation: 0.0000
+  Trim: 10.0000 percent
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Layer translation: [0.0000, 0.0000]
+  Calculated geometryBounds before Trim: [835.0000, 415.0000, 1085.0000, 665.0000]
+  Expected bbox after Trim: [860.0000, 440.0000, 1060.0000, 640.0000]
+  Provider capture/disable: PASS
+
+END CASE C
+BEGIN CASE D
+CASE D — Non-uniform Scale 150 by 75
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [150.0000, 75.0000]
+  Layer Rotation: 0.0000
+  Trim: 10.0000 percent
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Layer translation: [0.0000, 0.0000]
+  Calculated geometryBounds before Trim: [585.0000, 352.5000, 1335.0000, 727.5000]
+  Expected bbox after Trim: [660.0000, 390.0000, 1260.0000, 690.0000]
+  Provider capture/disable: PASS
+
+END CASE D
+BEGIN CASE E
+CASE E — Non-uniform Scale 75 by 150
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [75.0000, 150.0000]
+  Layer Rotation: 0.0000
+  Trim: 10.0000 percent
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Layer translation: [0.0000, 0.0000]
+  Calculated geometryBounds before Trim: [772.5000, 165.0000, 1147.5000, 915.0000]
+  Expected bbox after Trim: [810.0000, 240.0000, 1110.0000, 840.0000]
+  Provider capture/disable: PASS
+
+END CASE E
+BEGIN CASE F
+CASE F — Decimal Scale
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [123.5000, 87.2500]
+  Layer Rotation: 0.0000
+  Trim: 10.0000 percent
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Layer translation: [0.0000, 0.0000]
+  Calculated geometryBounds before Trim: [651.2500, 321.8750, 1268.7500, 758.1250]
+  Expected bbox after Trim: [713.0000, 365.5000, 1207.0000, 714.5000]
+  Provider capture/disable: PASS
+
+END CASE F
+TEMPORARY COMPOSITIONS REMOVED: YES
+SCRIPT RESULT: PASS
+Pixel analysis: pending external RGBA validation.
+
+External RGBA Phase 5.11B.1 Layer Scale analysis
+A: scale=(100, 100), trim=10.0, expected=(760, 340, 1160, 740)
+A: alphaBBoxes layer=(710, 290, 1210, 790), source=(760, 340, 1160, 740), fallback=(710, 290, 1210, 790)
+A: sourceVsLayerDifference=None, fallbackVsLayerDifference=None, PASS
+B: scale=(150, 150), trim=10.0, expected=(660, 240, 1260, 840)
+B: alphaBBoxes layer=(585, 165, 1335, 915), source=(660, 240, 1260, 840), fallback=(585, 165, 1335, 915)
+B: sourceVsLayerDifference=None, fallbackVsLayerDifference=None, PASS
+C: scale=(50, 50), trim=10.0, expected=(860, 440, 1060, 640)
+C: alphaBBoxes layer=(835, 415, 1085, 665), source=(860, 440, 1060, 640), fallback=(835, 415, 1085, 665)
+C: sourceVsLayerDifference=None, fallbackVsLayerDifference=None, PASS
+D: scale=(150, 75), trim=10.0, expected=(660, 390, 1260, 690)
+D: alphaBBoxes layer=(585, 352, 1335, 728), source=(660, 390, 1260, 690), fallback=(585, 352, 1335, 728)
+D: sourceVsLayerDifference=None, fallbackVsLayerDifference=None, PASS
+E: scale=(75, 150), trim=10.0, expected=(810, 240, 1110, 840)
+E: alphaBBoxes layer=(772, 165, 1148, 915), source=(810, 240, 1110, 840), fallback=(772, 165, 1148, 915)
+E: sourceVsLayerDifference=None, fallbackVsLayerDifference=None, PASS
+F: scale=(123.5, 87.25), trim=10.0, expected=(713, 366, 1207, 715)
+F: alphaBBoxes layer=(651, 321, 1269, 759), source=(713, 366, 1207, 715), fallback=(651, 321, 1269, 759)
+F: sourceVsLayerDifference=None, fallbackVsLayerDifference=None, PASS
+PHASE 5.11B.1 STATIC SCALE RESULT: PASS

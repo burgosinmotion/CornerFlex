@@ -43,3 +43,22 @@ research/output/RectangleLayerTranslationDefensiveFrames/
 # Windows
 Thumbs.db
 Desktop.ini
+
+# Full Phase 5.11A/B.1 validation frame archives; selected evidence is stored separately
+research/output/Phase511ANonUniformFallbackFrames/
+research/output/Phase511ARegressionFrames/
+research/output/Phase511ARotationScaleFallbackFrames/
+research/output/Phase511AUniformFallbackFrames/
+research/output/Phase511B1DefensiveRegressionFrames/
+research/output/Phase511B1RegressionFrames/
+research/output/Phase511B1Stage1Frames/
+research/output/Phase511B1Stage2Frames/
+research/output/Phase511B1Stage3Frames/
+research/output/Phase511B1T0x0Frames/
+research/output/Phase511B1T100x0Frames/
+research/output/Phase511B1U100xNeg100Frames/
+research/output/Phase511B1UNeg100xNeg100Frames/
+
+# Python cache artifacts
+__pycache__/
+*.pyc

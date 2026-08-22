@@ -1,0 +1,336 @@
+CornerFlex Rectangle Layer Translation Validation
+After Effects version: 26.3x87
+Operating system: Windows/64 10.0  
+Trim: linked 10%
+Provider: E:\Files\Proyectos\CornerFlexDev\CornerFlex-CEP\jsx\CornerFlexGeometryProvider.jsx
+Formula: effect = local + input/2 + position - comp/2 - anchor
+
+BEGIN CASE A
+CASE A — Default Anchor and Position
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Layer translation: [0.0000, 0.0000]
+  Calculated geometryBounds before Trim: [710.0000, 290.0000, 1210.0000, 790.0000]
+  Expected bbox after Trim: [760.0000, 340.0000, 1160.0000, 740.0000]
+  Provider capture/disable: PASS
+
+END CASE A
+BEGIN CASE B
+CASE B — Positive Anchor
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [100.0000, 50.0000]
+  Layer Position: [960.0000, 540.0000]
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Layer translation: [-100.0000, -50.0000]
+  Calculated geometryBounds before Trim: [610.0000, 240.0000, 1110.0000, 740.0000]
+  Expected bbox after Trim: [660.0000, 290.0000, 1060.0000, 690.0000]
+  Provider capture/disable: PASS
+
+END CASE B
+BEGIN CASE C
+CASE C — Negative Anchor
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [-100.0000, -50.0000]
+  Layer Position: [960.0000, 540.0000]
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Layer translation: [100.0000, 50.0000]
+  Calculated geometryBounds before Trim: [810.0000, 340.0000, 1310.0000, 840.0000]
+  Expected bbox after Trim: [860.0000, 390.0000, 1260.0000, 790.0000]
+  Provider capture/disable: PASS
+
+END CASE C
+BEGIN CASE D
+CASE D — Positive Layer Position offset
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [1160.0000, 640.0000]
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Layer translation: [200.0000, 100.0000]
+  Calculated geometryBounds before Trim: [910.0000, 390.0000, 1410.0000, 890.0000]
+  Expected bbox after Trim: [960.0000, 440.0000, 1360.0000, 840.0000]
+  Provider capture/disable: PASS
+
+END CASE D
+BEGIN CASE E
+CASE E — Negative Layer Position offset
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [760.0000, 440.0000]
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Layer translation: [-200.0000, -100.0000]
+  Calculated geometryBounds before Trim: [510.0000, 190.0000, 1010.0000, 690.0000]
+  Expected bbox after Trim: [560.0000, 240.0000, 960.0000, 640.0000]
+  Provider capture/disable: PASS
+
+END CASE E
+BEGIN CASE F
+CASE F — Combined Anchor and Position
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [100.0000, 50.0000]
+  Layer Position: [1160.0000, 640.0000]
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Layer translation: [100.0000, 50.0000]
+  Calculated geometryBounds before Trim: [810.0000, 340.0000, 1310.0000, 840.0000]
+  Expected bbox after Trim: [860.0000, 390.0000, 1260.0000, 790.0000]
+  Provider capture/disable: PASS
+
+END CASE F
+BEGIN CASE G
+CASE G — Layer Position equals comp center
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Layer translation: [0.0000, 0.0000]
+  Calculated geometryBounds before Trim: [710.0000, 290.0000, 1210.0000, 790.0000]
+  Expected bbox after Trim: [760.0000, 340.0000, 1160.0000, 740.0000]
+  Provider capture/disable: PASS
+
+END CASE G
+BEGIN CASE H
+CASE H — Layer Position outside comp center
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [1200.0000, 700.0000]
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Layer translation: [240.0000, 160.0000]
+  Calculated geometryBounds before Trim: [950.0000, 450.0000, 1450.0000, 950.0000]
+  Expected bbox after Trim: [1000.0000, 500.0000, 1400.0000, 900.0000]
+  Provider capture/disable: PASS
+
+END CASE H
+BEGIN CASE I
+CASE I — Different composition dimensions
+  Composition: 1280 x 720
+  Input buffer contract: 1280 x 720
+  Rectangle Size: [420.0000, 260.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [20.0000, 10.0000]
+  Layer Position: [740.0000, 310.0000]
+  sourceRectAtTime: [-210.0000, -130.0000, 210.0000, 130.0000]
+  Snapshot local bounds: [-210.0000, -130.0000, 210.0000, 130.0000]
+  Layer translation: [80.0000, -60.0000]
+  Calculated geometryBounds before Trim: [510.0000, 170.0000, 930.0000, 430.0000]
+  Expected bbox after Trim: [552.0000, 196.0000, 888.0000, 404.0000]
+  Provider capture/disable: PASS
+
+END CASE I
+BEGIN CASE J
+CASE J — Rectangle Position plus layer translation
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 360.0000]
+  Rectangle Position: [175.0000, -85.0000]
+  Layer Anchor: [60.0000, -35.0000]
+  Layer Position: [1100.0000, 630.0000]
+  sourceRectAtTime: [-75.0000, -265.0000, 425.0000, 95.0000]
+  Snapshot local bounds: [-75.0000, -265.0000, 425.0000, 95.0000]
+  Layer translation: [80.0000, 125.0000]
+  Calculated geometryBounds before Trim: [965.0000, 400.0000, 1465.0000, 760.0000]
+  Expected bbox after Trim: [1015.0000, 436.0000, 1415.0000, 724.0000]
+  Provider capture/disable: PASS
+
+END CASE J
+BEGIN CASE RA
+CASE RA — Phase 5.9 A regression
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Layer translation: [0.0000, 0.0000]
+  Calculated geometryBounds before Trim: [710.0000, 290.0000, 1210.0000, 790.0000]
+  Expected bbox after Trim: [760.0000, 340.0000, 1160.0000, 740.0000]
+  Provider capture/disable: PASS
+
+END CASE RA
+BEGIN CASE RB
+CASE RB — Phase 5.9 B regression
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [200.0000, 100.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  sourceRectAtTime: [-50.0000, -150.0000, 450.0000, 350.0000]
+  Snapshot local bounds: [-50.0000, -150.0000, 450.0000, 350.0000]
+  Layer translation: [0.0000, 0.0000]
+  Calculated geometryBounds before Trim: [910.0000, 390.0000, 1410.0000, 890.0000]
+  Expected bbox after Trim: [960.0000, 440.0000, 1360.0000, 840.0000]
+  Provider capture/disable: PASS
+
+END CASE RB
+BEGIN CASE RC
+CASE RC — Phase 5.9 C regression
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [-200.0000, -100.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  sourceRectAtTime: [-450.0000, -350.0000, 50.0000, 150.0000]
+  Snapshot local bounds: [-450.0000, -350.0000, 50.0000, 150.0000]
+  Layer translation: [0.0000, 0.0000]
+  Calculated geometryBounds before Trim: [510.0000, 190.0000, 1010.0000, 690.0000]
+  Expected bbox after Trim: [560.0000, 240.0000, 960.0000, 640.0000]
+  Provider capture/disable: PASS
+
+END CASE RC
+BEGIN CASE RD
+CASE RD — Phase 5.9 D regression
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [1920.0000, 1080.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  sourceRectAtTime: [-960.0000, -540.0000, 960.0000, 540.0000]
+  Snapshot local bounds: [-960.0000, -540.0000, 960.0000, 540.0000]
+  Layer translation: [0.0000, 0.0000]
+  Calculated geometryBounds before Trim: [0.0000, 0.0000, 1920.0000, 1080.0000]
+  Expected bbox after Trim: [192.0000, 108.0000, 1728.0000, 972.0000]
+  Provider capture/disable: PASS
+
+END CASE RD
+BEGIN CASE RE
+CASE RE — Phase 5.9 E regression
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [501.5000, 499.2500]
+  Rectangle Position: [10.2500, -20.7500]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  sourceRectAtTime: [-240.5000, -270.3750, 261.0000, 228.8750]
+  Snapshot local bounds: [-240.5000, -270.3750, 261.0000, 228.8750]
+  Layer translation: [0.0000, 0.0000]
+  Calculated geometryBounds before Trim: [719.5000, 269.6250, 1221.0000, 768.8750]
+  Expected bbox after Trim: [769.6500, 319.5500, 1170.8500, 718.9500]
+  Provider capture/disable: PASS
+
+END CASE RE
+BEGIN CASE RF
+CASE RF — Phase 5.9 F regression
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Layer translation: [0.0000, 0.0000]
+  Calculated geometryBounds before Trim: [710.0000, 290.0000, 1210.0000, 790.0000]
+  Expected bbox after Trim: [760.0000, 340.0000, 1160.0000, 740.0000]
+  Provider capture/disable: PASS
+
+END CASE RF
+TEMPORARY COMPOSITIONS REMOVED: YES
+SCRIPT RESULT: PASS
+Pixel analysis: pending external RGBA validation.
+
+External RGBA layer-translation analysis
+Pillow version: 12.2.0
+A: comp=(1920, 1080), input=(1920, 1080), size=(500, 500), rectPosition=(0, 0), anchor=(0, 0), layerPosition=(960.0, 540.0)
+A: translation=(0.0, 0.0), geometryBounds=(710.0, 290.0, 1210.0, 790.0)
+A: alphaBBoxes layer=(710, 290, 1210, 790), source=(760, 340, 1160, 740), fallback=(710, 290, 1210, 790), expectedSource=(760, 340, 1160, 740)
+A: bboxDifference=(0, 0, 0, 0), fallbackPixelDifference=None, PASS
+B: comp=(1920, 1080), input=(1920, 1080), size=(500, 500), rectPosition=(0, 0), anchor=(100, 50), layerPosition=(960.0, 540.0)
+B: translation=(-100.0, -50.0), geometryBounds=(610.0, 240.0, 1110.0, 740.0)
+B: alphaBBoxes layer=(610, 240, 1110, 740), source=(660, 290, 1060, 690), fallback=(610, 240, 1110, 740), expectedSource=(660, 290, 1060, 690)
+B: bboxDifference=(0, 0, 0, 0), fallbackPixelDifference=None, PASS
+C: comp=(1920, 1080), input=(1920, 1080), size=(500, 500), rectPosition=(0, 0), anchor=(-100, -50), layerPosition=(960.0, 540.0)
+C: translation=(100.0, 50.0), geometryBounds=(810.0, 340.0, 1310.0, 840.0)
+C: alphaBBoxes layer=(810, 340, 1310, 840), source=(860, 390, 1260, 790), fallback=(810, 340, 1310, 840), expectedSource=(860, 390, 1260, 790)
+C: bboxDifference=(0, 0, 0, 0), fallbackPixelDifference=None, PASS
+D: comp=(1920, 1080), input=(1920, 1080), size=(500, 500), rectPosition=(0, 0), anchor=(0, 0), layerPosition=(1160.0, 640.0)
+D: translation=(200.0, 100.0), geometryBounds=(910.0, 390.0, 1410.0, 890.0)
+D: alphaBBoxes layer=(910, 390, 1410, 890), source=(960, 440, 1360, 840), fallback=(910, 390, 1410, 890), expectedSource=(960, 440, 1360, 840)
+D: bboxDifference=(0, 0, 0, 0), fallbackPixelDifference=None, PASS
+E: comp=(1920, 1080), input=(1920, 1080), size=(500, 500), rectPosition=(0, 0), anchor=(0, 0), layerPosition=(760.0, 440.0)
+E: translation=(-200.0, -100.0), geometryBounds=(510.0, 190.0, 1010.0, 690.0)
+E: alphaBBoxes layer=(510, 190, 1010, 690), source=(560, 240, 960, 640), fallback=(510, 190, 1010, 690), expectedSource=(560, 240, 960, 640)
+E: bboxDifference=(0, 0, 0, 0), fallbackPixelDifference=None, PASS
+F: comp=(1920, 1080), input=(1920, 1080), size=(500, 500), rectPosition=(0, 0), anchor=(100, 50), layerPosition=(1160.0, 640.0)
+F: translation=(100.0, 50.0), geometryBounds=(810.0, 340.0, 1310.0, 840.0)
+F: alphaBBoxes layer=(810, 340, 1310, 840), source=(860, 390, 1260, 790), fallback=(810, 340, 1310, 840), expectedSource=(860, 390, 1260, 790)
+F: bboxDifference=(0, 0, 0, 0), fallbackPixelDifference=None, PASS
+G: comp=(1920, 1080), input=(1920, 1080), size=(500, 500), rectPosition=(0, 0), anchor=(0, 0), layerPosition=(960.0, 540.0)
+G: translation=(0.0, 0.0), geometryBounds=(710.0, 290.0, 1210.0, 790.0)
+G: alphaBBoxes layer=(710, 290, 1210, 790), source=(760, 340, 1160, 740), fallback=(710, 290, 1210, 790), expectedSource=(760, 340, 1160, 740)
+G: bboxDifference=(0, 0, 0, 0), fallbackPixelDifference=None, PASS
+H: comp=(1920, 1080), input=(1920, 1080), size=(500, 500), rectPosition=(0, 0), anchor=(0, 0), layerPosition=(1200.0, 700.0)
+H: translation=(240.0, 160.0), geometryBounds=(950.0, 450.0, 1450.0, 950.0)
+H: alphaBBoxes layer=(950, 450, 1450, 950), source=(1000, 500, 1400, 900), fallback=(950, 450, 1450, 950), expectedSource=(1000, 500, 1400, 900)
+H: bboxDifference=(0, 0, 0, 0), fallbackPixelDifference=None, PASS
+I: comp=(1280, 720), input=(1280, 720), size=(420, 260), rectPosition=(0, 0), anchor=(20, 10), layerPosition=(740.0, 310.0)
+I: translation=(80.0, -60.0), geometryBounds=(510.0, 170.0, 930.0, 430.0)
+I: alphaBBoxes layer=(510, 170, 930, 430), source=(552, 196, 888, 404), fallback=(510, 170, 930, 430), expectedSource=(552, 196, 888, 404)
+I: bboxDifference=(0, 0, 0, 0), fallbackPixelDifference=None, PASS
+J: comp=(1920, 1080), input=(1920, 1080), size=(500, 360), rectPosition=(175, -85), anchor=(60, -35), layerPosition=(1100.0, 630.0)
+J: translation=(80.0, 125.0), geometryBounds=(965.0, 400.0, 1465.0, 760.0)
+J: alphaBBoxes layer=(965, 400, 1465, 760), source=(1015, 436, 1415, 724), fallback=(965, 400, 1465, 760), expectedSource=(1015, 436, 1415, 724)
+J: bboxDifference=(0, 0, 0, 0), fallbackPixelDifference=None, PASS
+RA: comp=(1920, 1080), input=(1920, 1080), size=(500, 500), rectPosition=(0, 0), anchor=(0, 0), layerPosition=(960.0, 540.0)
+RA: translation=(0.0, 0.0), geometryBounds=(710.0, 290.0, 1210.0, 790.0)
+RA: alphaBBoxes layer=(710, 290, 1210, 790), source=(760, 340, 1160, 740), fallback=(710, 290, 1210, 790), expectedSource=(760, 340, 1160, 740)
+RA: bboxDifference=(0, 0, 0, 0), fallbackPixelDifference=None, PASS
+RB: comp=(1920, 1080), input=(1920, 1080), size=(500, 500), rectPosition=(200, 100), anchor=(0, 0), layerPosition=(960.0, 540.0)
+RB: translation=(0.0, 0.0), geometryBounds=(910.0, 390.0, 1410.0, 890.0)
+RB: alphaBBoxes layer=(910, 390, 1410, 890), source=(960, 440, 1360, 840), fallback=(910, 390, 1410, 890), expectedSource=(960, 440, 1360, 840)
+RB: bboxDifference=(0, 0, 0, 0), fallbackPixelDifference=None, PASS
+RC: comp=(1920, 1080), input=(1920, 1080), size=(500, 500), rectPosition=(-200, -100), anchor=(0, 0), layerPosition=(960.0, 540.0)
+RC: translation=(0.0, 0.0), geometryBounds=(510.0, 190.0, 1010.0, 690.0)
+RC: alphaBBoxes layer=(510, 190, 1010, 690), source=(560, 240, 960, 640), fallback=(510, 190, 1010, 690), expectedSource=(560, 240, 960, 640)
+RC: bboxDifference=(0, 0, 0, 0), fallbackPixelDifference=None, PASS
+RD: comp=(1920, 1080), input=(1920, 1080), size=(1920, 1080), rectPosition=(0, 0), anchor=(0, 0), layerPosition=(960.0, 540.0)
+RD: translation=(0.0, 0.0), geometryBounds=(0.0, 0.0, 1920.0, 1080.0)
+RD: alphaBBoxes layer=(192, 108, 1728, 972), source=(192, 108, 1728, 972), fallback=(192, 108, 1728, 972), expectedSource=(192, 108, 1728, 972)
+RD: bboxDifference=(0, 0, 0, 0), fallbackPixelDifference=None, PASS
+RE: comp=(1920, 1080), input=(1920, 1080), size=(501.5, 499.25), rectPosition=(10.25, -20.75), anchor=(0, 0), layerPosition=(960.0, 540.0)
+RE: translation=(0.0, 0.0), geometryBounds=(719.5, 269.625, 1221.0, 768.875)
+RE: alphaBBoxes layer=(719, 269, 1221, 769), source=(770, 320, 1171, 719), fallback=(719, 269, 1221, 769), expectedSource=(770, 320, 1171, 719)
+RE: bboxDifference=(0, 0, 0, 0), fallbackPixelDifference=None, PASS
+RF: comp=(1920, 1080), input=(1920, 1080), size=(500, 500), rectPosition=(0, 0), anchor=(0, 0), layerPosition=(960.0, 540.0)
+RF: translation=(0.0, 0.0), geometryBounds=(710.0, 290.0, 1210.0, 790.0)
+RF: alphaBBoxes layer=(710, 290, 1210, 790), source=(760, 340, 1160, 740), fallback=(710, 290, 1210, 790), expectedSource=(760, 340, 1160, 740)
+RF: bboxDifference=(0, 0, 0, 0), fallbackPixelDifference=None, PASS
+TRANSLATION A-J RESULT: PASS
+PHASE 5.9 A-F REGRESSION RESULT: PASS
+LAYER TRANSLATION RESULT: PASS

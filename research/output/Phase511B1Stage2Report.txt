@@ -1,0 +1,189 @@
+CornerFlex Rectangle Layer Translation Validation
+After Effects version: 26.3x87
+Operating system: Windows/64 10.0  
+Trim: linked, configured per case
+Provider: E:\Files\Proyectos\CornerFlexDev\CornerFlex-CEP\jsx\CornerFlexGeometryProvider.jsx
+Formula: effect = local + input/2 + position - comp/2 - anchor
+
+BEGIN CASE I
+CASE I — Anchor plus Scale
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [100.0000, 50.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [150.0000, 150.0000]
+  Layer Rotation: 0.0000
+  Trim: 10.0000 percent
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Layer translation: [-150.0000, -75.0000]
+  Calculated geometryBounds before Trim: [435.0000, 90.0000, 1185.0000, 840.0000]
+  Expected bbox after Trim: [510.0000, 165.0000, 1110.0000, 765.0000]
+  Provider capture/disable: PASS
+
+END CASE I
+BEGIN CASE J
+CASE J — Layer Position plus Scale
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [1200.0000, 700.0000]
+  Layer Scale: [150.0000, 150.0000]
+  Layer Rotation: 0.0000
+  Trim: 10.0000 percent
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Layer translation: [240.0000, 160.0000]
+  Calculated geometryBounds before Trim: [825.0000, 325.0000, 1575.0000, 1075.0000]
+  Expected bbox after Trim: [900.0000, 400.0000, 1500.0000, 1000.0000]
+  Provider capture/disable: PASS
+
+END CASE J
+BEGIN CASE K
+CASE K — Rectangle Position plus Scale
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [200.0000, 100.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [150.0000, 150.0000]
+  Layer Rotation: 0.0000
+  Trim: 10.0000 percent
+  sourceRectAtTime: [-50.0000, -150.0000, 450.0000, 350.0000]
+  Snapshot local bounds: [-50.0000, -150.0000, 450.0000, 350.0000]
+  Layer translation: [0.0000, 0.0000]
+  Calculated geometryBounds before Trim: [885.0000, 315.0000, 1635.0000, 1065.0000]
+  Expected bbox after Trim: [960.0000, 390.0000, 1560.0000, 990.0000]
+  Provider capture/disable: PASS
+
+END CASE K
+BEGIN CASE L
+CASE L — Combined non-uniform transform
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [200.0000, 100.0000]
+  Layer Anchor: [100.0000, 50.0000]
+  Layer Position: [1200.0000, 700.0000]
+  Layer Scale: [150.0000, 75.0000]
+  Layer Rotation: 0.0000
+  Trim: 10.0000 percent
+  sourceRectAtTime: [-50.0000, -150.0000, 450.0000, 350.0000]
+  Snapshot local bounds: [-50.0000, -150.0000, 450.0000, 350.0000]
+  Layer translation: [90.0000, 122.5000]
+  Calculated geometryBounds before Trim: [975.0000, 550.0000, 1725.0000, 925.0000]
+  Expected bbox after Trim: [1050.0000, 587.5000, 1650.0000, 887.5000]
+  Provider capture/disable: PASS
+
+END CASE L
+BEGIN CASE M
+CASE M — Trim zero
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [150.0000, 150.0000]
+  Layer Rotation: 0.0000
+  Trim: 0.0000 percent
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Layer translation: [0.0000, 0.0000]
+  Calculated geometryBounds before Trim: [585.0000, 165.0000, 1335.0000, 915.0000]
+  Expected bbox after Trim: [585.0000, 165.0000, 1335.0000, 915.0000]
+  Provider capture/disable: PASS
+
+END CASE M
+BEGIN CASE N
+CASE N — Trim ten
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [150.0000, 150.0000]
+  Layer Rotation: 0.0000
+  Trim: 10.0000 percent
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Layer translation: [0.0000, 0.0000]
+  Calculated geometryBounds before Trim: [585.0000, 165.0000, 1335.0000, 915.0000]
+  Expected bbox after Trim: [660.0000, 240.0000, 1260.0000, 840.0000]
+  Provider capture/disable: PASS
+
+END CASE N
+BEGIN CASE O
+CASE O — Trim fifty
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [150.0000, 150.0000]
+  Layer Rotation: 0.0000
+  Trim: 50.0000 percent
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Layer translation: [0.0000, 0.0000]
+  Calculated geometryBounds before Trim: [585.0000, 165.0000, 1335.0000, 915.0000]
+  Expected bbox after Trim: [960.0000, 540.0000, 960.0000, 540.0000]
+  Provider capture/disable: PASS
+
+END CASE O
+BEGIN CASE P
+CASE P — Return to Layer Bounds
+  Composition: 1920 x 1080
+  Input buffer contract: 1920 x 1080
+  Rectangle Size: [500.0000, 500.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [150.0000, 150.0000]
+  Layer Rotation: 0.0000
+  Trim: 10.0000 percent
+  sourceRectAtTime: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Snapshot local bounds: [-250.0000, -250.0000, 250.0000, 250.0000]
+  Layer translation: [0.0000, 0.0000]
+  Calculated geometryBounds before Trim: [585.0000, 165.0000, 1335.0000, 915.0000]
+  Expected bbox after Trim: [660.0000, 240.0000, 1260.0000, 840.0000]
+  Provider capture/disable: PASS
+
+END CASE P
+TEMPORARY COMPOSITIONS REMOVED: YES
+SCRIPT RESULT: PASS
+Pixel analysis: pending external RGBA validation.
+
+External RGBA Phase 5.11B.1 Layer Scale analysis
+I: scale=(150, 150), trim=10.0, expected=(510, 165, 1110, 765)
+I: alphaBBoxes layer=(435, 108, 1185, 840), source=(510, 165, 1110, 765), fallback=(435, 108, 1185, 840)
+I: sourceVsLayerDifference=None, fallbackVsLayerDifference=None, PASS
+J: scale=(150, 150), trim=10.0, expected=(900, 400, 1500, 1000)
+J: alphaBBoxes layer=(825, 325, 1575, 972), source=(900, 400, 1500, 1000), fallback=(825, 325, 1575, 972)
+J: sourceVsLayerDifference=None, fallbackVsLayerDifference=None, PASS
+K: scale=(150, 150), trim=10.0, expected=(960, 390, 1560, 990)
+K: alphaBBoxes layer=(885, 315, 1635, 972), source=(960, 390, 1560, 990), fallback=(885, 315, 1635, 972)
+K: sourceVsLayerDifference=None, fallbackVsLayerDifference=None, PASS
+L: scale=(150, 75), trim=10.0, expected=(1050, 588, 1650, 888)
+L: alphaBBoxes layer=(975, 550, 1725, 925), source=(1050, 588, 1650, 888), fallback=(975, 550, 1725, 925)
+L: sourceVsLayerDifference=None, fallbackVsLayerDifference=None, PASS
+M: scale=(150, 150), trim=0, expected=(585, 165, 1335, 915)
+M: alphaBBoxes layer=(585, 165, 1335, 915), source=(585, 165, 1335, 915), fallback=(585, 165, 1335, 915)
+M: sourceVsLayerDifference=None, fallbackVsLayerDifference=None, PASS
+N: scale=(150, 150), trim=10, expected=(660, 240, 1260, 840)
+N: alphaBBoxes layer=(585, 165, 1335, 915), source=(660, 240, 1260, 840), fallback=(585, 165, 1335, 915)
+N: sourceVsLayerDifference=None, fallbackVsLayerDifference=None, PASS
+O: scale=(150, 150), trim=50, expected=None
+O: alphaBBoxes layer=None, source=None, fallback=None
+O: sourceVsLayerDifference=None, fallbackVsLayerDifference=None, PASS
+P: scale=(150, 150), trim=10, expected=(660, 240, 1260, 840)
+P: alphaBBoxes layer=(585, 165, 1335, 915), source=(660, 240, 1260, 840), fallback=(585, 165, 1335, 915)
+P: sourceVsLayerDifference=None, fallbackVsLayerDifference=None, PASS
+PHASE 5.11B.1 STATIC SCALE RESULT: PASS

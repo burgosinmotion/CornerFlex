@@ -959,7 +959,38 @@ La evidencia PNG mínima seleccionada se conserva en `research/output/RectangleL
 
 El plugin no declara `PF_OutFlag2_SUPPORTS_THREADED_RENDERING`; After Effects serializa sus llamadas de render. Antes de habilitar MFR explícito deberá revisarse la seguridad concurrente de las suites AEGP, que no debe asumirse salvo documentación específica.
 
-Permanecen fuera de alcance Scale, Rotation, parenting, 3D, transformaciones de Shape Groups, grupos anidados transformados, skew, downsampling, SmartFX, pixel aspect ratio distinto de uno, Stroke y efectos previos que redimensionen o desplacen buffers. Esos casos usan el fallback cuando la capa de integración puede detectarlos; los transforms internos de Shape Groups todavía no forman parte del snapshot y deberán resolverse en una fase independiente.
+Permanecen fuera de alcance la validación formal de Scale animado o expresado, Rotation, parenting, 3D, transformaciones de Shape Groups, grupos anidados transformados, skew, downsampling, SmartFX, pixel aspect ratio distinto de uno, Stroke y efectos previos que redimensionen o desplacen buffers. Esos casos usan el fallback cuando la capa de integración puede detectarlos; los transforms internos de Shape Groups todavía no forman parte del snapshot y deberán resolverse en una fase independiente.
+
+### Phase 5.11B.1 — Positive Static Layer Scale 2D
+
+`CF_LayerTransform2DContext` amplía el contrato traslacional de Phase 5.10 con `scaleX` y `scaleY` normalizados, donde `1.0` representa `100 %`. La capa de integración evalúa Scale en el mismo tiempo de composición que Anchor Point y Layer Position y solo acepta componentes finitos y estrictamente positivos.
+
+La conversión mantiene tres responsabilidades separadas:
+
+```text
+Rectangle Geometry Snapshot
+→ ConvertRectangleSnapshotToLocalBounds()
+→ TransformLocalBoundsWithLayerTransform2D()
+→ ExecuteTrimOperation()
+```
+
+`TransformLocalBoundsWithLayerTransform2D()` es pura: multiplica `left/right` por `scaleX` y `top/bottom` por `scaleY`, suma el origen del input y añade la traslación de capa. No consulta suites, no aplica Trim, no normaliza bounds ni modifica sus entradas.
+
+```text
+effectX = localX * scaleX + inputWidth / 2 + translationX
+effectY = localY * scaleY + inputHeight / 2 + translationY
+
+translationX = positionX - compWidth / 2 - anchorX * scaleX
+translationY = positionY - compHeight / 2 - anchorY * scaleY
+```
+
+Rectangle Path Position se escala porque forma parte del espacio local; Layer Position no se escala. Anchor Point participa mediante `anchor * scale`. `TransformLocalBoundsToEffectSpace()` valida la finitud y coherencia de los bounds finales antes de habilitar Rectangle Source.
+
+Scale cero, negativo o no finito mantiene Layer Bounds como fallback. También permanecen como fallbacks absolutos Rotation, parenting, capas 3D, downsampling y orígenes de buffer especiales. Phase 5.11B.1 limita su criterio de cierre a Scale 2D positivo y estático; animación y expresiones de Scale se validarán formalmente en Phase 5.11B.2.
+
+La matriz funcional B.1 cerró con PASS para A-F, I-P y Q-U: Scale 100x100, 150x150, 50x50, 150x75, 75x150, decimal, Anchor + Scale, Layer Position + Scale, Rectangle Path Position + Scale, combinación completa, Trim 0 %, Trim 10 %, Trim 50 %, regreso a Layer Bounds, Rotation fallback, parent fallback, 3D fallback, Scale cero fallback y Scale negativo fallback. Las regresiones Phase 5.9, Phase 5.10 y Phase 5.11A también quedaron en PASS.
+
+La referencia independiente con `toComp()` quedó inconclusa: los intentos de harness por expresión fallaron antes de producir bounds utilizables. Esa limitación quedó documentada como una brecha de oracle independiente, pero no bloqueó la validación end-to-end porque los resultados cerraron mediante comparación pixel/bounds, retorno a Layer Bounds y regresiones defensivas.
 
 ## 9. Estado actual
 
@@ -983,7 +1014,7 @@ Actualmente están implementados:
 - `CF_RectangleGeometrySnapshot`;
 - `CF_RectangleSourceData`;
 - `CF_RectangleCoordinateContext`;
-- `CF_LayerTranslationContext`;
+- `CF_LayerTransform2DContext`;
 - `CF_GeometryResolveRequest`;
 - `CF_GeometrySourceData`;
 - `CF_GeometryContext`;

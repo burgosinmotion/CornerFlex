@@ -692,11 +692,42 @@ IsRectangleSnapshotSourceEnabled(
 		: FALSE;
 }
 
+CF_Rect
+TransformLocalBoundsWithLayerTransform2D(
+	const CF_Rect& localBounds,
+	const CF_RectangleCoordinateContext& coordinateContext,
+	const CF_LayerTransform2DContext& layerTransformContext)
+{
+	CF_Rect transformedBounds;
+
+	transformedBounds.left =
+		(localBounds.left * layerTransformContext.scaleX) +
+		coordinateContext.originX +
+		layerTransformContext.translationX;
+
+	transformedBounds.top =
+		(localBounds.top * layerTransformContext.scaleY) +
+		coordinateContext.originY +
+		layerTransformContext.translationY;
+
+	transformedBounds.right =
+		(localBounds.right * layerTransformContext.scaleX) +
+		coordinateContext.originX +
+		layerTransformContext.translationX;
+
+	transformedBounds.bottom =
+		(localBounds.bottom * layerTransformContext.scaleY) +
+		coordinateContext.originY +
+		layerTransformContext.translationY;
+
+	return transformedBounds;
+}
+
 CF_RectangleSourceData
 TransformLocalBoundsToEffectSpace(
 	const CF_Rect& localBounds,
 	const CF_RectangleCoordinateContext& coordinateContext,
-	const CF_LayerTranslationContext& layerTranslationContext)
+	const CF_LayerTransform2DContext& layerTransformContext)
 {
 	CF_RectangleSourceData sourceData;
 	AEFX_CLR_STRUCT(sourceData);
@@ -704,40 +735,26 @@ TransformLocalBoundsToEffectSpace(
 	sourceData.isAvailable = FALSE;
 
 	if (!coordinateContext.isValid ||
-		!layerTranslationContext.isValid) {
+		!layerTransformContext.isValid) {
 		return sourceData;
 	}
 
-	const PF_FpLong left =
-		localBounds.left +
-		coordinateContext.originX +
-		layerTranslationContext.translationX;
-	const PF_FpLong top =
-		localBounds.top +
-		coordinateContext.originY +
-		layerTranslationContext.translationY;
-	const PF_FpLong right =
-		localBounds.right +
-		coordinateContext.originX +
-		layerTranslationContext.translationX;
-	const PF_FpLong bottom =
-		localBounds.bottom +
-		coordinateContext.originY +
-		layerTranslationContext.translationY;
+	const CF_Rect transformedBounds =
+		TransformLocalBoundsWithLayerTransform2D(
+			localBounds,
+			coordinateContext,
+			layerTransformContext);
 
-	if (!std::isfinite(left) ||
-		!std::isfinite(top) ||
-		!std::isfinite(right) ||
-		!std::isfinite(bottom) ||
-		right < left ||
-		bottom < top) {
+	if (!std::isfinite(transformedBounds.left) ||
+		!std::isfinite(transformedBounds.top) ||
+		!std::isfinite(transformedBounds.right) ||
+		!std::isfinite(transformedBounds.bottom) ||
+		transformedBounds.right < transformedBounds.left ||
+		transformedBounds.bottom < transformedBounds.top) {
 		return sourceData;
 	}
 
-	sourceData.bounds.left = left;
-	sourceData.bounds.top = top;
-	sourceData.bounds.right = right;
-	sourceData.bounds.bottom = bottom;
+	sourceData.bounds = transformedBounds;
 	sourceData.isAvailable = TRUE;
 
 	return sourceData;
@@ -800,7 +817,7 @@ CF_RectangleSourceData
 ConvertRectangleGeometrySnapshotToSourceData(
 	const CF_RectangleGeometrySnapshot& snapshot,
 	const CF_RectangleCoordinateContext& coordinateContext,
-	const CF_LayerTranslationContext& layerTranslationContext)
+	const CF_LayerTransform2DContext& layerTransformContext)
 {
 	CF_RectangleSourceData sourceData;
 	AEFX_CLR_STRUCT(sourceData);
@@ -809,7 +826,7 @@ ConvertRectangleGeometrySnapshotToSourceData(
 
 	if (!ValidateRectangleGeometrySnapshot(snapshot) ||
 		!coordinateContext.isValid ||
-		!layerTranslationContext.isValid) {
+		!layerTransformContext.isValid) {
 		return sourceData;
 	}
 
@@ -828,7 +845,7 @@ ConvertRectangleGeometrySnapshotToSourceData(
 	return TransformLocalBoundsToEffectSpace(
 		localBounds,
 		coordinateContext,
-		layerTranslationContext);
+		layerTransformContext);
 }
 
 CF_RectangleSourceData
@@ -1165,14 +1182,14 @@ ReadLayerSpatialValue(
 			: FALSE;
 }
 
-static CF_LayerTranslationContext
-ResolveLayerTranslationFromAfterEffects(
+static CF_LayerTransform2DContext
+ResolveLayerTransform2DFromAfterEffects(
 	PF_InData* in_data)
 {
-	CF_LayerTranslationContext translationContext;
-	AEFX_CLR_STRUCT(translationContext);
+	CF_LayerTransform2DContext transformContext;
+	AEFX_CLR_STRUCT(transformContext);
 
-	translationContext.isValid = FALSE;
+	transformContext.isValid = FALSE;
 
 	if (!in_data ||
 		!in_data->effect_ref ||
@@ -1188,7 +1205,7 @@ ResolveLayerTranslationFromAfterEffects(
 		in_data->pre_effect_source_origin_x != 0 ||
 		in_data->pre_effect_source_origin_y != 0) {
 
-		return translationContext;
+		return transformContext;
 	}
 
 	AEGP_PFInterfaceSuite1* pfInterfaceSuite = NULL;
@@ -1207,7 +1224,7 @@ ResolveLayerTranslationFromAfterEffects(
 		streamSuite = suites.StreamSuite6();
 	}
 	catch (...) {
-		return translationContext;
+		return transformContext;
 	}
 
 	AEGP_LayerH effectLayerH = NULL;
@@ -1224,7 +1241,7 @@ ResolveLayerTranslationFromAfterEffects(
 			&effectLayerH);
 
 	if (err || !effectLayerH) {
-		return translationContext;
+		return transformContext;
 	}
 
 	err = layerSuite->AEGP_IsLayer3D(
@@ -1232,7 +1249,7 @@ ResolveLayerTranslationFromAfterEffects(
 		&isLayer3D);
 
 	if (err || isLayer3D) {
-		return translationContext;
+		return transformContext;
 	}
 
 	err = layerSuite->AEGP_GetLayerParent(
@@ -1240,7 +1257,7 @@ ResolveLayerTranslationFromAfterEffects(
 		&parentLayerH);
 
 	if (err || parentLayerH) {
-		return translationContext;
+		return transformContext;
 	}
 
 	err = layerSuite->AEGP_GetLayerParentComp(
@@ -1248,7 +1265,7 @@ ResolveLayerTranslationFromAfterEffects(
 		&compH);
 
 	if (err || !compH) {
-		return translationContext;
+		return transformContext;
 	}
 
 	err = compSuite->AEGP_GetItemFromComp(
@@ -1256,16 +1273,16 @@ ResolveLayerTranslationFromAfterEffects(
 		&compItemH);
 
 	if (err || !compItemH) {
-		return translationContext;
+		return transformContext;
 	}
 
 	err = itemSuite->AEGP_GetItemDimensions(
 		compItemH,
-		&translationContext.compWidth,
-		&translationContext.compHeight);
+		&transformContext.compWidth,
+		&transformContext.compHeight);
 
 	if (err) {
-		return translationContext;
+		return transformContext;
 	}
 
 	err = pfInterfaceSuite->AEGP_ConvertEffectToCompTime(
@@ -1274,8 +1291,8 @@ ResolveLayerTranslationFromAfterEffects(
 		in_data->time_scale,
 		&compTime);
 
-	PF_FpLong scaleX = 0;
-	PF_FpLong scaleY = 0;
+	PF_FpLong scalePercentX = 0;
+	PF_FpLong scalePercentY = 0;
 
 	if (!err &&
 		!ReadLayerSpatialValue(
@@ -1283,8 +1300,8 @@ ResolveLayerTranslationFromAfterEffects(
 			effectLayerH,
 			AEGP_LayerStream_ANCHORPOINT,
 			compTime,
-			translationContext.anchorX,
-			translationContext.anchorY)) {
+			transformContext.anchorX,
+			transformContext.anchorY)) {
 
 		err = A_Err_GENERIC;
 	}
@@ -1295,8 +1312,8 @@ ResolveLayerTranslationFromAfterEffects(
 			effectLayerH,
 			AEGP_LayerStream_POSITION,
 			compTime,
-			translationContext.positionX,
-			translationContext.positionY)) {
+			transformContext.positionX,
+			transformContext.positionY)) {
 
 		err = A_Err_GENERIC;
 	}
@@ -1307,11 +1324,17 @@ ResolveLayerTranslationFromAfterEffects(
 			effectLayerH,
 			AEGP_LayerStream_SCALE,
 			compTime,
-			scaleX,
-			scaleY)) {
+			scalePercentX,
+			scalePercentY)) {
 
 		err = A_Err_GENERIC;
 	}
+
+	transformContext.scaleX =
+		scalePercentX / 100.0;
+
+	transformContext.scaleY =
+		scalePercentY / 100.0;
 
 	AEGP_StreamVal2 rotationValue;
 	AEFX_CLR_STRUCT(rotationValue);
@@ -1332,39 +1355,41 @@ ResolveLayerTranslationFromAfterEffects(
 
 	const A_Boolean supportedTransform =
 		!err &&
-		translationContext.compWidth > 0 &&
-		translationContext.compHeight > 0 &&
-		std::isfinite(scaleX) &&
-		std::isfinite(scaleY) &&
+		transformContext.compWidth > 0 &&
+		transformContext.compHeight > 0 &&
+		std::isfinite(transformContext.scaleX) &&
+		std::isfinite(transformContext.scaleY) &&
+		transformContext.scaleX > 0.0 &&
+		transformContext.scaleY > 0.0 &&
 		rotationType == AEGP_StreamType_OneD &&
 		std::isfinite(rotationValue.one_d) &&
-		std::fabs(scaleX - 100.0) <= 0.0001 &&
-		std::fabs(scaleY - 100.0) <= 0.0001 &&
 		std::fabs(rotationValue.one_d) <= 0.0001;
 
 	if (!supportedTransform) {
-		return translationContext;
+		return transformContext;
 	}
 
-	translationContext.translationX =
-		translationContext.positionX -
+	transformContext.translationX =
+		transformContext.positionX -
 		(static_cast<PF_FpLong>(
-			translationContext.compWidth) * 0.5) -
-		translationContext.anchorX;
+			transformContext.compWidth) * 0.5) -
+		(transformContext.anchorX *
+			transformContext.scaleX);
 
-	translationContext.translationY =
-		translationContext.positionY -
+	transformContext.translationY =
+		transformContext.positionY -
 		(static_cast<PF_FpLong>(
-			translationContext.compHeight) * 0.5) -
-		translationContext.anchorY;
+			transformContext.compHeight) * 0.5) -
+		(transformContext.anchorY *
+			transformContext.scaleY);
 
-	translationContext.isValid =
-		std::isfinite(translationContext.translationX) &&
-		std::isfinite(translationContext.translationY)
+	transformContext.isValid =
+		std::isfinite(transformContext.translationX) &&
+		std::isfinite(transformContext.translationY)
 			? TRUE
 			: FALSE;
 
-	return translationContext;
+	return transformContext;
 }
 
 CF_GeometrySourceData
@@ -1605,14 +1630,14 @@ Render(
 			inputWidth,
 			inputHeight);
 
-	CF_LayerTranslationContext layerTranslationContext;
-	AEFX_CLR_STRUCT(layerTranslationContext);
+	CF_LayerTransform2DContext layerTransformContext;
+	AEFX_CLR_STRUCT(layerTransformContext);
 
-	layerTranslationContext.isValid = FALSE;
+	layerTransformContext.isValid = FALSE;
 
 	if (snapshotSourceEnabled) {
-		layerTranslationContext =
-			ResolveLayerTranslationFromAfterEffects(
+		layerTransformContext =
+			ResolveLayerTransform2DFromAfterEffects(
 				in_data);
 	}
 
@@ -1620,7 +1645,7 @@ Render(
 		ConvertRectangleGeometrySnapshotToSourceData(
 			rectangleSnapshot,
 			coordinateContext,
-			layerTranslationContext);
+			layerTransformContext);
 
 	const CF_GeometryTargetState storedTargetState =
 		ReadGeometryTargetState(params);
