@@ -152,6 +152,24 @@ typedef short int			int16;
 
 	typedef struct
 	{
+		PF_FpLong x;
+		PF_FpLong y;
+
+	} CF_Vector2;
+
+	typedef struct
+	{
+		PF_FpLong a;
+		PF_FpLong b;
+		PF_FpLong c;
+		PF_FpLong d;
+		PF_FpLong tx;
+		PF_FpLong ty;
+
+	} CF_AffineTransform2D;
+
+	typedef struct
+	{
 		CF_Rect bounds;
 		PF_FpLong width;
 		PF_FpLong height;
@@ -159,6 +177,16 @@ typedef short int			int16;
 		PF_FpLong centerY;
 
 	} CF_RectangleGeometry;
+
+	typedef struct
+	{
+		CF_Vector2 center;
+		CF_Vector2 axisX;
+		CF_Vector2 axisY;
+		PF_FpLong halfWidth;
+		PF_FpLong halfHeight;
+
+	} CF_OrientedRectangle;
 
 	typedef struct
 	{
@@ -331,6 +359,32 @@ typedef short int			int16;
 	CF_RectangleGeometry
 	BuildRectangleGeometry(
 		const CF_Rect& bounds);
+
+	CF_Vector2
+	TransformPoint2D(
+		const CF_AffineTransform2D& transform,
+		const CF_Vector2& point);
+
+	CF_AffineTransform2D
+	MakeIdentityAffineTransform2D();
+
+	CF_AffineTransform2D
+	BuildLayerTransform2D(
+		const CF_RectangleCoordinateContext& coordinateContext,
+		const CF_LayerTransform2DContext& layerTransformContext);
+
+	CF_OrientedRectangle
+	BuildAxisAlignedOrientedRectangle(
+		const CF_Rect& bounds);
+
+	CF_OrientedRectangle
+	TransformOrientedRectangle(
+		const CF_OrientedRectangle& rectangle,
+		const CF_AffineTransform2D& transform);
+
+	CF_Rect
+	ComputeOrientedRectangleAABB(
+		const CF_OrientedRectangle& rectangle);
 
 	// Validates geometry data without modifying it or accessing the host.
 	A_Boolean

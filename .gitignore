@@ -65,3 +65,6 @@ __pycache__/
 
 # Full Phase 5.11B.2 animated/expression validation frames; selected evidence is stored separately
 research/output/Phase511B2ValidationFrames/
+
+# Full Phase 5.12B visual validation frames; selected evidence is stored separately
+research/output/Phase512BValidationFrames/

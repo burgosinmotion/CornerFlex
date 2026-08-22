@@ -95,6 +95,19 @@ La geometría de CornerFlex debe calcularse respecto al objeto objetivo. Por eje
 
 `BuildRectangleGeometry()` construye `CF_RectangleGeometry` exclusivamente desde un `CF_Rect`. Esta representación es una instantánea estable de la primitiva base previa a las operaciones. Las operaciones geométricas no deben modificarla.
 
+#### Oriented Primitive Foundation
+
+`CF_Vector2` es un POD para puntos o vectores 2D. `CF_AffineTransform2D` representa exclusivamente una transformación affine 2D, sin suites, handles, ownership, 3D, cámara o espacio mundo. Su convención es:
+
+```text
+x' = a*x + c*y + tx
+y' = b*x + d*y + ty
+```
+
+`CF_OrientedRectangle` describe una primitive rectangular orientable mediante `center`, dos ejes locales y dimensiones medias. En Phase 5.12B los ejes se tratan como basis vectors transformados: pueden incluir la parte lineal de Scale/Rotation y no se asume que sean unitarios después de una transformación affine. `halfWidth` y `halfHeight` permanecen positivos y describen la primitive antes de proyectar sus ejes.
+
+`ComputeOrientedRectangleAABB()` calcula un `CF_Rect` de contención a partir de los cuatro vértices derivados de la primitive orientada. Ese AABB no representa la primitive; solo es metadata de bounds. El pixel renderer de Phase 5.12B continúa consumiendo la ruta axis-aligned validada en Phase 5.11, por lo que Rotation distinta de cero sigue en fallback.
+
 #### Working Geometry
 
 `geometryBounds` se inicializa desde `rectangleGeometry.bounds` y representa el estado transformable. El Geometry Operation Pipeline modifica únicamente Working Geometry; actualmente `ExecuteTrimOperation()` actualiza `geometryBounds` sin alterar la primitiva base.
@@ -1001,6 +1014,28 @@ Scale values driven by keyframes or expressions resolve per frame through the sa
 Trim continues to operate after the Rectangle Path bounds are transformed for the current frame. Scale components that resolve to zero or negative values keep Rectangle Source unavailable and select Layer Bounds as fallback. Rotation also continues to activate fallback. Returning manually to Layer Bounds remained RGBA-identical to the Layer Bounds baseline.
 
 The Phase 5.11B.2 validation harness closed A-M with PASS, covering animated uniform, animated non-uniform, decimal, expression-driven uniform, expression-driven non-uniform, Anchor + Scale, Layer Position + Scale, Rectangle Path Position + Scale, Trim 10 %, manual return to Layer Bounds, zero Scale fallback, negative Scale fallback and Rotation fallback. Static regression RA-RG also closed with PASS.
+
+### Phase 5.12B — Oriented Rectangle Foundation
+
+Phase 5.12B introduces the minimum geometry contracts needed before real Layer Rotation 2D can be enabled: `CF_Vector2`, `CF_AffineTransform2D` and `CF_OrientedRectangle`. This phase is structural only. Rotation from After Effects is still read as `AEGP_LayerStream_ROTATION`, and any value different from zero continues to make the layer transform invalid so Rectangle Source falls back to Layer Bounds.
+
+The affine convention is fixed as `x' = a*x + c*y + tx` and `y' = b*x + d*y + ty`. The supported Phase 5.11 subset builds an affine transform from the already validated `CF_LayerTransform2DContext`: `a = scaleX`, `d = scaleY`, `tx = inputOriginX + translationX`, `ty = inputOriginY + translationY`, with `b = 0` and `c = 0`. Because `translationX/Y` already include Layer Position, comp center and `anchor * scale`, this produces the same coordinates as the Phase 5.11 formula when Rotation is zero.
+
+`BuildAxisAlignedOrientedRectangle()` creates a base primitive from local bounds with X/Y axes and positive half dimensions. `TransformOrientedRectangle()` applies the affine transform to its center and basis vectors. `ComputeOrientedRectangleAABB()` projects the transformed primitive into a containment rectangle by evaluating its four vertices. The AABB remains a containment result only; it is not a substitute for a rotated primitive.
+
+The renderer and Trim pipeline are intentionally unchanged in this phase. `ExecuteTrimOperation()` still operates on `geometryBounds` in the existing axis-aligned route. The future target flow is:
+
+```text
+Base Primitive
+→ Primitive Operations
+→ Layer Transform
+→ Render Geometry
+```
+
+That future flow is required before enabling Rotation semantically, because a rotated rectangle cannot be represented correctly by `CF_Rect` alone.
+
+The pure foundation test `research/ValidateOrientedRectangleFoundation.py` closed with PASS for identity, translation, uniform and non-uniform Scale, Anchor + Scale + Position equivalence, fractional values, axis-aligned AABB and a disconnected mathematical 45 degree oriented-rectangle case. The visual validation `research/ValidateOrientedRectangleFoundationVisual.jsx` plus `research/AnalyzeOrientedRectangleFoundationVisual.py` closed A-K with PASS on the Phase 5.12B build: base, Scale 150x150, Scale 150x75, Anchor + Scale, Layer Position + Scale, Rectangle Position + Scale, animated Scale, expression-driven Scale, Rotation fallback, Rotation + Scale fallback and return to Layer Bounds. Rotation remains disabled and in fallback; the pixel renderer remains axis-aligned and does not consume oriented primitive geometry.
+
 ## 9. Estado actual
 
 Actualmente están implementados:

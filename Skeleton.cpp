@@ -49,6 +49,22 @@
 
 static AEGP_PluginID S_cornerFlexPluginId = 0;
 
+static PF_FpLong
+MinFpLong(
+	PF_FpLong a,
+	PF_FpLong b)
+{
+	return a < b ? a : b;
+}
+
+static PF_FpLong
+MaxFpLong(
+	PF_FpLong a,
+	PF_FpLong b)
+{
+	return a > b ? a : b;
+}
+
 static PF_Err 
 About (	
 	PF_InData		*in_data,
@@ -698,29 +714,21 @@ TransformLocalBoundsWithLayerTransform2D(
 	const CF_RectangleCoordinateContext& coordinateContext,
 	const CF_LayerTransform2DContext& layerTransformContext)
 {
-	CF_Rect transformedBounds;
+	const CF_AffineTransform2D layerTransform =
+		BuildLayerTransform2D(
+			coordinateContext,
+			layerTransformContext);
 
-	transformedBounds.left =
-		(localBounds.left * layerTransformContext.scaleX) +
-		coordinateContext.originX +
-		layerTransformContext.translationX;
+	const CF_OrientedRectangle localRectangle =
+		BuildAxisAlignedOrientedRectangle(localBounds);
 
-	transformedBounds.top =
-		(localBounds.top * layerTransformContext.scaleY) +
-		coordinateContext.originY +
-		layerTransformContext.translationY;
+	const CF_OrientedRectangle transformedRectangle =
+		TransformOrientedRectangle(
+			localRectangle,
+			layerTransform);
 
-	transformedBounds.right =
-		(localBounds.right * layerTransformContext.scaleX) +
-		coordinateContext.originX +
-		layerTransformContext.translationX;
-
-	transformedBounds.bottom =
-		(localBounds.bottom * layerTransformContext.scaleY) +
-		coordinateContext.originY +
-		layerTransformContext.translationY;
-
-	return transformedBounds;
+	return ComputeOrientedRectangleAABB(
+		transformedRectangle);
 }
 
 CF_RectangleSourceData
@@ -1474,6 +1482,198 @@ BuildRectangleGeometry(
 		(rectangleGeometry.height / 2.0);
 
 	return rectangleGeometry;
+}
+
+CF_Vector2
+TransformPoint2D(
+	const CF_AffineTransform2D& transform,
+	const CF_Vector2& point)
+{
+	CF_Vector2 transformedPoint;
+
+	transformedPoint.x =
+		(transform.a * point.x) +
+		(transform.c * point.y) +
+		transform.tx;
+
+	transformedPoint.y =
+		(transform.b * point.x) +
+		(transform.d * point.y) +
+		transform.ty;
+
+	return transformedPoint;
+}
+
+CF_AffineTransform2D
+MakeIdentityAffineTransform2D()
+{
+	CF_AffineTransform2D transform;
+	AEFX_CLR_STRUCT(transform);
+
+	transform.a = 1.0;
+	transform.d = 1.0;
+
+	return transform;
+}
+
+CF_AffineTransform2D
+BuildLayerTransform2D(
+	const CF_RectangleCoordinateContext& coordinateContext,
+	const CF_LayerTransform2DContext& layerTransformContext)
+{
+	CF_AffineTransform2D transform =
+		MakeIdentityAffineTransform2D();
+
+	if (!coordinateContext.isValid ||
+		!layerTransformContext.isValid) {
+		return transform;
+	}
+
+	transform.a =
+		layerTransformContext.scaleX;
+
+	transform.d =
+		layerTransformContext.scaleY;
+
+	transform.tx =
+		coordinateContext.originX +
+		layerTransformContext.translationX;
+
+	transform.ty =
+		coordinateContext.originY +
+		layerTransformContext.translationY;
+
+	return transform;
+}
+
+CF_OrientedRectangle
+BuildAxisAlignedOrientedRectangle(
+	const CF_Rect& bounds)
+{
+	CF_OrientedRectangle rectangle;
+	AEFX_CLR_STRUCT(rectangle);
+
+	const PF_FpLong width =
+		bounds.right - bounds.left;
+
+	const PF_FpLong height =
+		bounds.bottom - bounds.top;
+
+	rectangle.center.x =
+		bounds.left + (width * 0.5);
+
+	rectangle.center.y =
+		bounds.top + (height * 0.5);
+
+	rectangle.axisX.x = 1.0;
+	rectangle.axisX.y = 0.0;
+
+	rectangle.axisY.x = 0.0;
+	rectangle.axisY.y = 1.0;
+
+	rectangle.halfWidth =
+		width * 0.5;
+
+	rectangle.halfHeight =
+		height * 0.5;
+
+	return rectangle;
+}
+
+CF_OrientedRectangle
+TransformOrientedRectangle(
+	const CF_OrientedRectangle& rectangle,
+	const CF_AffineTransform2D& transform)
+{
+	CF_OrientedRectangle transformedRectangle;
+	AEFX_CLR_STRUCT(transformedRectangle);
+
+	transformedRectangle.center =
+		TransformPoint2D(
+			transform,
+			rectangle.center);
+
+	transformedRectangle.axisX.x =
+		(transform.a * rectangle.axisX.x) +
+		(transform.c * rectangle.axisX.y);
+
+	transformedRectangle.axisX.y =
+		(transform.b * rectangle.axisX.x) +
+		(transform.d * rectangle.axisX.y);
+
+	transformedRectangle.axisY.x =
+		(transform.a * rectangle.axisY.x) +
+		(transform.c * rectangle.axisY.y);
+
+	transformedRectangle.axisY.y =
+		(transform.b * rectangle.axisY.x) +
+		(transform.d * rectangle.axisY.y);
+
+	transformedRectangle.halfWidth =
+		rectangle.halfWidth;
+
+	transformedRectangle.halfHeight =
+		rectangle.halfHeight;
+
+	return transformedRectangle;
+}
+
+CF_Rect
+ComputeOrientedRectangleAABB(
+	const CF_OrientedRectangle& rectangle)
+{
+	const CF_Vector2 xExtent = {
+		rectangle.axisX.x * rectangle.halfWidth,
+		rectangle.axisX.y * rectangle.halfWidth
+	};
+
+	const CF_Vector2 yExtent = {
+		rectangle.axisY.x * rectangle.halfHeight,
+		rectangle.axisY.y * rectangle.halfHeight
+	};
+
+	const CF_Vector2 p0 = {
+		rectangle.center.x - xExtent.x - yExtent.x,
+		rectangle.center.y - xExtent.y - yExtent.y
+	};
+
+	const CF_Vector2 p1 = {
+		rectangle.center.x + xExtent.x - yExtent.x,
+		rectangle.center.y + xExtent.y - yExtent.y
+	};
+
+	const CF_Vector2 p2 = {
+		rectangle.center.x + xExtent.x + yExtent.x,
+		rectangle.center.y + xExtent.y + yExtent.y
+	};
+
+	const CF_Vector2 p3 = {
+		rectangle.center.x - xExtent.x + yExtent.x,
+		rectangle.center.y - xExtent.y + yExtent.y
+	};
+
+	CF_Rect aabb;
+	aabb.left =
+		MinFpLong(
+			MinFpLong(p0.x, p1.x),
+			MinFpLong(p2.x, p3.x));
+
+	aabb.top =
+		MinFpLong(
+			MinFpLong(p0.y, p1.y),
+			MinFpLong(p2.y, p3.y));
+
+	aabb.right =
+		MaxFpLong(
+			MaxFpLong(p0.x, p1.x),
+			MaxFpLong(p2.x, p3.x));
+
+	aabb.bottom =
+		MaxFpLong(
+			MaxFpLong(p0.y, p1.y),
+			MaxFpLong(p2.y, p3.y));
+
+	return aabb;
 }
 
 static CF_GeometryContext
