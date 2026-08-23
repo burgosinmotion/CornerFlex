@@ -1589,6 +1589,39 @@ MakeIdentityAffineTransform2D()
 }
 
 CF_AffineTransform2D
+ComposeAffineTransform2D(
+	const CF_AffineTransform2D& parent,
+	const CF_AffineTransform2D& child)
+{
+	CF_AffineTransform2D result;
+	AEFX_CLR_STRUCT(result);
+
+	// result = parent * child: apply child first, then parent.
+	result.a =
+		(parent.a * child.a) +
+		(parent.c * child.b);
+	result.b =
+		(parent.b * child.a) +
+		(parent.d * child.b);
+	result.c =
+		(parent.a * child.c) +
+		(parent.c * child.d);
+	result.d =
+		(parent.b * child.c) +
+		(parent.d * child.d);
+	result.tx =
+		(parent.a * child.tx) +
+		(parent.c * child.ty) +
+		parent.tx;
+	result.ty =
+		(parent.b * child.tx) +
+		(parent.d * child.ty) +
+		parent.ty;
+
+	return result;
+}
+
+CF_AffineTransform2D
 BuildLayerTransform2D(
 	const CF_RectangleCoordinateContext& coordinateContext,
 	const CF_LayerTransform2DContext& layerTransformContext)
@@ -1782,6 +1815,199 @@ ComputeOrientedRectangleAABB(
 			MaxFpLong(p2.y, p3.y));
 
 	return aabb;
+}
+
+static const PF_FpLong CF_AFFINE_DETERMINANT_EPSILON =
+	1.0e-12;
+
+static A_Boolean
+IsFiniteAffineRectangle(
+	const CF_AffineRectangle& rectangle)
+{
+	return std::isfinite(rectangle.center.x) &&
+		std::isfinite(rectangle.center.y) &&
+		std::isfinite(rectangle.basisX.x) &&
+		std::isfinite(rectangle.basisX.y) &&
+		std::isfinite(rectangle.basisY.x) &&
+		std::isfinite(rectangle.basisY.y) &&
+		std::isfinite(rectangle.halfWidth) &&
+		std::isfinite(rectangle.halfHeight) &&
+		rectangle.halfWidth >= 0.0 &&
+		rectangle.halfHeight >= 0.0;
+}
+
+static PF_FpLong
+AffineRectangleDeterminant(
+	const CF_AffineRectangle& rectangle)
+{
+	return (rectangle.basisX.x * rectangle.basisY.y) -
+		(rectangle.basisY.x * rectangle.basisX.y);
+}
+
+static A_Boolean
+IsInvertibleAffineRectangle(
+	const CF_AffineRectangle& rectangle)
+{
+	const PF_FpLong determinant =
+		AffineRectangleDeterminant(rectangle);
+
+	return IsFiniteAffineRectangle(rectangle) &&
+		std::isfinite(determinant) &&
+		std::fabs(determinant) >
+			CF_AFFINE_DETERMINANT_EPSILON;
+}
+
+CF_AffineRectangle
+BuildAxisAlignedAffineRectangle(
+	const CF_Rect& bounds)
+{
+	CF_AffineRectangle rectangle;
+	AEFX_CLR_STRUCT(rectangle);
+
+	const PF_FpLong width =
+		bounds.right - bounds.left;
+	const PF_FpLong height =
+		bounds.bottom - bounds.top;
+
+	if (!std::isfinite(bounds.left) ||
+		!std::isfinite(bounds.top) ||
+		!std::isfinite(bounds.right) ||
+		!std::isfinite(bounds.bottom) ||
+		width < 0.0 ||
+		height < 0.0) {
+		return rectangle;
+	}
+
+	rectangle.center.x =
+		bounds.left + (width * 0.5);
+	rectangle.center.y =
+		bounds.top + (height * 0.5);
+	rectangle.basisX.x = 1.0;
+	rectangle.basisY.y = 1.0;
+	rectangle.halfWidth = width * 0.5;
+	rectangle.halfHeight = height * 0.5;
+
+	return rectangle;
+}
+
+CF_AffineRectangle
+TransformAffineRectangle(
+	const CF_AffineRectangle& rectangle,
+	const CF_AffineTransform2D& transform)
+{
+	CF_AffineRectangle transformedRectangle;
+	AEFX_CLR_STRUCT(transformedRectangle);
+
+	if (!IsFiniteAffineRectangle(rectangle) ||
+		!std::isfinite(transform.a) ||
+		!std::isfinite(transform.b) ||
+		!std::isfinite(transform.c) ||
+		!std::isfinite(transform.d) ||
+		!std::isfinite(transform.tx) ||
+		!std::isfinite(transform.ty)) {
+		return transformedRectangle;
+	}
+
+	transformedRectangle.center =
+		TransformPoint2D(transform, rectangle.center);
+
+	transformedRectangle.basisX.x =
+		(transform.a * rectangle.basisX.x) +
+		(transform.c * rectangle.basisX.y);
+	transformedRectangle.basisX.y =
+		(transform.b * rectangle.basisX.x) +
+		(transform.d * rectangle.basisX.y);
+	transformedRectangle.basisY.x =
+		(transform.a * rectangle.basisY.x) +
+		(transform.c * rectangle.basisY.y);
+	transformedRectangle.basisY.y =
+		(transform.b * rectangle.basisY.x) +
+		(transform.d * rectangle.basisY.y);
+	transformedRectangle.halfWidth = rectangle.halfWidth;
+	transformedRectangle.halfHeight = rectangle.halfHeight;
+
+	return IsFiniteAffineRectangle(transformedRectangle)
+		? transformedRectangle
+		: CF_AffineRectangle{};
+}
+
+CF_Rect
+ComputeAffineRectangleAABB(
+	const CF_AffineRectangle& rectangle)
+{
+	CF_Rect aabb;
+	AEFX_CLR_STRUCT(aabb);
+
+	if (!IsFiniteAffineRectangle(rectangle)) {
+		return aabb;
+	}
+
+	const CF_Vector2 xExtent = {
+		rectangle.basisX.x * rectangle.halfWidth,
+		rectangle.basisX.y * rectangle.halfWidth
+	};
+	const CF_Vector2 yExtent = {
+		rectangle.basisY.x * rectangle.halfHeight,
+		rectangle.basisY.y * rectangle.halfHeight
+	};
+	const CF_Vector2 points[4] = {
+		{ rectangle.center.x - xExtent.x - yExtent.x,
+		  rectangle.center.y - xExtent.y - yExtent.y },
+		{ rectangle.center.x + xExtent.x - yExtent.x,
+		  rectangle.center.y + xExtent.y - yExtent.y },
+		{ rectangle.center.x + xExtent.x + yExtent.x,
+		  rectangle.center.y + xExtent.y + yExtent.y },
+		{ rectangle.center.x - xExtent.x + yExtent.x,
+		  rectangle.center.y - xExtent.y + yExtent.y }
+	};
+
+	aabb.left = points[0].x;
+	aabb.top = points[0].y;
+	aabb.right = points[0].x;
+	aabb.bottom = points[0].y;
+
+	for (A_long pointIndex = 1; pointIndex < 4; pointIndex++) {
+		aabb.left = MinFpLong(aabb.left, points[pointIndex].x);
+		aabb.top = MinFpLong(aabb.top, points[pointIndex].y);
+		aabb.right = MaxFpLong(aabb.right, points[pointIndex].x);
+		aabb.bottom = MaxFpLong(aabb.bottom, points[pointIndex].y);
+	}
+
+	return aabb;
+}
+
+A_Boolean
+IsPointInsideAffineRectangle(
+	const CF_AffineRectangle& rectangle,
+	PF_FpLong x,
+	PF_FpLong y)
+{
+	if (!IsInvertibleAffineRectangle(rectangle) ||
+		!std::isfinite(x) ||
+		!std::isfinite(y)) {
+		return FALSE;
+	}
+
+	const PF_FpLong determinant =
+		AffineRectangleDeterminant(rectangle);
+	const PF_FpLong deltaX = x - rectangle.center.x;
+	const PF_FpLong deltaY = y - rectangle.center.y;
+	const PF_FpLong localX =
+		((rectangle.basisY.y * deltaX) -
+			(rectangle.basisY.x * deltaY)) /
+		determinant;
+	const PF_FpLong localY =
+		((-rectangle.basisX.y * deltaX) +
+			(rectangle.basisX.x * deltaY)) /
+		determinant;
+	const PF_FpLong tolerance = 1.0e-9;
+
+	return std::isfinite(localX) &&
+		std::isfinite(localY) &&
+		std::fabs(localX) <= rectangle.halfWidth + tolerance &&
+		std::fabs(localY) <= rectangle.halfHeight + tolerance
+			? TRUE
+			: FALSE;
 }
 
 A_Boolean

@@ -188,6 +188,17 @@ typedef short int			int16;
 
 	} CF_OrientedRectangle;
 
+	// General affine rectangle foundation; basis vectors remain unnormalized.
+	typedef struct
+	{
+		CF_Vector2 center;
+		CF_Vector2 basisX;
+		CF_Vector2 basisY;
+		PF_FpLong halfWidth;
+		PF_FpLong halfHeight;
+
+	} CF_AffineRectangle;
+
 	typedef struct
 	{
 		PF_FpLong topLeft;
@@ -391,6 +402,11 @@ typedef short int			int16;
 	MakeIdentityAffineTransform2D();
 
 	CF_AffineTransform2D
+	ComposeAffineTransform2D(
+		const CF_AffineTransform2D& parent,
+		const CF_AffineTransform2D& child);
+
+	CF_AffineTransform2D
 	BuildLayerTransform2D(
 		const CF_RectangleCoordinateContext& coordinateContext,
 		const CF_LayerTransform2DContext& layerTransformContext);
@@ -407,6 +423,25 @@ typedef short int			int16;
 	CF_Rect
 	ComputeOrientedRectangleAABB(
 		const CF_OrientedRectangle& rectangle);
+
+	CF_AffineRectangle
+	BuildAxisAlignedAffineRectangle(
+		const CF_Rect& bounds);
+
+	CF_AffineRectangle
+	TransformAffineRectangle(
+		const CF_AffineRectangle& rectangle,
+		const CF_AffineTransform2D& transform);
+
+	CF_Rect
+	ComputeAffineRectangleAABB(
+		const CF_AffineRectangle& rectangle);
+
+	A_Boolean
+	IsPointInsideAffineRectangle(
+		const CF_AffineRectangle& rectangle,
+		PF_FpLong x,
+		PF_FpLong y);
 
 	A_Boolean
 	IsPointInsideOrientedRectangle(

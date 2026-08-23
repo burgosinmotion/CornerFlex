@@ -1167,3 +1167,95 @@ Por defecto, `BuildGeometryContext()` crea Layer Bounds a partir de Input Bounds
 - Los callbacks de píxeles no deben leer directamente la UI.
 - Evitar renombrar Match Names o Disk IDs después de publicar.
 - No modificar archivos del SDK de Adobe salvo necesidad justificada.
+
+## Phase 5.13B — Affine Composition / Primitive Foundation
+
+Phase 5.13B incorpora una foundation matemática paralela para futuras cadenas
+de transformaciones de Shape Groups. No habilita la lectura de `ADBE Vector
+Group`, `ADBE Vector Transform Group` ni ningún otro stream de Shape Group.
+
+`CF_AffineTransform2D` utiliza la convención:
+
+```text
+x' = a*x + c*y + tx
+y' = b*x + d*y + ty
+```
+
+`ComposeAffineTransform2D(parent, child)` devuelve `parent · child`: primero
+se aplica `child` y después `parent`. La composición no normaliza columnas ni
+asume ortogonalidad:
+
+```text
+a  = parent.a * child.a + parent.c * child.b
+b  = parent.b * child.a + parent.d * child.b
+c  = parent.a * child.c + parent.c * child.d
+d  = parent.b * child.c + parent.d * child.d
+tx = parent.a * child.tx + parent.c * child.ty + parent.tx
+ty = parent.b * child.tx + parent.d * child.ty + parent.ty
+```
+
+`CF_AffineRectangle` es un POD independiente de After Effects:
+
+```text
+center
+basisX
+basisY
+halfWidth
+halfHeight
+```
+
+`basisX` y `basisY` se conservan sin normalizar. Por ello la primitive puede
+representar Scale, Rotation, Translation y bases no ortogonales que podrían
+aparecer con futuras cadenas de Scale/Rotation o con Skew. `TransformAffineRectangle()`
+transforma el centro y ambos vectores base mediante la parte lineal de la
+matriz; conserva los half extents en el espacio local.
+
+`ComputeAffineRectangleAABB()` calcula los cuatro vértices reales:
+
+```text
+center ± basisX * halfWidth ± basisY * halfHeight
+```
+
+El AABB es solamente metadata de contención. No sustituye la primitive affine.
+
+`IsPointInsideAffineRectangle()` resta el centro e invierte la base 2×2. El
+determinante es:
+
+```text
+det = basisX.x * basisY.y - basisY.x * basisX.y
+```
+
+La primitive se rechaza si algún valor no es finito, si un half extent es
+negativo o si `abs(det) <= 1.0e-12`. La membership usa una tolerancia numérica
+de `1.0e-9` y nunca produce un resultado parcial para una base degenerada.
+
+`CF_OrientedRectangle` no se elimina ni se migra. Continúa siendo la
+representación validada del renderer actual. La nueva `CF_AffineRectangle` no
+está conectada a `CF_RenderContext`, `TrimFunc8()`, `TrimFunc16()`, Rectangle
+Source, Layer Bounds ni al pipeline de operaciones.
+
+El test independiente
+`research/ValidateAffineRectangleFoundation.py` cubre identidad, traslación,
+Scale uniforme y no uniforme, Rotation, composición `parent · child`, orden
+inverso, cadenas de tres matrices, AABB por cuatro vértices, membership
+axis-aligned, rotada y no ortogonal, determinantes cero o casi singulares,
+NaN/Infinity y valores fraccionarios. El resultado fue:
+
+```text
+PHASE 5.13B PURE FOUNDATION RESULT: PASS
+ORTHOGONAL SUBSET: PASS
+```
+
+El build Debug x64 generó `CornerFlex.aex` en:
+
+```text
+E:\Files\Proyectos\CornerFlexDev\Plugins\CornerFlex.aex
+```
+
+Tamaño: `95,744 bytes`
+SHA-256: `805C16F8275C5C1D8E8D6B5EC991B3C9D64820969015023B65E6AB25611630CD`
+
+El AEX instalado en Program Files no fue reemplazado y conserva el baseline
+Phase 5.11B.1. Shape Group Transforms, Skew, nesting real, parenting, 3D,
+MFR y cualquier conversión de `CF_AffineRectangle` al renderer siguen fuera
+de alcance.

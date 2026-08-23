@@ -1,0 +1,120 @@
+CornerFlex — Phase 5.13B Visual Neutrality Validation
+=====================================================
+
+Resultado global: PASS (GO para cerrar la validación visual de neutralidad).
+
+Alcance
+-------
+Esta validación comprueba que la foundation paralela CF_AffineRectangle no
+altera el pipeline existente. No se conectó CF_AffineRectangle a
+CF_RenderContext, TrimFunc8(), TrimFunc16() ni al renderer. Rectangle Source
+continúa utilizando CF_OrientedRectangle; Layer Bounds conserva su fallback.
+
+Baseline y binarios
+-------------------
+Workspace: E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton
+Rama: codex/cornerflex-development
+HEAD: 2fcfeafe4f98039b8bc780abc80a6b880b616a89
+After Effects: cerrado antes y después de la prueba.
+
+Build Phase 5.13B:
+  Ruta: E:\Files\Proyectos\CornerFlexDev\Plugins\CornerFlex.aex
+  Tamaño: 95,744 bytes
+  SHA-256: 805C16F8275C5C1D8E8D6B5EC991B3C9D64820969015023B65E6AB25611630CD
+
+Binario baseline instalado:
+  Tamaño: 83,968 bytes
+  SHA-256: 7F88245DDD3FC180EF90BA08E6DD19AF6B76FF42F9B58D3BA5E0741978AA939B
+
+Backup creado:
+  E:\Files\Proyectos\CornerFlexDev\Plugins\backup\Phase513BValidation_20260823_020501\CornerFlex.aex
+  Tamaño: 83,968 bytes
+  SHA-256: 7F88245DDD3FC180EF90BA08E6DD19AF6B76FF42F9B58D3BA5E0741978AA939B
+
+Instalación temporal verificada antes de abrir After Effects:
+  SHA-256: 805C16F8275C5C1D8E8D6B5EC991B3C9D64820969015023B65E6AB25611630CD
+  Tamaño: 95,744 bytes
+
+Método de prueba
+----------------
+Se utilizó una copia temporal no modificada del harness histórico
+ValidateRectangleLayerRotation2DAnimated.jsx, con el provider CEP explícito,
+y su analizador Python correspondiente. Las copias de ejecución y el reporte
+intermedio permanecieron fuera del repositorio. El harness terminó con
+SCRIPT RESULT: PASS y eliminó las composiciones temporales.
+
+Resultados A–T
+--------------
+Todos los frames A–T reportaron Provider capture/disable: PASS y análisis de
+alpha PASS. En cada caso se compararon Layer Bounds, Rectangle Source y
+fallback; sourceVsLayerDifference y fallbackVsLayerDifference fueron None,
+excepto el caso histórico de retorno manual a Layer Bounds, donde la
+diferencia esperada contra Rectangle Source fue detectada y el fallback
+coincidió con Layer Bounds.
+
+Nota de cobertura: la nomenclatura A–T corresponde a la matriz animada de
+rotación/escala ya existente en el harness Phase 5.12D. Incluye escalas
+uniformes y no uniformes (G/H, RS4, RS6/RS7), pero no sustituye una nueva
+matriz independiente de escala estática 50 %, 150 % y 150×75 %. Esa matriz
+específica queda como validación posterior de Phase 5.11B, no como requisito
+para demostrar la neutralidad de esta foundation desconectada.
+
+A  Rotation 0→90: PASS; T0/T0.5/T1; membership orientado validado.
+B  Rotation negativa 0→−45: PASS; signo y membership validados.
+C  Rotation 0→180: PASS; T0/T0.25/T0.5/T0.75/T1.
+D  Rotation 0→360: PASS; equivalencia angular validada.
+E  Rotation por expresión time*90: PASS; post-expresión.
+F  Rotation por expresión −time*90: PASS; post-expresión.
+G  Rotation + Scale uniforme animados: PASS.
+H  Rotation + Scale no uniforme animados: PASS.
+I  Anchor Point + Rotation: PASS; pivote correcto.
+J  Layer Position + Rotation: PASS; traslación correcta.
+K  Rectangle Position + Rotation: PASS; orden local correcto.
+L  Anchor + Position + Rectangle Position + Scale no uniforme + Rotation: PASS.
+M  Rotation + Trim enlazado 10 %: PASS; Trim en primitive-space.
+N  Rotation + Trim Left-only: PASS; lados locales correctos.
+O  Rotation + Trim no uniforme: PASS; lados locales correctos.
+P  Parenting: PASS; Layer Bounds fallback.
+Q  Capa 3D: PASS; Layer Bounds fallback.
+R  Scale cero: PASS; fallback seguro, sin frame válido producido.
+S  Scale negativo: PASS; Layer Bounds fallback.
+T  Equivalencia 0°/360°: PASS; RGBA equivalence: PASS.
+
+Comprobaciones de primitive y AABB
+----------------------------------
+Para los casos rotados se inspeccionaron centro, punto interior, borde y un
+punto dentro del AABB pero fuera de la primitive orientada. En frames como
+A_T0p5, B_T0p5, E_T0p5, G_T1, H_T1, I_T1, J_T1, K_T1, L_T1, M_T1, N_T1 y
+O_T1, el punto outsideAABBOnly produjo alpha 0 con outsideRequired=True.
+Esto confirma que el AABB actúa como rechazo rápido y que el membership final
+continúa realizándose contra CF_OrientedRectangle. Los frames de borde y
+centro conservaron los valores esperados (alpha 255 cuando correspondía).
+
+Neutralidad estática
+--------------------
+- CF_AffineRectangle, ComposeAffineTransform2D(), TransformAffineRectangle(),
+  ComputeAffineRectangleAABB() e IsPointInsideAffineRectangle() permanecen
+  fuera de CF_RenderContext y de ambos callbacks de píxel.
+- No se modificaron renderer, Trim, parámetros, Disk IDs, PiPL ni CEP durante
+  esta validación.
+- Shape Group Transforms siguen deshabilitados.
+
+Restauración
+------------
+After Effects fue cerrado y el binario baseline fue restaurado desde el
+backup. Verificación final:
+  Tamaño: 83,968 bytes
+  SHA-256: 7F88245DDD3FC180EF90BA08E6DD19AF6B76FF42F9B58D3BA5E0741978AA939B
+
+Evidencia seleccionada
+----------------------
+research/output/Phase513BValidationFrames/ contiene 20 PNG representativos:
+caso base, rotación positiva, escalas animadas uniforme/no uniforme, anchor,
+position, rectangle position, combinaciones, trim, fallbacks de parenting/3D/
+escala cero/negativa y retorno angular.
+
+Conclusión
+----------
+GO: Phase 5.13B mantiene neutralidad visual y funcional respecto al pipeline
+validado. No se instaló permanentemente el build 5.13B, no se creó commit y no
+se hizo push.
