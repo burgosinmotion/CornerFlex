@@ -1036,6 +1036,42 @@ That future flow is required before enabling Rotation semantically, because a ro
 
 The pure foundation test `research/ValidateOrientedRectangleFoundation.py` closed with PASS for identity, translation, uniform and non-uniform Scale, Anchor + Scale + Position equivalence, fractional values, axis-aligned AABB and a disconnected mathematical 45 degree oriented-rectangle case. The visual validation `research/ValidateOrientedRectangleFoundationVisual.jsx` plus `research/AnalyzeOrientedRectangleFoundationVisual.py` closed A-K with PASS on the Phase 5.12B build: base, Scale 150x150, Scale 150x75, Anchor + Scale, Layer Position + Scale, Rectangle Position + Scale, animated Scale, expression-driven Scale, Rotation fallback, Rotation + Scale fallback and return to Layer Bounds. Rotation remains disabled and in fallback; the pixel renderer remains axis-aligned and does not consume oriented primitive geometry.
 
+### Phase 5.12C — Static Layer Rotation 2D
+
+Phase 5.12C enables real static Layer Rotation 2D for Rectangle Source without representing Rotation as an AABB-only result. AABB remains containment metadata; the pixel renderer now receives enough immutable render geometry to test whether each pixel belongs to the transformed rectangle primitive.
+
+The render flow for Rectangle Source is:
+
+```text
+Rectangle local primitive
+→ Trim in primitive/local space
+→ Layer Transform 2D
+→ Oriented Render Geometry
+→ AABB containment
+→ Pixel Renderer
+```
+
+Trim semantics are local to the Rectangle Path primitive. For example, Trim Left 10% removes 10% from the rectangle's local left side before Layer Rotation is applied. Rotation `0` keeps the existing Phase 5.11 semantics exactly: the local trimmed rectangle transforms into the same axis-aligned bounds as before.
+
+`CF_RenderContext` now carries `geometryBounds` as the AABB used for iteration rejection plus an optional `orientedRect` with `hasOrientedRect`. Layer Bounds fallback keeps the historical axis-aligned path and does not create an oriented primitive. Rectangle Source builds the local rectangle from Rectangle Size and Rectangle Position, applies Trim through `ExecuteTrimOperation()`, then transforms that trimmed primitive with `BuildLayerTransform2D()` and `TransformOrientedRectangle()`.
+
+The official affine convention remains `x' = a*x + c*y + tx` and `y' = b*x + d*y + ty`. The validated After Effects Rotation sign in the effect-buffer Y-down space is:
+
+```text
+a =  cos(rotation) * scaleX
+b =  sin(rotation) * scaleX
+c = -sin(rotation) * scaleY
+d =  cos(rotation) * scaleY
+```
+
+Positive AE Rotation therefore follows the clockwise visual direction in the Y-down effect buffer. The anchor is subtracted through the full affine basis, not through an axis-aligned `anchor * scale` shortcut.
+
+`TransformOrientedRectangle()` normalizes `axisX` and `axisY` after applying the affine basis and folds their lengths into `halfWidth` and `halfHeight`. `IsPointInsideOrientedRectangle()` projects `point - center` onto those normalized axes and tests `abs(localX) <= halfWidth` and `abs(localY) <= halfHeight`. This is the critical guard that prevents pixels inside the AABB but outside the oriented primitive from being affected by CornerFlex.
+
+The Phase 5.12C pure geometry test `research/ValidateRectangleLayerRotation2DStaticPure.py` closed with PASS for point-in-oriented-rect, normalized axes, AABB, Rotation 0, Rotation 90 and Rotation ±45. The visual harness `research/ValidateRectangleLayerRotation2DStatic.jsx` plus `research/AnalyzeRectangleLayerRotation2DStaticFrames.py` closed with PASS for A-R: Rotation 0, 15, 30, 45, 90, -45, 180, 360, Rotation + Scale, Rotation + Anchor, Rotation + Layer Position, Rotation + Rectangle Position, combined Anchor + Position + Scale, Trim 0%, Trim 10%, left-only Trim and non-uniform Trim. The analyzer used an opaque full-frame shape behind the selected Rectangle Path so AABB-only false positives were detectable; outside-AABB-only samples stayed transparent for rotated cases.
+
+The same visual pass also covered Phase 5.11 regressions for positive Scale, non-uniform Scale, Anchor, Layer Position, Rectangle Position, Scale animated at the sampled render time, Scale expression at the sampled render time and manual return to Layer Bounds. Rotation animation and expression-driven Rotation are not declared as formal support in this phase. Parenting, 3D layers, Scale zero/negative, downsampling/origin special cases, Shape Group transforms, Skew, SmartFX and MFR remain out of scope or fallback paths.
+
 ## 9. Estado actual
 
 Actualmente están implementados:

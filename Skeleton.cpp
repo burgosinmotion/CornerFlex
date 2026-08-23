@@ -458,7 +458,15 @@ TrimFunc16(
 		y < topBoundary ||
 		y >= bottomBoundary;
 
-	if (outsideBounds) {
+	const PF_Boolean outsideOrientedRectangle =
+		context->hasOrientedRect &&
+		!IsPointInsideOrientedRectangle(
+			context->orientedRect,
+			static_cast<PF_FpLong>(x) + 0.5,
+			static_cast<PF_FpLong>(y) + 0.5);
+
+	if (outsideBounds ||
+		outsideOrientedRectangle) {
 		outP->alpha = 0;
 		outP->red = 0;
 		outP->green = 0;
@@ -502,7 +510,15 @@ TrimFunc8(
 		y < topBoundary ||
 		y >= bottomBoundary;
 
-	if (outsideBounds) {
+	const PF_Boolean outsideOrientedRectangle =
+		context->hasOrientedRect &&
+		!IsPointInsideOrientedRectangle(
+			context->orientedRect,
+			static_cast<PF_FpLong>(x) + 0.5,
+			static_cast<PF_FpLong>(y) + 0.5);
+
+	if (outsideBounds ||
+		outsideOrientedRectangle) {
 		outP->alpha = 0;
 		outP->red = 0;
 		outP->green = 0;
@@ -747,11 +763,22 @@ TransformLocalBoundsToEffectSpace(
 		return sourceData;
 	}
 
-	const CF_Rect transformedBounds =
-		TransformLocalBoundsWithLayerTransform2D(
-			localBounds,
+	const CF_AffineTransform2D layerTransform =
+		BuildLayerTransform2D(
 			coordinateContext,
 			layerTransformContext);
+
+	const CF_OrientedRectangle localRectangle =
+		BuildAxisAlignedOrientedRectangle(localBounds);
+
+	const CF_OrientedRectangle transformedRectangle =
+		TransformOrientedRectangle(
+			localRectangle,
+			layerTransform);
+
+	const CF_Rect transformedBounds =
+		ComputeOrientedRectangleAABB(
+			transformedRectangle);
 
 	if (!std::isfinite(transformedBounds.left) ||
 		!std::isfinite(transformedBounds.top) ||
@@ -762,7 +789,9 @@ TransformLocalBoundsToEffectSpace(
 		return sourceData;
 	}
 
-	sourceData.bounds = transformedBounds;
+	sourceData.bounds = localBounds;
+	sourceData.layerTransform = layerTransform;
+	sourceData.hasLayerTransform = TRUE;
 	sourceData.isAvailable = TRUE;
 
 	return sourceData;
@@ -1370,26 +1399,24 @@ ResolveLayerTransform2DFromAfterEffects(
 		transformContext.scaleX > 0.0 &&
 		transformContext.scaleY > 0.0 &&
 		rotationType == AEGP_StreamType_OneD &&
-		std::isfinite(rotationValue.one_d) &&
-		std::fabs(rotationValue.one_d) <= 0.0001;
+		std::isfinite(rotationValue.one_d);
 
 	if (!supportedTransform) {
 		return transformContext;
 	}
 
+	transformContext.rotationDegrees =
+		rotationValue.one_d;
+
 	transformContext.translationX =
 		transformContext.positionX -
 		(static_cast<PF_FpLong>(
-			transformContext.compWidth) * 0.5) -
-		(transformContext.anchorX *
-			transformContext.scaleX);
+			transformContext.compWidth) * 0.5);
 
 	transformContext.translationY =
 		transformContext.positionY -
 		(static_cast<PF_FpLong>(
-			transformContext.compHeight) * 0.5) -
-		(transformContext.anchorY *
-			transformContext.scaleY);
+			transformContext.compHeight) * 0.5);
 
 	transformContext.isValid =
 		std::isfinite(transformContext.translationX) &&
@@ -1433,6 +1460,12 @@ ResolveRectangleGeometry(
 
 	sourceData.bounds =
 		rectangleSource.bounds;
+
+	sourceData.layerTransform =
+		rectangleSource.layerTransform;
+
+	sourceData.hasLayerTransform =
+		rectangleSource.hasLayerTransform;
 
 	sourceData.source =
 		CF_GEOMETRY_SOURCE_RECTANGLE;
@@ -1504,6 +1537,45 @@ TransformPoint2D(
 	return transformedPoint;
 }
 
+PF_FpLong
+DotVector2(
+	const CF_Vector2& a,
+	const CF_Vector2& b)
+{
+	return (a.x * b.x) + (a.y * b.y);
+}
+
+PF_FpLong
+LengthVector2(
+	const CF_Vector2& vector)
+{
+	return std::sqrt(DotVector2(vector, vector));
+}
+
+CF_Vector2
+NormalizeVector2(
+	const CF_Vector2& vector)
+{
+	CF_Vector2 normalizedVector;
+	AEFX_CLR_STRUCT(normalizedVector);
+
+	const PF_FpLong length =
+		LengthVector2(vector);
+
+	if (length <= 0.0 ||
+		!std::isfinite(length)) {
+		return normalizedVector;
+	}
+
+	normalizedVector.x =
+		vector.x / length;
+
+	normalizedVector.y =
+		vector.y / length;
+
+	return normalizedVector;
+}
+
 CF_AffineTransform2D
 MakeIdentityAffineTransform2D()
 {
@@ -1529,19 +1601,43 @@ BuildLayerTransform2D(
 		return transform;
 	}
 
+	const PF_FpLong radians =
+		layerTransformContext.rotationDegrees *
+		(3.14159265358979323846 / 180.0);
+
+	const PF_FpLong cosRotation =
+		std::cos(radians);
+
+	const PF_FpLong sinRotation =
+		std::sin(radians);
+
 	transform.a =
+		cosRotation *
 		layerTransformContext.scaleX;
 
+	transform.b =
+		sinRotation *
+		layerTransformContext.scaleX;
+
+	transform.c =
+		-sinRotation *
+		layerTransformContext.scaleY;
+
 	transform.d =
+		cosRotation *
 		layerTransformContext.scaleY;
 
 	transform.tx =
 		coordinateContext.originX +
-		layerTransformContext.translationX;
+		layerTransformContext.translationX -
+		((transform.a * layerTransformContext.anchorX) +
+			(transform.c * layerTransformContext.anchorY));
 
 	transform.ty =
 		coordinateContext.originY +
-		layerTransformContext.translationY;
+		layerTransformContext.translationY -
+		((transform.b * layerTransformContext.anchorX) +
+			(transform.d * layerTransformContext.anchorY));
 
 	return transform;
 }
@@ -1609,11 +1705,23 @@ TransformOrientedRectangle(
 		(transform.b * rectangle.axisY.x) +
 		(transform.d * rectangle.axisY.y);
 
+	const PF_FpLong axisXLength =
+		LengthVector2(transformedRectangle.axisX);
+
+	const PF_FpLong axisYLength =
+		LengthVector2(transformedRectangle.axisY);
+
+	transformedRectangle.axisX =
+		NormalizeVector2(transformedRectangle.axisX);
+
+	transformedRectangle.axisY =
+		NormalizeVector2(transformedRectangle.axisY);
+
 	transformedRectangle.halfWidth =
-		rectangle.halfWidth;
+		rectangle.halfWidth * axisXLength;
 
 	transformedRectangle.halfHeight =
-		rectangle.halfHeight;
+		rectangle.halfHeight * axisYLength;
 
 	return transformedRectangle;
 }
@@ -1676,6 +1784,31 @@ ComputeOrientedRectangleAABB(
 	return aabb;
 }
 
+A_Boolean
+IsPointInsideOrientedRectangle(
+	const CF_OrientedRectangle& rectangle,
+	PF_FpLong x,
+	PF_FpLong y)
+{
+	const CF_Vector2 pointDelta = {
+		x - rectangle.center.x,
+		y - rectangle.center.y
+	};
+
+	const PF_FpLong localX =
+		DotVector2(pointDelta, rectangle.axisX);
+
+	const PF_FpLong localY =
+		DotVector2(pointDelta, rectangle.axisY);
+
+	const PF_FpLong epsilon = 0.000001;
+
+	return std::fabs(localX) <= rectangle.halfWidth + epsilon &&
+		std::fabs(localY) <= rectangle.halfHeight + epsilon
+			? TRUE
+			: FALSE;
+}
+
 static CF_GeometryContext
 BuildGeometryContext(
 	const CF_GeometrySourceData& sourceData)
@@ -1689,6 +1822,9 @@ BuildGeometryContext(
 	geometryContext.geometryBounds =
 		geometryContext.rectangleGeometry.bounds;
 
+	geometryContext.layerTransform =
+		sourceData.layerTransform;
+
 	geometryContext.cornerRadii.topLeft = 0;
 	geometryContext.cornerRadii.topRight = 0;
 	geometryContext.cornerRadii.bottomRight = 0;
@@ -1699,6 +1835,9 @@ BuildGeometryContext(
 
 	geometryContext.primitiveType =
 		sourceData.primitiveType;
+
+	geometryContext.hasLayerTransform =
+		sourceData.hasLayerTransform;
 
 	geometryContext.isFallback =
 		sourceData.isFallback;
@@ -1792,6 +1931,26 @@ BuildRenderContext(
 
 	renderContext.geometryBounds =
 		geometryContext.geometryBounds;
+
+	if (geometryContext.source == CF_GEOMETRY_SOURCE_RECTANGLE &&
+		geometryContext.primitiveType == CF_PRIMITIVE_RECTANGLE &&
+		geometryContext.hasLayerTransform) {
+
+		const CF_OrientedRectangle localRectangle =
+			BuildAxisAlignedOrientedRectangle(
+				geometryContext.geometryBounds);
+
+		renderContext.orientedRect =
+			TransformOrientedRectangle(
+				localRectangle,
+				geometryContext.layerTransform);
+
+		renderContext.geometryBounds =
+			ComputeOrientedRectangleAABB(
+				renderContext.orientedRect);
+
+		renderContext.hasOrientedRect = TRUE;
+	}
 
 	renderContext.inputWidth = inputWidth;
 	renderContext.inputHeight = inputHeight;

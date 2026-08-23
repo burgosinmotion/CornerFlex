@@ -1,0 +1,455 @@
+CornerFlex Phase 5.12C Static Layer Rotation 2D Validation
+After Effects version: 26.3x87
+Operating system: Windows/64 10.0  
+Provider: E:\Files\Proyectos\CornerFlexDev\CornerFlex-CEP\jsx\CornerFlexGeometryProvider.jsx
+Flow: Rectangle local primitive -> Trim primitive-space -> Layer Transform 2D -> Oriented Render Geometry -> AABB containment -> Pixel Renderer
+
+BEGIN CASE A
+CASE A - Rotation 0
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [100.0000, 100.0000]
+  Layer Rotation: 0.0000
+  Provider capture/disable: PASS
+
+END CASE A
+BEGIN CASE B
+CASE B - Rotation 15
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [100.0000, 100.0000]
+  Layer Rotation: 15.0000
+  Provider capture/disable: PASS
+
+END CASE B
+BEGIN CASE C
+CASE C - Rotation 30
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [100.0000, 100.0000]
+  Layer Rotation: 30.0000
+  Provider capture/disable: PASS
+
+END CASE C
+BEGIN CASE D
+CASE D - Rotation 45
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [100.0000, 100.0000]
+  Layer Rotation: 45.0000
+  Provider capture/disable: PASS
+
+END CASE D
+BEGIN CASE E
+CASE E - Rotation 90
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [100.0000, 100.0000]
+  Layer Rotation: 90.0000
+  Provider capture/disable: PASS
+
+END CASE E
+BEGIN CASE F
+CASE F - Rotation -45
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [100.0000, 100.0000]
+  Layer Rotation: -45.0000
+  Provider capture/disable: PASS
+
+END CASE F
+BEGIN CASE G
+CASE G - Rotation 180
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [100.0000, 100.0000]
+  Layer Rotation: 180.0000
+  Provider capture/disable: PASS
+
+END CASE G
+BEGIN CASE H
+CASE H - Rotation 360
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [100.0000, 100.0000]
+  Layer Rotation: 360.0000
+  Provider capture/disable: PASS
+
+END CASE H
+BEGIN CASE I
+CASE I - Rotation plus Scale 150x150
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [150.0000, 150.0000]
+  Layer Rotation: 30.0000
+  Provider capture/disable: PASS
+
+END CASE I
+BEGIN CASE J
+CASE J - Rotation plus Scale 150x75
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [150.0000, 75.0000]
+  Layer Rotation: 30.0000
+  Provider capture/disable: PASS
+
+END CASE J
+BEGIN CASE K
+CASE K - Rotation plus Anchor
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [100.0000, 50.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [100.0000, 100.0000]
+  Layer Rotation: 30.0000
+  Provider capture/disable: PASS
+
+END CASE K
+BEGIN CASE L
+CASE L - Rotation plus Layer Position
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [1200.0000, 700.0000]
+  Layer Scale: [100.0000, 100.0000]
+  Layer Rotation: 30.0000
+  Provider capture/disable: PASS
+
+END CASE L
+BEGIN CASE M
+CASE M - Rotation plus Rectangle Position
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [200.0000, 100.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [100.0000, 100.0000]
+  Layer Rotation: 30.0000
+  Provider capture/disable: PASS
+
+END CASE M
+BEGIN CASE N
+CASE N - Rotation plus Anchor Position Scale
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [200.0000, 100.0000]
+  Layer Anchor: [100.0000, 50.0000]
+  Layer Position: [1200.0000, 700.0000]
+  Layer Scale: [150.0000, 75.0000]
+  Layer Rotation: 30.0000
+  Provider capture/disable: PASS
+
+END CASE N
+BEGIN CASE O
+CASE O - Rotation 30 Trim 0
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [100.0000, 100.0000]
+  Layer Rotation: 30.0000
+  Provider capture/disable: PASS
+
+END CASE O
+BEGIN CASE P
+CASE P - Rotation 30 Trim 10
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [100.0000, 100.0000]
+  Layer Rotation: 30.0000
+  Provider capture/disable: PASS
+
+END CASE P
+BEGIN CASE Q
+CASE Q - Rotation 30 Trim Left only
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [100.0000, 100.0000]
+  Layer Rotation: 30.0000
+  Provider capture/disable: PASS
+
+END CASE Q
+BEGIN CASE R
+CASE R - Rotation 45 Trim non-uniform
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [100.0000, 100.0000]
+  Layer Rotation: 45.0000
+  Provider capture/disable: PASS
+
+END CASE R
+BEGIN CASE RA
+CASE RA - Regression Scale 150x150
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [150.0000, 150.0000]
+  Layer Rotation: 0.0000
+  Provider capture/disable: PASS
+
+END CASE RA
+BEGIN CASE RB
+CASE RB - Regression Scale 150x75
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [150.0000, 75.0000]
+  Layer Rotation: 0.0000
+  Provider capture/disable: PASS
+
+END CASE RB
+BEGIN CASE RC
+CASE RC - Regression Anchor
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [100.0000, 50.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [150.0000, 150.0000]
+  Layer Rotation: 0.0000
+  Provider capture/disable: PASS
+
+END CASE RC
+BEGIN CASE RD
+CASE RD - Regression Layer Position
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [1200.0000, 700.0000]
+  Layer Scale: [150.0000, 150.0000]
+  Layer Rotation: 0.0000
+  Provider capture/disable: PASS
+
+END CASE RD
+BEGIN CASE RE
+CASE RE - Regression Rectangle Position
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [200.0000, 100.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [150.0000, 150.0000]
+  Layer Rotation: 0.0000
+  Provider capture/disable: PASS
+
+END CASE RE
+BEGIN CASE RF
+CASE RF - Regression Scale animated T1
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [150.0000, 150.0000]
+  Layer Rotation: 0.0000
+  Provider capture/disable: PASS
+
+END CASE RF
+BEGIN CASE RG
+CASE RG - Regression Scale expression T1
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [150.0000, 150.0000]
+  Layer Rotation: 0.0000
+  Provider capture/disable: PASS
+
+END CASE RG
+BEGIN CASE RH
+CASE RH - Regression Return to Layer Bounds
+  Rectangle Size: [400.0000, 200.0000]
+  Rectangle Position: [0.0000, 0.0000]
+  Layer Anchor: [0.0000, 0.0000]
+  Layer Position: [960.0000, 540.0000]
+  Layer Scale: [150.0000, 150.0000]
+  Layer Rotation: 0.0000
+  Provider capture/disable: PASS
+
+END CASE RH
+TEMPORARY COMPOSITIONS REMOVED: YES
+SCRIPT RESULT: PASS
+Pixel analysis: pending external RGBA validation.
+
+External RGBA Phase 5.12C Static Layer Rotation 2D analysis
+A Rotation 0: PASS
+  source=Rectangle Source
+  expectedBBox=(800, 460, 1120, 620)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(800, 460, 1120, 620), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(880, 500):255, outsideAABBOnly=(802, 462):255, outsideRequired=False, edge=(960, 460):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+B Rotation 15: PASS
+  source=Rectangle Source
+  expectedBBox=(784, 421, 1136, 659)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(785, 422, 1135, 659), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(893, 481):255, outsideAABBOnly=(786, 423):0, outsideRequired=True, edge=(981, 463):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+C Rotation 30: PASS
+  source=Rectangle Source
+  expectedBBox=(781, 390, 1139, 690)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(782, 391, 1138, 689), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(911, 465):255, outsideAABBOnly=(783, 392):0, outsideRequired=True, edge=(1000, 471):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+D Rotation 45: PASS
+  source=Rectangle Source
+  expectedBBox=(790, 370, 1130, 710)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(791, 371, 1130, 710), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(932, 455):255, outsideAABBOnly=(792, 372):0, outsideRequired=True, edge=(1017, 483):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+E Rotation 90: PASS
+  source=Rectangle Source
+  expectedBBox=(880, 380, 1040, 700)
+  alphaBBoxes layer=(203, 108, 1716, 972), source=(880, 380, 1040, 700), fallback=(203, 108, 1716, 972)
+  samples center=(960, 540):255, inside=(1000, 460):255, outsideAABBOnly=(882, 382):255, outsideRequired=False, edge=(1040, 540):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+F Rotation -45: PASS
+  source=Rectangle Source
+  expectedBBox=(790, 370, 1130, 710)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(791, 371, 1130, 710), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(875, 568):255, outsideAABBOnly=(792, 372):0, outsideRequired=True, edge=(903, 483):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+G Rotation 180: PASS
+  source=Rectangle Source
+  expectedBBox=(800, 460, 1120, 620)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(800, 460, 1120, 620), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(1040, 580):255, outsideAABBOnly=(802, 462):255, outsideRequired=False, edge=(960, 620):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+H Rotation 360: PASS
+  source=Rectangle Source
+  expectedBBox=(800, 459, 1120, 620)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(800, 460, 1120, 620), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(880, 500):255, outsideAABBOnly=(802, 461):255, outsideRequired=False, edge=(960, 460):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+I Rotation plus Scale 150x150: PASS
+  source=Rectangle Source
+  expectedBBox=(692, 316, 1228, 764)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(693, 317, 1228, 764), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(886, 428):255, outsideAABBOnly=(694, 318):0, outsideRequired=True, edge=(1020, 436):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+J Rotation plus Scale 150x75: PASS
+  source=Rectangle Source
+  expectedBBox=(722, 368, 1198, 712)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(723, 369, 1198, 712), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(871, 454):255, outsideAABBOnly=(724, 370):0, outsideRequired=True, edge=(990, 488):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+K Rotation plus Anchor: PASS
+  source=Rectangle Source
+  expectedBBox=(719, 297, 1077, 596)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(720, 298, 1077, 596), fallback=(192, 108, 1728, 972)
+  samples center=(898, 447):255, inside=(849, 372):255, outsideAABBOnly=(721, 299):0, outsideRequired=True, edge=(938, 377):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+L Rotation plus Layer Position: PASS
+  source=Rectangle Source
+  expectedBBox=(1021, 550, 1379, 850)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(1022, 551, 1378, 849), fallback=(192, 108, 1728, 972)
+  samples center=(1200, 700):255, inside=(1151, 625):255, outsideAABBOnly=(1023, 552):0, outsideRequired=True, edge=(1240, 631):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+M Rotation plus Rectangle Position: PASS
+  source=Rectangle Source
+  expectedBBox=(904, 577, 1262, 876)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(905, 578, 1262, 876), fallback=(192, 108, 1728, 972)
+  samples center=(1083, 727):255, inside=(1034, 652):255, outsideAABBOnly=(906, 579):0, outsideRequired=True, edge=(1123, 657):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+N Rotation plus Anchor Position Scale: PASS
+  source=Rectangle Source
+  expectedBBox=(1073, 635, 1549, 980)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(1074, 636, 1549, 979), fallback=(192, 108, 1728, 972)
+  samples center=(1311, 807):255, inside=(1222, 721):255, outsideAABBOnly=(1075, 637):0, outsideRequired=True, edge=(1341, 756):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+O Rotation 30 Trim 0: PASS
+  source=Rectangle Source
+  expectedBBox=(736, 353, 1184, 727)
+  alphaBBoxes layer=(0, 0, 1920, 1080), source=(737, 354, 1183, 726), fallback=(0, 0, 1920, 1080)
+  samples center=(960, 540):255, inside=(898, 447):255, outsideAABBOnly=(738, 355):0, outsideRequired=True, edge=(1010, 453):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+P Rotation 30 Trim 10: PASS
+  source=Rectangle Source
+  expectedBBox=(781, 390, 1139, 690)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(782, 391, 1138, 689), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(911, 465):255, outsideAABBOnly=(783, 392):0, outsideRequired=True, edge=(1000, 471):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+Q Rotation 30 Trim Left only: PASS
+  source=Rectangle Source
+  expectedBBox=(771, 373, 1184, 727)
+  alphaBBoxes layer=(192, 0, 1920, 1080), source=(772, 374, 1183, 726), fallback=(192, 0, 1920, 1080)
+  samples center=(977, 550):255, inside=(924, 462):255, outsideAABBOnly=(773, 375):0, outsideRequired=True, edge=(1027, 463):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+R Rotation 45 Trim non-uniform: PASS
+  source=Rectangle Source
+  expectedBBox=(776, 363, 1095, 682)
+  alphaBBoxes layer=(96, 162, 1536, 972), source=(777, 364, 1094, 681), fallback=(96, 162, 1536, 972)
+  samples center=(935, 522):255, inside=(909, 443):255, outsideAABBOnly=(778, 365):0, outsideRequired=True, edge=(988, 469):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+RA Regression Scale 150x150: PASS
+  source=Rectangle Source
+  expectedBBox=(720, 420, 1200, 660)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(720, 420, 1200, 660), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(840, 480):255, outsideAABBOnly=(722, 422):255, outsideRequired=False, edge=(960, 420):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+RB Regression Scale 150x75: PASS
+  source=Rectangle Source
+  expectedBBox=(720, 480, 1200, 600)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(720, 480, 1200, 600), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(840, 510):255, outsideAABBOnly=(722, 482):255, outsideRequired=False, edge=(960, 480):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+RC Regression Anchor: PASS
+  source=Rectangle Source
+  expectedBBox=(570, 345, 1050, 585)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(570, 345, 1050, 585), fallback=(192, 108, 1728, 972)
+  samples center=(810, 465):255, inside=(690, 405):255, outsideAABBOnly=(572, 347):255, outsideRequired=False, edge=(810, 345):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+RD Regression Layer Position: PASS
+  source=Rectangle Source
+  expectedBBox=(960, 580, 1440, 820)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(960, 580, 1440, 820), fallback=(192, 108, 1728, 972)
+  samples center=(1200, 700):255, inside=(1080, 640):255, outsideAABBOnly=(962, 582):255, outsideRequired=False, edge=(1200, 580):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+RE Regression Rectangle Position: PASS
+  source=Rectangle Source
+  expectedBBox=(1020, 570, 1500, 810)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(1020, 570, 1500, 810), fallback=(192, 108, 1728, 972)
+  samples center=(1260, 690):255, inside=(1140, 630):255, outsideAABBOnly=(1022, 572):255, outsideRequired=False, edge=(1260, 570):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+RF Regression Scale animated T1: PASS
+  source=Rectangle Source
+  expectedBBox=(720, 420, 1200, 660)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(720, 420, 1200, 660), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(840, 480):255, outsideAABBOnly=(722, 422):255, outsideRequired=False, edge=(960, 420):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+RG Regression Scale expression T1: PASS
+  source=Rectangle Source
+  expectedBBox=(720, 420, 1200, 660)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(720, 420, 1200, 660), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(840, 480):255, outsideAABBOnly=(722, 422):255, outsideRequired=False, edge=(960, 420):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+RH Regression Return to Layer Bounds: PASS
+  source=Layer Bounds after manual return
+  expectedBBox=(720, 420, 1200, 660)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(720, 420, 1200, 660), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(840, 480):255, outsideAABBOnly=(722, 422):255, outsideRequired=False, edge=(960, 420):255
+  sourceVsLayerDifference=(192, 108, 1728, 972); fallbackVsLayerDifference=None
+Rotation 360 equivalent to 0 bbox tolerance: PASS
+PHASE 5.12C STATIC LAYER ROTATION 2D RESULT: PASS

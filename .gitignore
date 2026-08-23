@@ -68,3 +68,6 @@ research/output/Phase511B2ValidationFrames/
 
 # Full Phase 5.12B visual validation frames; selected evidence is stored separately
 research/output/Phase512BValidationFrames/
+
+# Full Phase 5.12C visual validation frames; selected evidence can be stored separately
+research/output/Phase512CValidationFrames/

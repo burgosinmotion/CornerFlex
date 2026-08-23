@@ -270,6 +270,8 @@ typedef short int			int16;
 	typedef struct
 	{
 		CF_Rect bounds;
+		CF_AffineTransform2D layerTransform;
+		A_Boolean hasLayerTransform;
 		A_Boolean isAvailable;
 
 	} CF_RectangleSourceData;
@@ -295,6 +297,7 @@ typedef short int			int16;
 		PF_FpLong positionY;
 		PF_FpLong scaleX;
 		PF_FpLong scaleY;
+		PF_FpLong rotationDegrees;
 		A_long compWidth;
 		A_long compHeight;
 		PF_FpLong translationX;
@@ -313,8 +316,10 @@ typedef short int			int16;
 	typedef struct
 	{
 		CF_Rect bounds;
+		CF_AffineTransform2D layerTransform;
 		CF_GeometrySource source;
 		CF_PrimitiveType primitiveType;
+		A_Boolean hasLayerTransform;
 		A_Boolean isFallback;
 
 	} CF_GeometrySourceData;
@@ -322,10 +327,12 @@ typedef short int			int16;
 	typedef struct
 	{
 		CF_Rect geometryBounds;
+		CF_AffineTransform2D layerTransform;
 		CF_RectangleGeometry rectangleGeometry;
 		CF_CornerRadii cornerRadii;
 		CF_GeometrySource source;
 		CF_PrimitiveType primitiveType;
+		A_Boolean hasLayerTransform;
 		A_Boolean isFallback;
 
 	} CF_GeometryContext;
@@ -333,6 +340,8 @@ typedef short int			int16;
 	typedef struct
 	{
 		CF_Rect geometryBounds;
+		CF_OrientedRectangle orientedRect;
+		A_Boolean hasOrientedRect;
 
 		A_long inputWidth;
 		A_long inputHeight;
@@ -365,6 +374,19 @@ typedef short int			int16;
 		const CF_AffineTransform2D& transform,
 		const CF_Vector2& point);
 
+	PF_FpLong
+	DotVector2(
+		const CF_Vector2& a,
+		const CF_Vector2& b);
+
+	PF_FpLong
+	LengthVector2(
+		const CF_Vector2& vector);
+
+	CF_Vector2
+	NormalizeVector2(
+		const CF_Vector2& vector);
+
 	CF_AffineTransform2D
 	MakeIdentityAffineTransform2D();
 
@@ -385,6 +407,12 @@ typedef short int			int16;
 	CF_Rect
 	ComputeOrientedRectangleAABB(
 		const CF_OrientedRectangle& rectangle);
+
+	A_Boolean
+	IsPointInsideOrientedRectangle(
+		const CF_OrientedRectangle& rectangle,
+		PF_FpLong x,
+		PF_FpLong y);
 
 	// Validates geometry data without modifying it or accessing the host.
 	A_Boolean
