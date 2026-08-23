@@ -1072,6 +1072,20 @@ The Phase 5.12C pure geometry test `research/ValidateRectangleLayerRotation2DSta
 
 The same visual pass also covered Phase 5.11 regressions for positive Scale, non-uniform Scale, Anchor, Layer Position, Rectangle Position, Scale animated at the sampled render time, Scale expression at the sampled render time and manual return to Layer Bounds. Rotation animation and expression-driven Rotation are not declared as formal support in this phase. Parenting, 3D layers, Scale zero/negative, downsampling/origin special cases, Shape Group transforms, Skew, SmartFX and MFR remain out of scope or fallback paths.
 
+### Phase 5.12D — Animated and Expression Rotation
+
+Phase 5.12D validates animated and expression-driven Layer Rotation 2D as behavior already supported by the Phase 5.12C renderer. No C++ changes were required for this phase.
+
+Rotation continues to be evaluated through `AEGP_LayerStream_ROTATION` after converting the effect time with `AEGP_ConvertEffectToCompTime()`. The stream is read in `AEGP_LTimeMode_CompTime` with `pre_expressionB = FALSE`, so the value consumed by `CF_LayerTransform2DContext::rotationDegrees` is the post-expression value for the current render time. `CF_AffineTransform2D` is rebuilt per render/frame from the evaluated Anchor, Position, Scale and Rotation streams; there is no separate cache or special path for animated Rotation.
+
+Animated Scale and animated Rotation are resolved against the same `compTime`, so their combined affine transform remains temporally coherent. Trim remains in Rectangle primitive/local space before the layer transform is applied, and pixels that fall inside the AABB containment but outside the oriented rectangle continue to be excluded by `IsPointInsideOrientedRectangle()`.
+
+The Phase 5.12D validation harness `research/ValidateRectangleLayerRotation2DAnimated.jsx` plus `research/AnalyzeRectangleLayerRotation2DAnimatedFrames.py` closed A-V with PASS: animated Rotation 0→90, negative Rotation, 0→180, 0→360, positive and negative expression Rotation, Rotation + animated Scale, Rotation + animated non-uniform Scale, Anchor, Layer Position, Rectangle Position, full affine combination, Trim 10%, left-only Trim, non-uniform Trim, parent fallback, 3D fallback, Scale zero fallback, Scale negative fallback, 0°/360° equivalence, -360° and 720°. Static regression also closed with PASS for Rotation 15°, 45°, -45°, Rotation + Scale, return to Layer Bounds, animated Scale and expression Scale.
+
+The harness uses a 4 fps composition only so `T0`, `T0.25`, `T0.5`, `T0.75` and `T1` align with exact `saveFrameToPng()` frames. This frame-rate choice is a validation artifact and is not a plugin requirement.
+
+Parenting, 3D layers, Scale zero/negative as renderable geometry, Shape Group transforms, Skew, downsampling, special origins, SmartFX and MFR remain outside the supported Rectangle Source transform path or continue to use fallback behavior.
+
 ## 9. Estado actual
 
 Actualmente están implementados:

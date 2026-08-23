@@ -1,0 +1,1112 @@
+CornerFlex Phase 5.12D Animated/Expression Layer Rotation 2D Validation
+After Effects version: 26.3x87
+Operating system: Windows/64 10.0  
+Provider: E:\Files\Proyectos\CornerFlexDev\CornerFlex-CEP\jsx\CornerFlexGeometryProvider.jsx
+Temporal flow: effect current_time -> compTime -> post-expression Rotation/Scale -> affine -> oriented renderer
+
+BEGIN CASE A
+CASE A - Animated Rotation 0 to 90
+  FRAME A_T0
+    compTime: 0.0000
+    Evaluated Rotation: 0.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME A_T0p5
+    compTime: 0.5000
+    Evaluated Rotation: 45.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME A_T1
+    compTime: 1.0000
+    Evaluated Rotation: 90.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE A
+BEGIN CASE B
+CASE B - Animated Negative Rotation
+  FRAME B_T0
+    compTime: 0.0000
+    Evaluated Rotation: 0.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME B_T0p5
+    compTime: 0.5000
+    Evaluated Rotation: -22.5000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME B_T1
+    compTime: 1.0000
+    Evaluated Rotation: -45.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE B
+BEGIN CASE C
+CASE C - Animated Rotation 0 to 180
+  FRAME C_T0
+    compTime: 0.0000
+    Evaluated Rotation: 0.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME C_T0p25
+    compTime: 0.2500
+    Evaluated Rotation: 45.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME C_T0p5
+    compTime: 0.5000
+    Evaluated Rotation: 90.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME C_T0p75
+    compTime: 0.7500
+    Evaluated Rotation: 135.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME C_T1
+    compTime: 1.0000
+    Evaluated Rotation: 180.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE C
+BEGIN CASE D
+CASE D - Animated Rotation 0 to 360
+  FRAME D_T0
+    compTime: 0.0000
+    Evaluated Rotation: 0.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME D_T0p25
+    compTime: 0.2500
+    Evaluated Rotation: 90.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME D_T0p5
+    compTime: 0.5000
+    Evaluated Rotation: 180.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME D_T0p75
+    compTime: 0.7500
+    Evaluated Rotation: 270.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME D_T1
+    compTime: 1.0000
+    Evaluated Rotation: 360.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE D
+BEGIN CASE E
+CASE E - Expression Rotation time * 90
+  FRAME E_T0
+    compTime: 0.0000
+    Evaluated Rotation: 0.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME E_T0p5
+    compTime: 0.5000
+    Evaluated Rotation: 45.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME E_T1
+    compTime: 1.0000
+    Evaluated Rotation: 90.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE E
+BEGIN CASE F
+CASE F - Expression Negative Rotation -time * 90
+  FRAME F_T0
+    compTime: 0.0000
+    Evaluated Rotation: 0.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME F_T0p5
+    compTime: 0.5000
+    Evaluated Rotation: -45.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME F_T1
+    compTime: 1.0000
+    Evaluated Rotation: -90.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE F
+BEGIN CASE G
+CASE G - Animated Rotation plus Animated Scale
+  FRAME G_T0
+    compTime: 0.0000
+    Evaluated Rotation: 0.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME G_T0p5
+    compTime: 0.5000
+    Evaluated Rotation: 22.5000
+    Evaluated Scale: [125.0000, 125.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME G_T1
+    compTime: 1.0000
+    Evaluated Rotation: 45.0000
+    Evaluated Scale: [150.0000, 150.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE G
+BEGIN CASE H
+CASE H - Animated Rotation plus Animated Non-uniform Scale
+  FRAME H_T0
+    compTime: 0.0000
+    Evaluated Rotation: 0.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME H_T0p5
+    compTime: 0.5000
+    Evaluated Rotation: 22.5000
+    Evaluated Scale: [125.0000, 87.5000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME H_T1
+    compTime: 1.0000
+    Evaluated Rotation: 45.0000
+    Evaluated Scale: [150.0000, 75.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE H
+BEGIN CASE I
+CASE I - Animated Rotation plus Anchor
+  FRAME I_T0
+    compTime: 0.0000
+    Evaluated Rotation: 0.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [100.0000, 50.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME I_T0p5
+    compTime: 0.5000
+    Evaluated Rotation: 22.5000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [100.0000, 50.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME I_T1
+    compTime: 1.0000
+    Evaluated Rotation: 45.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [100.0000, 50.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE I
+BEGIN CASE J
+CASE J - Animated Rotation plus Layer Position
+  FRAME J_T0
+    compTime: 0.0000
+    Evaluated Rotation: 0.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [1200.0000, 700.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME J_T0p5
+    compTime: 0.5000
+    Evaluated Rotation: 22.5000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [1200.0000, 700.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME J_T1
+    compTime: 1.0000
+    Evaluated Rotation: 45.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [1200.0000, 700.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE J
+BEGIN CASE K
+CASE K - Animated Rotation plus Rectangle Position
+  FRAME K_T0
+    compTime: 0.0000
+    Evaluated Rotation: 0.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [200.0000, 100.0000]
+    Expected source: Rectangle Source
+  FRAME K_T0p5
+    compTime: 0.5000
+    Evaluated Rotation: 22.5000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [200.0000, 100.0000]
+    Expected source: Rectangle Source
+  FRAME K_T1
+    compTime: 1.0000
+    Evaluated Rotation: 45.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [200.0000, 100.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE K
+BEGIN CASE L
+CASE L - Animated Full Combination
+  FRAME L_T0
+    compTime: 0.0000
+    Evaluated Rotation: 0.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [100.0000, 50.0000]
+    Layer Position: [1200.0000, 700.0000]
+    Rectangle Position: [200.0000, 100.0000]
+    Expected source: Rectangle Source
+  FRAME L_T0p5
+    compTime: 0.5000
+    Evaluated Rotation: 22.5000
+    Evaluated Scale: [125.0000, 87.5000]
+    Anchor: [100.0000, 50.0000]
+    Layer Position: [1200.0000, 700.0000]
+    Rectangle Position: [200.0000, 100.0000]
+    Expected source: Rectangle Source
+  FRAME L_T1
+    compTime: 1.0000
+    Evaluated Rotation: 45.0000
+    Evaluated Scale: [150.0000, 75.0000]
+    Anchor: [100.0000, 50.0000]
+    Layer Position: [1200.0000, 700.0000]
+    Rectangle Position: [200.0000, 100.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE L
+BEGIN CASE M
+CASE M - Animated Rotation plus Trim 10
+  FRAME M_T0
+    compTime: 0.0000
+    Evaluated Rotation: 0.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME M_T0p5
+    compTime: 0.5000
+    Evaluated Rotation: 22.5000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME M_T1
+    compTime: 1.0000
+    Evaluated Rotation: 45.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE M
+BEGIN CASE N
+CASE N - Animated Rotation plus Trim Left only
+  FRAME N_T0
+    compTime: 0.0000
+    Evaluated Rotation: 0.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME N_T0p5
+    compTime: 0.5000
+    Evaluated Rotation: 22.5000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME N_T1
+    compTime: 1.0000
+    Evaluated Rotation: 45.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE N
+BEGIN CASE O
+CASE O - Animated Rotation plus Non-uniform Trim
+  FRAME O_T0
+    compTime: 0.0000
+    Evaluated Rotation: 0.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME O_T0p5
+    compTime: 0.5000
+    Evaluated Rotation: 22.5000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME O_T1
+    compTime: 1.0000
+    Evaluated Rotation: 45.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE O
+BEGIN CASE P
+CASE P - Animated Rotation plus Parent fallback
+  FRAME P_T1
+    compTime: 1.0000
+    Evaluated Rotation: 45.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Layer Bounds fallback
+  Provider capture/disable: PASS
+
+END CASE P
+BEGIN CASE Q
+CASE Q - Animated Rotation plus 3D fallback
+  FRAME Q_T1
+    compTime: 1.0000
+    Evaluated Rotation: 45.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Layer Bounds fallback
+  Provider capture/disable: PASS
+
+END CASE Q
+BEGIN CASE R
+CASE R - Animated Rotation plus Scale Zero fallback
+  FRAME R_T1
+    compTime: 1.0000
+    Evaluated Rotation: 45.0000
+    Evaluated Scale: [0.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Layer Bounds fallback
+  Provider capture/disable: PASS
+
+END CASE R
+BEGIN CASE S
+CASE S - Animated Rotation plus Negative Scale fallback
+  FRAME S_T1
+    compTime: 1.0000
+    Evaluated Rotation: 45.0000
+    Evaluated Scale: [-100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Layer Bounds fallback
+  Provider capture/disable: PASS
+
+END CASE S
+BEGIN CASE T
+CASE T - Equivalence 0 to 360
+  FRAME T_T0
+    compTime: 0.0000
+    Evaluated Rotation: 0.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  FRAME T_T1
+    compTime: 1.0000
+    Evaluated Rotation: 360.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE T
+BEGIN CASE U
+CASE U - Equivalence -360
+  FRAME U_T1
+    compTime: 1.0000
+    Evaluated Rotation: -360.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE U
+BEGIN CASE V
+CASE V - Equivalence 720
+  FRAME V_T1
+    compTime: 1.0000
+    Evaluated Rotation: 720.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE V
+BEGIN CASE RS1
+CASE RS1 - Static regression Rotation 15
+  FRAME RS1_T1
+    compTime: 1.0000
+    Evaluated Rotation: 15.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE RS1
+BEGIN CASE RS2
+CASE RS2 - Static regression Rotation 45
+  FRAME RS2_T1
+    compTime: 1.0000
+    Evaluated Rotation: 45.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE RS2
+BEGIN CASE RS3
+CASE RS3 - Static regression Rotation -45
+  FRAME RS3_T1
+    compTime: 1.0000
+    Evaluated Rotation: -45.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE RS3
+BEGIN CASE RS4
+CASE RS4 - Static regression Rotation plus Scale
+  FRAME RS4_T1
+    compTime: 1.0000
+    Evaluated Rotation: 30.0000
+    Evaluated Scale: [150.0000, 150.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE RS4
+BEGIN CASE RS5
+CASE RS5 - Static regression Return to Layer Bounds
+  FRAME RS5_T1
+    compTime: 1.0000
+    Evaluated Rotation: 30.0000
+    Evaluated Scale: [100.0000, 100.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE RS5
+BEGIN CASE RS6
+CASE RS6 - Static regression Scale animated
+  FRAME RS6_T1
+    compTime: 1.0000
+    Evaluated Rotation: 0.0000
+    Evaluated Scale: [150.0000, 150.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE RS6
+BEGIN CASE RS7
+CASE RS7 - Static regression Scale expression
+  FRAME RS7_T1
+    compTime: 1.0000
+    Evaluated Rotation: 0.0000
+    Evaluated Scale: [150.0000, 150.0000]
+    Anchor: [0.0000, 0.0000]
+    Layer Position: [960.0000, 540.0000]
+    Rectangle Position: [0.0000, 0.0000]
+    Expected source: Rectangle Source
+  Provider capture/disable: PASS
+
+END CASE RS7
+TEMPORARY COMPOSITIONS REMOVED: YES
+SCRIPT RESULT: PASS
+Pixel analysis: pending external RGBA validation.
+
+External RGBA Phase 5.12D Animated/Expression Layer Rotation 2D analysis
+A_T0 Animated Rotation 0 to 90: PASS
+  source=Rectangle Source
+  evaluatedRotation=0; evaluatedScale=(100, 100)
+  expectedBBox=(800, 460, 1120, 620)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(800, 460, 1120, 620), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(880, 500):255, outsideAABBOnly=(802, 462):255, outsideRequired=False, edge=(960, 460):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+A_T0p5 Animated Rotation 0 to 90: PASS
+  source=Rectangle Source
+  evaluatedRotation=45; evaluatedScale=(100, 100)
+  expectedBBox=(790, 370, 1130, 710)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(791, 371, 1130, 710), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(932, 455):255, outsideAABBOnly=(792, 372):0, outsideRequired=True, edge=(1017, 483):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+A_T1 Animated Rotation 0 to 90: PASS
+  source=Rectangle Source
+  evaluatedRotation=90; evaluatedScale=(100, 100)
+  expectedBBox=(880, 380, 1040, 700)
+  alphaBBoxes layer=(203, 108, 1716, 972), source=(880, 380, 1040, 700), fallback=(203, 108, 1716, 972)
+  samples center=(960, 540):255, inside=(1000, 460):255, outsideAABBOnly=(882, 382):255, outsideRequired=False, edge=(1040, 540):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+B_T0 Animated Negative Rotation: PASS
+  source=Rectangle Source
+  evaluatedRotation=0; evaluatedScale=(100, 100)
+  expectedBBox=(800, 460, 1120, 620)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(800, 460, 1120, 620), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(880, 500):255, outsideAABBOnly=(802, 462):255, outsideRequired=False, edge=(960, 460):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+B_T0p5 Animated Negative Rotation: PASS
+  source=Rectangle Source
+  evaluatedRotation=-22.5; evaluatedScale=(100, 100)
+  expectedBBox=(781, 404, 1139, 676)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(782, 405, 1138, 675), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(871, 534):255, outsideAABBOnly=(783, 406):0, outsideRequired=True, edge=(929, 466):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+B_T1 Animated Negative Rotation: PASS
+  source=Rectangle Source
+  evaluatedRotation=-45; evaluatedScale=(100, 100)
+  expectedBBox=(790, 370, 1130, 710)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(791, 371, 1130, 710), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(875, 568):255, outsideAABBOnly=(792, 372):0, outsideRequired=True, edge=(903, 483):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+C_T0 Animated Rotation 0 to 180: PASS
+  source=Rectangle Source
+  evaluatedRotation=0; evaluatedScale=(100, 100)
+  expectedBBox=(800, 460, 1120, 620)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(800, 460, 1120, 620), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(880, 500):255, outsideAABBOnly=(802, 462):255, outsideRequired=False, edge=(960, 460):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+C_T0p25 Animated Rotation 0 to 180: PASS
+  source=Rectangle Source
+  evaluatedRotation=45.0; evaluatedScale=(100, 100)
+  expectedBBox=(790, 370, 1130, 710)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(791, 371, 1130, 710), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(932, 455):255, outsideAABBOnly=(792, 372):0, outsideRequired=True, edge=(1017, 483):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+C_T0p5 Animated Rotation 0 to 180: PASS
+  source=Rectangle Source
+  evaluatedRotation=90.0; evaluatedScale=(100, 100)
+  expectedBBox=(880, 380, 1040, 700)
+  alphaBBoxes layer=(203, 108, 1716, 972), source=(880, 380, 1040, 700), fallback=(203, 108, 1716, 972)
+  samples center=(960, 540):255, inside=(1000, 460):255, outsideAABBOnly=(882, 382):255, outsideRequired=False, edge=(1040, 540):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+C_T0p75 Animated Rotation 0 to 180: PASS
+  source=Rectangle Source
+  evaluatedRotation=135.0; evaluatedScale=(100, 100)
+  expectedBBox=(790, 370, 1130, 710)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(791, 371, 1130, 710), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(1045, 512):255, outsideAABBOnly=(792, 372):0, outsideRequired=True, edge=(1017, 597):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+C_T1 Animated Rotation 0 to 180: PASS
+  source=Rectangle Source
+  evaluatedRotation=180; evaluatedScale=(100, 100)
+  expectedBBox=(800, 460, 1120, 620)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(800, 460, 1120, 620), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(1040, 580):255, outsideAABBOnly=(802, 462):255, outsideRequired=False, edge=(960, 620):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+D_T0 Animated Rotation 0 to 360: PASS
+  source=Rectangle Source
+  evaluatedRotation=0; evaluatedScale=(100, 100)
+  expectedBBox=(800, 460, 1120, 620)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(800, 460, 1120, 620), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(880, 500):255, outsideAABBOnly=(802, 462):255, outsideRequired=False, edge=(960, 460):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+D_T0p25 Animated Rotation 0 to 360: PASS
+  source=Rectangle Source
+  evaluatedRotation=90.0; evaluatedScale=(100, 100)
+  expectedBBox=(880, 380, 1040, 700)
+  alphaBBoxes layer=(203, 108, 1716, 972), source=(880, 380, 1040, 700), fallback=(203, 108, 1716, 972)
+  samples center=(960, 540):255, inside=(1000, 460):255, outsideAABBOnly=(882, 382):255, outsideRequired=False, edge=(1040, 540):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+D_T0p5 Animated Rotation 0 to 360: PASS
+  source=Rectangle Source
+  evaluatedRotation=180.0; evaluatedScale=(100, 100)
+  expectedBBox=(800, 460, 1120, 620)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(800, 460, 1120, 620), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(1040, 580):255, outsideAABBOnly=(802, 462):255, outsideRequired=False, edge=(960, 620):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+D_T0p75 Animated Rotation 0 to 360: PASS
+  source=Rectangle Source
+  evaluatedRotation=270.0; evaluatedScale=(100, 100)
+  expectedBBox=(880, 380, 1040, 700)
+  alphaBBoxes layer=(203, 108, 1716, 972), source=(880, 380, 1040, 700), fallback=(203, 108, 1716, 972)
+  samples center=(960, 540):255, inside=(920, 620):255, outsideAABBOnly=(882, 382):255, outsideRequired=False, edge=(880, 540):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+D_T1 Animated Rotation 0 to 360: PASS
+  source=Rectangle Source
+  evaluatedRotation=360; evaluatedScale=(100, 100)
+  expectedBBox=(800, 459, 1120, 620)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(800, 460, 1120, 620), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(880, 500):255, outsideAABBOnly=(802, 461):255, outsideRequired=False, edge=(960, 460):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+E_T0 Expression Rotation time * 90: PASS
+  source=Rectangle Source
+  evaluatedRotation=0; evaluatedScale=(100, 100)
+  expectedBBox=(800, 460, 1120, 620)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(800, 460, 1120, 620), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(880, 500):255, outsideAABBOnly=(802, 462):255, outsideRequired=False, edge=(960, 460):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+E_T0p5 Expression Rotation time * 90: PASS
+  source=Rectangle Source
+  evaluatedRotation=45; evaluatedScale=(100, 100)
+  expectedBBox=(790, 370, 1130, 710)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(791, 371, 1130, 710), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(932, 455):255, outsideAABBOnly=(792, 372):0, outsideRequired=True, edge=(1017, 483):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+E_T1 Expression Rotation time * 90: PASS
+  source=Rectangle Source
+  evaluatedRotation=90; evaluatedScale=(100, 100)
+  expectedBBox=(880, 380, 1040, 700)
+  alphaBBoxes layer=(203, 108, 1716, 972), source=(880, 380, 1040, 700), fallback=(203, 108, 1716, 972)
+  samples center=(960, 540):255, inside=(1000, 460):255, outsideAABBOnly=(882, 382):255, outsideRequired=False, edge=(1040, 540):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+F_T0 Expression Negative Rotation -time * 90: PASS
+  source=Rectangle Source
+  evaluatedRotation=0; evaluatedScale=(100, 100)
+  expectedBBox=(800, 460, 1120, 620)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(800, 460, 1120, 620), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(880, 500):255, outsideAABBOnly=(802, 462):255, outsideRequired=False, edge=(960, 460):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+F_T0p5 Expression Negative Rotation -time * 90: PASS
+  source=Rectangle Source
+  evaluatedRotation=-45; evaluatedScale=(100, 100)
+  expectedBBox=(790, 370, 1130, 710)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(791, 371, 1130, 710), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(875, 568):255, outsideAABBOnly=(792, 372):0, outsideRequired=True, edge=(903, 483):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+F_T1 Expression Negative Rotation -time * 90: PASS
+  source=Rectangle Source
+  evaluatedRotation=-90; evaluatedScale=(100, 100)
+  expectedBBox=(880, 380, 1040, 700)
+  alphaBBoxes layer=(204, 108, 1716, 972), source=(880, 380, 1040, 700), fallback=(204, 108, 1716, 972)
+  samples center=(960, 540):255, inside=(920, 620):255, outsideAABBOnly=(882, 382):255, outsideRequired=False, edge=(880, 540):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+G_T0 Animated Rotation plus Animated Scale: PASS
+  source=Rectangle Source
+  evaluatedRotation=0; evaluatedScale=(100, 100)
+  expectedBBox=(800, 460, 1120, 620)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(800, 460, 1120, 620), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(880, 500):255, outsideAABBOnly=(802, 462):255, outsideRequired=False, edge=(960, 460):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+G_T0p5 Animated Rotation plus Animated Scale: PASS
+  source=Rectangle Source
+  evaluatedRotation=22.5; evaluatedScale=(125.0, 125.0)
+  expectedBBox=(736, 371, 1184, 709)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(737, 372, 1183, 709), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(887, 456):255, outsideAABBOnly=(738, 373):0, outsideRequired=True, edge=(998, 448):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+G_T1 Animated Rotation plus Animated Scale: PASS
+  source=Rectangle Source
+  evaluatedRotation=45; evaluatedScale=(150, 150)
+  expectedBBox=(705, 285, 1215, 795)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(706, 286, 1214, 794), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(918, 413):255, outsideAABBOnly=(707, 287):0, outsideRequired=True, edge=(1045, 455):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+H_T0 Animated Rotation plus Animated Non-uniform Scale: PASS
+  source=Rectangle Source
+  evaluatedRotation=0; evaluatedScale=(100, 100)
+  expectedBBox=(800, 460, 1120, 620)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(800, 460, 1120, 620), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(880, 500):255, outsideAABBOnly=(802, 462):255, outsideRequired=False, edge=(960, 460):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+H_T0p5 Animated Rotation plus Animated Non-uniform Scale: PASS
+  source=Rectangle Source
+  evaluatedRotation=22.5; evaluatedScale=(125.0, 87.5)
+  expectedBBox=(748, 398, 1172, 682)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(749, 399, 1171, 681), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(881, 469):255, outsideAABBOnly=(750, 400):0, outsideRequired=True, edge=(987, 475):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+H_T1 Animated Rotation plus Animated Non-uniform Scale: PASS
+  source=Rectangle Source
+  evaluatedRotation=45; evaluatedScale=(150, 75)
+  expectedBBox=(747, 327, 1173, 753)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(748, 328, 1172, 752), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(896, 434):255, outsideAABBOnly=(749, 329):0, outsideRequired=True, edge=(1002, 498):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+I_T0 Animated Rotation plus Anchor: PASS
+  source=Rectangle Source
+  evaluatedRotation=0; evaluatedScale=(100, 100)
+  expectedBBox=(700, 410, 1020, 570)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(700, 410, 1020, 570), fallback=(192, 108, 1728, 972)
+  samples center=(860, 490):255, inside=(780, 450):255, outsideAABBOnly=(702, 412):255, outsideRequired=False, edge=(860, 410):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+I_T0p5 Animated Rotation plus Anchor: PASS
+  source=Rectangle Source
+  evaluatedRotation=22.5; evaluatedScale=(100, 100)
+  expectedBBox=(708, 320, 1066, 591)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(709, 321, 1065, 590), fallback=(192, 108, 1728, 972)
+  samples center=(887, 456):255, inside=(828, 388):255, outsideAABBOnly=(710, 322):0, outsideRequired=True, edge=(917, 382):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+I_T1 Animated Rotation plus Anchor: PASS
+  source=Rectangle Source
+  evaluatedRotation=45; evaluatedScale=(100, 100)
+  expectedBBox=(754, 264, 1095, 604)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(755, 265, 1094, 603), fallback=(192, 108, 1728, 972)
+  samples center=(925, 434):255, inside=(896, 349):255, outsideAABBOnly=(756, 266):0, outsideRequired=True, edge=(981, 377):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+J_T0 Animated Rotation plus Layer Position: PASS
+  source=Rectangle Source
+  evaluatedRotation=0; evaluatedScale=(100, 100)
+  expectedBBox=(1040, 620, 1360, 780)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(1040, 620, 1360, 780), fallback=(192, 108, 1728, 972)
+  samples center=(1200, 700):255, inside=(1120, 660):255, outsideAABBOnly=(1042, 622):255, outsideRequired=False, edge=(1200, 620):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+J_T0p5 Animated Rotation plus Layer Position: PASS
+  source=Rectangle Source
+  evaluatedRotation=22.5; evaluatedScale=(100, 100)
+  expectedBBox=(1021, 564, 1379, 836)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(1022, 565, 1378, 835), fallback=(192, 108, 1728, 972)
+  samples center=(1200, 700):255, inside=(1141, 632):255, outsideAABBOnly=(1023, 566):0, outsideRequired=True, edge=(1231, 626):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+J_T1 Animated Rotation plus Layer Position: PASS
+  source=Rectangle Source
+  evaluatedRotation=45; evaluatedScale=(100, 100)
+  expectedBBox=(1030, 530, 1370, 870)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(1031, 531, 1370, 870), fallback=(192, 108, 1728, 972)
+  samples center=(1200, 700):255, inside=(1172, 615):255, outsideAABBOnly=(1032, 532):0, outsideRequired=True, edge=(1257, 643):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+K_T0 Animated Rotation plus Rectangle Position: PASS
+  source=Rectangle Source
+  evaluatedRotation=0; evaluatedScale=(100, 100)
+  expectedBBox=(1000, 560, 1320, 720)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(1000, 560, 1320, 720), fallback=(192, 108, 1728, 972)
+  samples center=(1160, 640):255, inside=(1080, 600):255, outsideAABBOnly=(1002, 562):255, outsideRequired=False, edge=(1160, 560):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+K_T0p5 Animated Rotation plus Rectangle Position: PASS
+  source=Rectangle Source
+  evaluatedRotation=22.5; evaluatedScale=(100, 100)
+  expectedBBox=(928, 573, 1285, 845)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(929, 574, 1285, 844), fallback=(192, 108, 1728, 972)
+  samples center=(1107, 709):255, inside=(1048, 641):255, outsideAABBOnly=(930, 575):0, outsideRequired=True, edge=(1137, 635):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+K_T1 Animated Rotation plus Rectangle Position: PASS
+  source=Rectangle Source
+  evaluatedRotation=45; evaluatedScale=(100, 100)
+  expectedBBox=(861, 582, 1201, 922)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(862, 583, 1200, 922), fallback=(192, 108, 1728, 972)
+  samples center=(1031, 752):255, inside=(1002, 667):255, outsideAABBOnly=(863, 584):0, outsideRequired=True, edge=(1087, 696):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+L_T0 Animated Full Combination: PASS
+  source=Rectangle Source
+  evaluatedRotation=0; evaluatedScale=(100, 100)
+  expectedBBox=(1140, 670, 1460, 830)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(1140, 670, 1460, 830), fallback=(192, 108, 1728, 972)
+  samples center=(1300, 750):255, inside=(1220, 710):255, outsideAABBOnly=(1142, 672):255, outsideRequired=False, edge=(1300, 670):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+L_T0p5 Animated Full Combination: PASS
+  source=Rectangle Source
+  evaluatedRotation=22.5; evaluatedScale=(125.0, 87.5)
+  expectedBBox=(1087, 647, 1511, 930)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(1088, 648, 1510, 929), fallback=(192, 108, 1728, 972)
+  samples center=(1299, 788):255, inside=(1220, 718):255, outsideAABBOnly=(1089, 649):0, outsideRequired=True, edge=(1326, 724):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+L_T1 Animated Full Combination: PASS
+  source=Rectangle Source
+  evaluatedRotation=45; evaluatedScale=(150, 75)
+  expectedBBox=(1067, 620, 1492, 1045)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(1068, 621, 1491, 1044), fallback=(192, 108, 1728, 972)
+  samples center=(1280, 833):255, inside=(1216, 727):255, outsideAABBOnly=(1069, 622):0, outsideRequired=True, edge=(1322, 790):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+M_T0 Animated Rotation plus Trim 10: PASS
+  source=Rectangle Source
+  evaluatedRotation=0; evaluatedScale=(100, 100)
+  expectedBBox=(800, 460, 1120, 620)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(800, 460, 1120, 620), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(880, 500):255, outsideAABBOnly=(802, 462):255, outsideRequired=False, edge=(960, 460):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+M_T0p5 Animated Rotation plus Trim 10: PASS
+  source=Rectangle Source
+  evaluatedRotation=22.5; evaluatedScale=(100, 100)
+  expectedBBox=(781, 404, 1139, 676)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(782, 405, 1138, 675), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(901, 472):255, outsideAABBOnly=(783, 406):0, outsideRequired=True, edge=(991, 466):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+M_T1 Animated Rotation plus Trim 10: PASS
+  source=Rectangle Source
+  evaluatedRotation=45; evaluatedScale=(100, 100)
+  expectedBBox=(790, 370, 1130, 710)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(791, 371, 1130, 710), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(932, 455):255, outsideAABBOnly=(792, 372):0, outsideRequired=True, edge=(1017, 483):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+N_T0 Animated Rotation plus Trim Left only: PASS
+  source=Rectangle Source
+  evaluatedRotation=0; evaluatedScale=(100, 100)
+  expectedBBox=(800, 440, 1160, 640)
+  alphaBBoxes layer=(192, 0, 1920, 1080), source=(800, 440, 1160, 640), fallback=(192, 0, 1920, 1080)
+  samples center=(980, 540):255, inside=(890, 490):255, outsideAABBOnly=(802, 442):255, outsideRequired=False, edge=(980, 440):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+N_T0p5 Animated Rotation plus Trim Left only: PASS
+  source=Rectangle Source
+  evaluatedRotation=22.5; evaluatedScale=(100, 100)
+  expectedBBox=(773, 386, 1184, 709)
+  alphaBBoxes layer=(192, 0, 1920, 1080), source=(774, 387, 1183, 709), fallback=(192, 0, 1920, 1080)
+  samples center=(978, 548):255, inside=(914, 467):255, outsideAABBOnly=(775, 388):0, outsideRequired=True, edge=(1017, 455):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+N_T1 Animated Rotation plus Trim Left only: PASS
+  source=Rectangle Source
+  evaluatedRotation=45; evaluatedScale=(100, 100)
+  expectedBBox=(776, 356, 1173, 753)
+  alphaBBoxes layer=(192, 0, 1920, 1080), source=(777, 357, 1172, 752), fallback=(192, 0, 1920, 1080)
+  samples center=(974, 554):255, inside=(946, 455):255, outsideAABBOnly=(778, 358):0, outsideRequired=True, edge=(1045, 483):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+O_T0 Animated Rotation plus Non-uniform Trim: PASS
+  source=Rectangle Source
+  evaluatedRotation=0; evaluatedScale=(100, 100)
+  expectedBBox=(780, 470, 1080, 620)
+  alphaBBoxes layer=(96, 162, 1536, 972), source=(780, 470, 1080, 620), fallback=(96, 162, 1536, 972)
+  samples center=(930, 545):255, inside=(855, 508):255, outsideAABBOnly=(782, 472):255, outsideRequired=False, edge=(930, 470):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+O_T0p5 Animated Rotation plus Non-uniform Trim: PASS
+  source=Rectangle Source
+  evaluatedRotation=22.5; evaluatedScale=(100, 100)
+  expectedBBox=(763, 406, 1098, 660)
+  alphaBBoxes layer=(96, 162, 1536, 972), source=(764, 407, 1098, 660), fallback=(96, 162, 1536, 972)
+  samples center=(930, 533):255, inside=(875, 470):255, outsideAABBOnly=(765, 408):0, outsideRequired=True, edge=(959, 464):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+O_T1 Animated Rotation plus Non-uniform Trim: PASS
+  source=Rectangle Source
+  evaluatedRotation=45; evaluatedScale=(100, 100)
+  expectedBBox=(776, 363, 1095, 682)
+  alphaBBoxes layer=(96, 162, 1536, 972), source=(777, 364, 1094, 681), fallback=(96, 162, 1536, 972)
+  samples center=(935, 522):255, inside=(909, 443):255, outsideAABBOnly=(778, 365):0, outsideRequired=True, edge=(988, 469):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+P_T1 Animated Rotation plus Parent fallback: PASS
+  source=Layer Bounds fallback
+  evaluatedRotation=45; evaluatedScale=(100, 100)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(192, 108, 1728, 972), fallback=(192, 108, 1728, 972)
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+Q_T1 Animated Rotation plus 3D fallback: PASS
+  source=Layer Bounds fallback
+  evaluatedRotation=45; evaluatedScale=(100, 100)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(192, 108, 1728, 972), fallback=(192, 108, 1728, 972)
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+R_T1 Animated Rotation plus Scale Zero fallback: PASS
+  source=Layer Bounds fallback
+  evaluatedRotation=45; evaluatedScale=(0, 100)
+  alphaBBoxes layer=None, source=None, fallback=None
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+S_T1 Animated Rotation plus Negative Scale fallback: PASS
+  source=Layer Bounds fallback
+  evaluatedRotation=45; evaluatedScale=(-100, 100)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(192, 108, 1728, 972), fallback=(192, 108, 1728, 972)
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+T_T0 Equivalence 0 to 360: PASS
+  source=Rectangle Source
+  evaluatedRotation=0; evaluatedScale=(100, 100)
+  expectedBBox=(800, 460, 1120, 620)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(800, 460, 1120, 620), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(880, 500):255, outsideAABBOnly=(802, 462):255, outsideRequired=False, edge=(960, 460):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+T_T1 Equivalence 0 to 360: PASS
+  source=Rectangle Source
+  evaluatedRotation=360; evaluatedScale=(100, 100)
+  expectedBBox=(800, 459, 1120, 620)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(800, 460, 1120, 620), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(880, 500):255, outsideAABBOnly=(802, 461):255, outsideRequired=False, edge=(960, 460):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+U_T1 Equivalence -360: PASS
+  source=Rectangle Source
+  evaluatedRotation=-360; evaluatedScale=(100, 100)
+  expectedBBox=(800, 459, 1120, 620)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(800, 460, 1120, 620), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(880, 500):255, outsideAABBOnly=(802, 461):255, outsideRequired=False, edge=(960, 460):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+V_T1 Equivalence 720: PASS
+  source=Rectangle Source
+  evaluatedRotation=720; evaluatedScale=(100, 100)
+  expectedBBox=(800, 459, 1120, 621)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(800, 460, 1120, 620), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(880, 500):255, outsideAABBOnly=(802, 461):255, outsideRequired=False, edge=(960, 460):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+RS1_T1 Static regression Rotation 15: PASS
+  source=Rectangle Source
+  evaluatedRotation=15; evaluatedScale=(100, 100)
+  expectedBBox=(784, 421, 1136, 659)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(785, 422, 1135, 659), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(893, 481):255, outsideAABBOnly=(786, 423):0, outsideRequired=True, edge=(981, 463):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+RS2_T1 Static regression Rotation 45: PASS
+  source=Rectangle Source
+  evaluatedRotation=45; evaluatedScale=(100, 100)
+  expectedBBox=(790, 370, 1130, 710)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(791, 371, 1130, 710), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(932, 455):255, outsideAABBOnly=(792, 372):0, outsideRequired=True, edge=(1017, 483):0
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+RS3_T1 Static regression Rotation -45: PASS
+  source=Rectangle Source
+  evaluatedRotation=-45; evaluatedScale=(100, 100)
+  expectedBBox=(790, 370, 1130, 710)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(791, 371, 1130, 710), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(875, 568):255, outsideAABBOnly=(792, 372):0, outsideRequired=True, edge=(903, 483):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+RS4_T1 Static regression Rotation plus Scale: PASS
+  source=Rectangle Source
+  evaluatedRotation=30; evaluatedScale=(150, 150)
+  expectedBBox=(692, 316, 1228, 764)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(693, 317, 1228, 764), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(886, 428):255, outsideAABBOnly=(694, 318):0, outsideRequired=True, edge=(1020, 436):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+RS5_T1 Static regression Return to Layer Bounds: PASS
+  source=Layer Bounds after manual return
+  evaluatedRotation=30; evaluatedScale=(100, 100)
+  expectedBBox=(781, 390, 1139, 690)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(782, 391, 1138, 689), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(911, 465):255, outsideAABBOnly=(783, 392):0, outsideRequired=True, edge=(1000, 471):255
+  sourceVsLayerDifference=(192, 108, 1728, 972); fallbackVsLayerDifference=None
+RS6_T1 Static regression Scale animated: PASS
+  source=Rectangle Source
+  evaluatedRotation=0; evaluatedScale=(150, 150)
+  expectedBBox=(720, 420, 1200, 660)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(720, 420, 1200, 660), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(840, 480):255, outsideAABBOnly=(722, 422):255, outsideRequired=False, edge=(960, 420):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+RS7_T1 Static regression Scale expression: PASS
+  source=Rectangle Source
+  evaluatedRotation=0; evaluatedScale=(150, 150)
+  expectedBBox=(720, 420, 1200, 660)
+  alphaBBoxes layer=(192, 108, 1728, 972), source=(720, 420, 1200, 660), fallback=(192, 108, 1728, 972)
+  samples center=(960, 540):255, inside=(840, 480):255, outsideAABBOnly=(722, 422):255, outsideRequired=False, edge=(960, 420):255
+  sourceVsLayerDifference=None; fallbackVsLayerDifference=None
+T_0_vs_T_1 RGBA equivalence: PASS diff=None
+A_T0_vs_E_T0 RGBA equivalence: PASS diff=None
+A_T1_vs_E_T1 RGBA equivalence: PASS diff=None
+PHASE 5.12D ANIMATED/EXPRESSION LAYER ROTATION 2D RESULT: PASS
