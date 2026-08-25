@@ -1,0 +1,55 @@
+ADBE Root Vectors Group => ADBE Root Vectors Group
+group => ADBE Vector Group
+ADBE Vectors Group => ADBE Vectors Group
+rectangle => ADBE Vector Shape - Rect
+ADBE Vector Rect Size => ADBE Vector Rect Size
+ADBE Vector Rect Position => ADBE Vector Rect Position
+ADBE Vector Rect Roundness => ADBE Vector Rect Roundness
+ADBE Vector Rect Direction => MISSING
+ADBE Vector Transform Group => ADBE Vector Transform Group
+ADBE Vector Anchor => ADBE Vector Anchor
+ADBE Vector Position => ADBE Vector Position
+ADBE Vector Scale => ADBE Vector Scale
+ADBE Vector Rotation => ADBE Vector Rotation
+ADBE Vector Skew => ADBE Vector Skew
+ADBE Vector Skew Axis => ADBE Vector Skew Axis
+GROUP_HIERARCHY=Rectangle Path -> ADBE Vector Group -> Root Contents
+PIXEL_RESULT=NOT_RUN_BY_PROBE
+MATCH_NAME_RESULT=PASS
+
+PHASE 5.13C VALIDATION SUMMARY
+==============================
+Build Phase 5.13C: 103936 bytes
+Build SHA-256: D9903931CB388F5525438A925A8AC626DB3B8F85A8C4775244A3B4B9E7C97542
+Temporary installed AEX: verified before launch.
+
+PURE TEST: PASS
+The independent Python oracle passed group translation, anchor, positive
+uniform/non-uniform scale, positive/negative rotation, composition, AABB
+membership and invalid zero/negative/non-finite scale cases.
+
+RUNTIME MATCH NAMES: PASS
+The eight group names required by Phase 5.13C were confirmed in After Effects
+26.3x87. Rectangle Direction was not available and was not used.
+
+HISTORICAL REGRESSION: PASS
+The Phase 5.12D animated/expression rotation regression completed with SCRIPT
+RESULT: PASS on the temporary Phase 5.13C build. After Effects was closed after
+the run.
+
+GROUP PIXEL MATRIX A-Z: NOT EXECUTED
+The current CEP-to-AEX transport does not provide uniqueStreamId. Therefore a
+real Rectangle Path target inside a Shape Group cannot be activated
+reproducibly without inventing an identity. No simulated identity or partial
+group selection was introduced. Cases requiring Group Transform, nested-group
+fallback and group-specific AABB-only pixels remain pending.
+
+BACKUP AND RESTORATION
+Backup:
+E:\Files\Proyectos\CornerFlexDev\Plugins\backup\Phase513CValidation_20260823_140845\CornerFlex.aex
+Restored installed AEX: 83,968 bytes
+Restored SHA-256: 7F88245DDD3FC180EF90BA08E6DD19AF6B76FF42F9B58D3BA5E0741978AA939B
+
+RECOMMENDATION: NO-GO for declaring Single Group Transform product support.
+GO only for the next research step that implements a stable target identity
+transport and repeats the dedicated A-Z visual matrix.

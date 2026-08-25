@@ -1,0 +1,74 @@
+Phase 5.13C.9 Shape Group Coordinate Space Investigation
+
+STATUS: INVESTIGATION_ONLY
+BASELINE_AEX_SHA256: 7F88245DDD3FC180EF90BA08E6DD19AF6B76FF42F9B58D3BA5E0741978AA939B
+
+1. Código actual
+
+Rectangle snapshot -> ConvertRectangleSnapshotToLocalBounds()
+-> CF_RectangleSourceData.bounds
+-> BuildGeometryContext().geometryBounds
+-> ExecuteTrimOperation() en geometryBounds
+-> BuildRenderContext()
+-> TransformAffineRectangle()/TransformOrientedRectangle()
+-> TrimFunc8()/TrimFunc16() en effect-buffer space.
+
+Group Transform se obtiene en ResolveSingleGroupTransformFromAfterEffects(),
+se compone con Layer Transform 2D en BuildRenderContext() mediante:
+ComposeAffineTransform2D(layerTransform, groupTransform).
+
+2. Evidencia C.7
+
+LayerBoundsReference y Fallback:
+alpha bbox (128,159)-(1152,648)
+SHA-256 523450DE140E920F1AB2049ABB329A76F48EF83BE3DF84BF140E40B43C0F4543
+
+Target A observado:
+alpha bbox (270,245)-(343,312)
+centroide aproximado (300.5,284.4)
+SHA-256 33610B26EDF4A77822C3361D82F22BE2FEE4F57F5495D657A95648B3CEA06D7F
+
+Target B observado:
+alpha bbox (680,356)-(1116,644)
+centroide aproximado (964.6,459.4)
+SHA-256 DC2EEA9B9F802C67DFC93EED1DBB6578C568120A89B57FDE51CB83B400304B20
+
+3. Oracle affine independiente
+
+Aplicando Rectangle Position, Group Scale, Group Rotation y Group Position
+alrededor de Group Anchor [0,0], con centro de composición [640,360]:
+
+Target A esperado aproximado:
+alpha/AABB (93.5,245.4)-(402.3,542.6), centro (490,440)
+
+Target B esperado aproximado:
+alpha/AABB (680.9,159.6)-(1533.2,861.6), centro (1217,358)
+
+La observación no coincide con ninguno de los dos oráculos. El centro
+esperado de A y el centro esperado de B son transparentes en sus PNG.
+
+4. Hipótesis y estado
+
+H1, H2, H3: no confirmadas; la evidencia actual no permite elegir orden
+de Rectangle Position, Anchor y Group Transform.
+H4: posible doble o ausente aplicación de Rectangle Position; requiere
+casos unitarios sin Group Transform.
+H5: posible offset de input/comp/effect buffer; requiere medir origen real.
+H6: posible diferencia entre Group Position en layer-space y la hipótesis
+local; requiere caso Group Position puro.
+H7: Group Anchor real aún no está registrado desde AE en C.7.
+H8: posible diferencia entre espacio del snapshot y espacio del resolver;
+requiere registrar ambos valores y raster unitario.
+
+5. Decisión
+
+NO-GO para implementar una corrección funcional.
+NO continuar la matriz A-Z ni IA-II.
+Los casos A-O de C.9 deben ejecutarse con el harness unitario antes de
+modificar producción. No se aplicaron offsets correctivos ni cambios al AEX.
+
+6. Archivos de investigación
+
+research/ValidateShapeGroupCoordinateSpace.jsx
+research/AnalyzeShapeGroupCoordinateSpace.py
+research/output/Phase513C9ShapeGroupCoordinateSpaceReport.txt

@@ -1,0 +1,49 @@
+CornerFlex — Phase 5.13C.1 Identity Transport
+=============================================
+
+Estado: NO-GO para cerrar validación runtime completa.
+
+Contrato
+--------
+Layer ID + hasta 8 segmentos {propertyIndex, expectedMatchToken}.
+Tokens: Root Vectors Group=1, Vector Group=2, Vectors Group=3,
+Rectangle Path=4.
+Unique Stream ID no se transporta desde CEP; solo puede obtenerlo el AEX al
+resolver la ruta.
+
+Tests puros
+-----------
+research/ValidateGeometryTargetPathIdentity.py: PASS
+Casos: ruta correcta, version mismatch, profundidad excesiva, índice inválido,
+token inválido, jerarquía incorrecta, grupo faltante y reordenamiento.
+
+Match Names de parámetros inspeccionados en AE 26.3x87
+------------------------------------------------------
+0020 Geometry Target Path Version
+0021 Geometry Target Path Valid
+0022 Geometry Target Path Count
+0023–0038 pares Segment Index / Segment Token (8 segmentos)
+
+Build
+-----
+Debug x64: PASS
+Tamaño: 115200 bytes
+SHA-256: DA9BE3E8524F1F302C19510D12EC9AF08F6C469430D657DE3F49AD5B547074AB
+
+Runtime
+-------
+La inspección de Match Names de parámetros terminó correctamente. El probe
+automatizado de captura CEP no produjo reporte final; no se declara PASS de
+captura ni de resolución AEX. No se inventó Unique Stream ID.
+
+Group Transform
+---------------
+Permanece bloqueado. La ruta de identidad no alimenta el renderer ni activa
+Single Group Transform.
+
+Restauración
+------------
+Backup: E:\Files\Proyectos\CornerFlexDev\Plugins\backup\Phase513C1Validation_20260823_142000\CornerFlex.aex
+AEX restaurado: 83968 bytes
+SHA-256 restaurado: 7F88245DDD3FC180EF90BA08E6DD19AF6B76FF42F9B58D3BA5E0741978AA939B
+After Effects: cerrado.

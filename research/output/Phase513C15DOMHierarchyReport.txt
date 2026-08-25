@@ -1,0 +1,5 @@
+level=0 matchName=ADBE Vector Shape - Rect propertyIndex=1 propertyDepth=4
+level=1 matchName=ADBE Vectors Group propertyIndex=2 propertyDepth=3
+level=2 matchName=ADBE Vector Group propertyIndex=1 propertyDepth=2
+level=3 matchName=ADBE Root Vectors Group propertyIndex=2 propertyDepth=1
+EXPECTED_AEGP_CHAIN=LayerRoot->Root Vectors Group->Vector Group->Vectors Group->Rectangle Path

@@ -1,0 +1,8 @@
+Phase 5.13C.14 Group Transform Activation Gate Validation
+START
+PROVIDER_LOADED
+TARGET_A_CAPTURE={"ok":true,"code":"SNAPSHOT_CAPTURED","message":"Rectangle Path capturado.","data":{"layerId":13,"layerName":"Shape Layer 1","rectangleName":"Group A Rectangle","pathDepth":4,"sizeX":300,"sizeY":180,"positionX":-250,"positionY":-120,"roundness":0,"direction":1,"snapshotVersion":1,"enabled":true}}
+TargetA=RENDER_COMPLETED
+TARGET_B_CAPTURE={"ok":true,"code":"SNAPSHOT_CAPTURED","message":"Rectangle Path capturado.","data":{"layerId":13,"layerName":"Shape Layer 1","rectangleName":"Group B Rectangle","pathDepth":4,"sizeX":640,"sizeY":360,"positionX":220,"positionY":140,"roundness":0,"direction":1,"snapshotVersion":1,"enabled":true}}
+TargetB=RENDER_COMPLETED
+END

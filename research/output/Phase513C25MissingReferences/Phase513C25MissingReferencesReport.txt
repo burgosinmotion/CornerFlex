@@ -1,0 +1,24 @@
+PHASE 5.13C.25 MISSING REFERENCES
+CASE_COUNT=7
+P_FALLBACK={"ok":true,"code":"SNAPSHOT_DISABLED","message":"Layer Bounds restaurado.","data":{"layerId":25,"layerName":"Phase513C25_P","enabled":false}}
+P_RENDER_COMPLETED
+P_PASS=OPERATIONAL
+Q_FALLBACK={"ok":true,"code":"SNAPSHOT_DISABLED","message":"Layer Bounds restaurado.","data":{"layerId":38,"layerName":"Phase513C25_Q","enabled":false}}
+Q_RENDER_COMPLETED
+Q_PASS=OPERATIONAL
+R_FALLBACK={"ok":true,"code":"SNAPSHOT_DISABLED","message":"Layer Bounds restaurado.","data":{"layerId":54,"layerName":"Phase513C25_R","enabled":false}}
+R_RENDER_COMPLETED
+R_PASS=OPERATIONAL
+S_FALLBACK={"ok":true,"code":"SNAPSHOT_DISABLED","message":"Layer Bounds restaurado.","data":{"layerId":67,"layerName":"Phase513C25_S","enabled":false}}
+S_RENDER_COMPLETED
+S_PASS=OPERATIONAL
+T_FALLBACK={"ok":true,"code":"SNAPSHOT_DISABLED","message":"Layer Bounds restaurado.","data":{"layerId":80,"layerName":"Phase513C25_T","enabled":false}}
+T_RENDER_COMPLETED
+T_PASS=OPERATIONAL
+U_FALLBACK={"ok":true,"code":"SNAPSHOT_DISABLED","message":"Layer Bounds restaurado.","data":{"layerId":93,"layerName":"Phase513C25_U","enabled":false}}
+U_RENDER_COMPLETED
+U_PASS=OPERATIONAL
+Z_FALLBACK={"ok":true,"code":"SNAPSHOT_DISABLED","message":"Layer Bounds restaurado.","data":{"layerId":106,"layerName":"Phase513C25_Z","enabled":false}}
+Z_RENDER_COMPLETED
+Z_PASS=OPERATIONAL
+STATUS=PASS

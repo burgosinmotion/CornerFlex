@@ -80,8 +80,14 @@ typedef short int			int16;
 #define CF_RECTANGLE_SNAPSHOT_ROUNDNESS_MATCH_NAME	"Rectangle Snapshot Roundness"
 #define CF_RECTANGLE_SNAPSHOT_DIRECTION_MATCH_NAME	"Rectangle Snapshot Direction"
 #define CF_RECTANGLE_SNAPSHOT_ENABLED_MATCH_NAME		"Rectangle Snapshot Enabled"
+#define CF_GEOMETRY_TARGET_PATH_VERSION_MATCH_NAME	"Geometry Target Path Version"
+#define CF_GEOMETRY_TARGET_PATH_VALID_MATCH_NAME		"Geometry Target Path Valid"
+#define CF_GEOMETRY_TARGET_PATH_COUNT_MATCH_NAME		"Geometry Target Path Count"
+#define CF_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_PREFIX	"Geometry Target Path Segment Index "
+#define CF_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_PREFIX	"Geometry Target Path Segment Token "
 
 #define CF_GEOMETRY_TARGET_STATE_VERSION		1
+#define CF_GEOMETRY_TARGET_PATH_VERSION		1
 #define CF_RECTANGLE_GEOMETRY_SNAPSHOT_VERSION	1
 
 /* Parameter IDs */
@@ -107,6 +113,25 @@ typedef short int			int16;
 		CORNERFLEX_RECTANGLE_SNAPSHOT_ROUNDNESS,
 		CORNERFLEX_RECTANGLE_SNAPSHOT_DIRECTION,
 		CORNERFLEX_RECTANGLE_SNAPSHOT_ENABLED,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_VERSION,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_VALID,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_COUNT,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_0,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_0,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_1,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_1,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_2,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_2,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_3,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_3,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_4,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_4,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_5,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_5,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_6,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_6,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_7,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_7,
 		CORNERFLEX_NUM_PARAMS
 	};
 
@@ -129,8 +154,39 @@ typedef short int			int16;
 		RECTANGLE_SNAPSHOT_POSITION_Y_DISK_ID,
 		RECTANGLE_SNAPSHOT_ROUNDNESS_DISK_ID,
 		RECTANGLE_SNAPSHOT_DIRECTION_DISK_ID,
-		RECTANGLE_SNAPSHOT_ENABLED_DISK_ID
+		RECTANGLE_SNAPSHOT_ENABLED_DISK_ID,
+		GEOMETRY_TARGET_PATH_VERSION_DISK_ID = 20,
+		GEOMETRY_TARGET_PATH_VALID_DISK_ID,
+		GEOMETRY_TARGET_PATH_COUNT_DISK_ID,
+		GEOMETRY_TARGET_PATH_SEGMENT_INDEX_0_DISK_ID,
+		GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_0_DISK_ID,
+		GEOMETRY_TARGET_PATH_SEGMENT_INDEX_1_DISK_ID,
+		GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_1_DISK_ID,
+		GEOMETRY_TARGET_PATH_SEGMENT_INDEX_2_DISK_ID,
+		GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_2_DISK_ID,
+		GEOMETRY_TARGET_PATH_SEGMENT_INDEX_3_DISK_ID,
+		GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_3_DISK_ID,
+		GEOMETRY_TARGET_PATH_SEGMENT_INDEX_4_DISK_ID,
+		GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_4_DISK_ID,
+		GEOMETRY_TARGET_PATH_SEGMENT_INDEX_5_DISK_ID,
+		GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_5_DISK_ID,
+		GEOMETRY_TARGET_PATH_SEGMENT_INDEX_6_DISK_ID,
+		GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_6_DISK_ID,
+		GEOMETRY_TARGET_PATH_SEGMENT_INDEX_7_DISK_ID,
+		GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_7_DISK_ID
 	};
+
+	#define CF_GEOMETRY_TARGET_PATH_MAX_DEPTH 8
+	#define CF_GEOMETRY_TARGET_RESOLUTION_DIAGNOSTIC_VERSION 1
+
+	typedef enum
+	{
+		CF_MATCH_TOKEN_INVALID = 0,
+		CF_MATCH_ROOT_VECTORS_GROUP,
+		CF_MATCH_VECTOR_GROUP,
+		CF_MATCH_VECTORS_GROUP,
+		CF_MATCH_RECTANGLE_PATH
+	} CF_GeometryMatchToken;
 
 	typedef struct {
 		PF_Boolean linkTrim;
@@ -253,6 +309,54 @@ typedef short int			int16;
 
 	} CF_GeometryTargetLocation;
 
+	typedef enum
+	{
+		CF_TARGET_RESOLVE_NOT_ATTEMPTED = 0,
+		CF_TARGET_RESOLVE_OK,
+		CF_TARGET_RESOLVE_INVALID_REQUEST,
+		CF_TARGET_RESOLVE_LAYER_MISMATCH,
+		CF_TARGET_RESOLVE_SEGMENT_INDEX_INVALID,
+		CF_TARGET_RESOLVE_MATCH_NAME_MISMATCH,
+		CF_TARGET_RESOLVE_STREAM_ERROR,
+		CF_TARGET_RESOLVE_FINAL_NOT_RECTANGLE,
+		CF_TARGET_RESOLVE_DEPTH_INVALID
+
+	} CF_GeometryTargetResolveStatus;
+
+	// Pointer-free, per-resolution observation returned by the integration layer.
+	typedef struct
+	{
+		A_long version;
+		A_Boolean wasAttempted;
+		CF_GeometryTargetResolveStatus status;
+		AEGP_LayerIDVal requestedLayerId;
+		AEGP_LayerIDVal resolvedLayerId;
+		A_long requestedSegmentCount;
+		A_long resolvedSegmentCount;
+		CF_GeometryMatchToken finalExpectedToken;
+		CF_GeometryMatchToken finalResolvedToken;
+		int32_t finalUniqueStreamId;
+		A_long mismatchSegmentIndex;
+
+	} CF_GeometryTargetResolutionDiagnostic;
+
+	typedef struct
+	{
+		A_long propertyIndex;
+		CF_GeometryMatchToken expectedMatchToken;
+
+	} CF_GeometryPathSegment;
+
+	typedef struct
+	{
+		A_long version;
+		A_Boolean isValid;
+		AEGP_LayerIDVal layerId;
+		A_long segmentCount;
+		CF_GeometryPathSegment segments[CF_GEOMETRY_TARGET_PATH_MAX_DEPTH];
+
+	} CF_GeometryTargetPath;
+
 	typedef struct
 	{
 		A_Boolean wasRead;
@@ -282,7 +386,9 @@ typedef short int			int16;
 	{
 		CF_Rect bounds;
 		CF_AffineTransform2D layerTransform;
+		CF_AffineTransform2D groupTransform;
 		A_Boolean hasLayerTransform;
+		A_Boolean hasGroupTransform;
 		A_Boolean isAvailable;
 
 	} CF_RectangleSourceData;
@@ -316,11 +422,30 @@ typedef short int			int16;
 
 	} CF_LayerTransform2DContext;
 
+	// Runtime values for the single immediate Shape Group transform.
+	typedef struct
+	{
+		A_Boolean isValid;
+		A_Boolean hasGroupTransform;
+		A_Boolean isUnsupported;
+		PF_FpLong anchorX;
+		PF_FpLong anchorY;
+		PF_FpLong positionX;
+		PF_FpLong positionY;
+		PF_FpLong scaleX;
+		PF_FpLong scaleY;
+		PF_FpLong rotationDegrees;
+		CF_AffineTransform2D transform;
+
+	} CF_GroupTransform2DContext;
+
 	typedef struct
 	{
 		A_long inputWidth;
 		A_long inputHeight;
 		CF_RectangleSourceData rectangleSource;
+		CF_AffineTransform2D groupTransform;
+		A_Boolean hasGroupTransform;
 
 	} CF_GeometryResolveRequest;
 
@@ -328,9 +453,11 @@ typedef short int			int16;
 	{
 		CF_Rect bounds;
 		CF_AffineTransform2D layerTransform;
+		CF_AffineTransform2D groupTransform;
 		CF_GeometrySource source;
 		CF_PrimitiveType primitiveType;
 		A_Boolean hasLayerTransform;
+		A_Boolean hasGroupTransform;
 		A_Boolean isFallback;
 
 	} CF_GeometrySourceData;
@@ -341,9 +468,11 @@ typedef short int			int16;
 		CF_AffineTransform2D layerTransform;
 		CF_RectangleGeometry rectangleGeometry;
 		CF_CornerRadii cornerRadii;
+		CF_AffineTransform2D groupTransform;
 		CF_GeometrySource source;
 		CF_PrimitiveType primitiveType;
 		A_Boolean hasLayerTransform;
+		A_Boolean hasGroupTransform;
 		A_Boolean isFallback;
 
 	} CF_GeometryContext;
@@ -351,8 +480,12 @@ typedef short int			int16;
 	typedef struct
 	{
 		CF_Rect geometryBounds;
+		CF_AffineRectangle affineRect;
+		CF_AffineTransform2D groupTransform;
 		CF_OrientedRectangle orientedRect;
 		A_Boolean hasOrientedRect;
+		A_Boolean hasAffineRect;
+		A_Boolean hasGroupTransform;
 
 		A_long inputWidth;
 		A_long inputHeight;
@@ -479,6 +612,16 @@ typedef short int			int16;
 	CF_GeometryTargetIdentity
 	GetActiveGeometryTargetIdentity(
 		const CF_GeometryTargetState& targetState);
+
+	CF_GeometryTargetPath
+	ReadGeometryTargetPath(
+		PF_ParamDef* params[]);
+
+	// Resolves one immediate Vector Group and never retains SDK references.
+	CF_GroupTransform2DContext
+	ResolveSingleGroupTransformFromAfterEffects(
+		PF_InData* in_data,
+		const CF_GeometryTargetPath& targetPath);
 
 	CF_RectangleGeometrySnapshot
 	MakeInvalidRectangleGeometrySnapshot();

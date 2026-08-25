@@ -1,0 +1,84 @@
+CornerFlex — Phase 5.13C.4 Deterministic Runtime Identity Resolver Validation
+===========================================================================
+
+Fecha: 2026-08-23
+RESULTADO: NO-GO
+
+1. Baseline y build
+-------------------
+
+Build instrumentado Debug x64:
+  tamaño: 117760 bytes
+  SHA-256: B2831F8E874110D9C38FFEDD72E1EEED5A89B5FDEC4B4D762BA4304B6A873B28
+  errores: 0
+  advertencias: 0
+
+AEX estable restaurado:
+  tamaño: 83968 bytes
+  SHA-256: 7F88245DDD3FC180EF90BA08E6DD19AF6B76FF42F9B58D3BA5E0741978AA939B
+
+2. Causa conocida de la primera traza
+--------------------------------------
+
+El resolver alcanzó ReadGeometryTargetPath(), pero el provider no había
+escrito Target Layer ID (-0009). El path se marcó invalid_request antes de
+adquirir streams. El provider fue corregido para escribir el layer.id ya
+capturado, sin crear parámetros ni habilitar Target Identity Valid.
+
+3. Harness determinista
+-----------------------
+
+Se añadió ValidateGeometryTargetResolverDeterministic.jsx. El harness crea
+composiciones nuevas, activa cada comp, crea Shape Layer → Group → Contents →
+Rectangle Path, captura con el provider productivo, relee los parámetros de
+identidad y sólo después intenta renderizar.
+
+El harness registra Target State Version, Target Identity Valid, Target Layer
+ID, Target Unique Stream ID, Path Version, Path Valid, Path Count e índices y
+tokens por segmento. Cada ejecución escribe un RUN_ID antes del render.
+
+4. Ejecuciones
+--------------
+
+RUN 1: no se obtuvo un reporte posterior reproducible del proceso After Effects.
+RUN 2: no ejecutado; bloqueado por la misma falta de arranque observable.
+RUN 3: no ejecutado; bloqueado por la misma falta de arranque observable.
+
+La ejecución anterior a esta fase sí confirmó CEP_CAPTURE=SNAPSHOT_CAPTURED y
+produjo una traza AEX con invalid_request. Tras la corrección de layerId, los
+lanzamientos automatizados terminaron sin generar el archivo de reporte del
+harness; no se interpreta el frame residual como evidencia de resolución.
+
+5. Unique Stream ID
+-------------------
+
+CEP: no suministra uniqueStreamId.
+Parámetros: no lo usan como identidad primaria.
+AEX: sólo debe obtenerlo después de resolver el Rectangle Path. No se obtuvo
+una nueva traza runtime que permita confirmarlo en esta fase.
+
+6. Invalidation matrix
+----------------------
+
+No se ejecutó rename/reorder/duplicate/delete. El caso base no alcanzó 3/3
+resoluciones runtime reproducibles, por lo que la matriz queda bloqueada.
+
+7. Backup y restauración
+------------------------
+
+Backup:
+E:\Files\Proyectos\CornerFlexDev\Plugins\backup\Phase513C4Validation_20260823_212909\CornerFlex.aex
+SHA-256 del backup: 7F88245DDD3FC180EF90BA08E6DD19AF6B76FF42F9B58D3BA5E0741978AA939B
+
+La ruta instalada fue restaurada al mismo hash y After Effects quedó cerrado.
+
+8. Instrumentación pendiente
+----------------------------
+
+La instrumentación temporal de Skeleton.cpp permanece pendiente de retirada.
+No debe incluirse en un commit de producto hasta completar una traza runtime
+estable. Group Transform continúa deshabilitado.
+
+Conclusión: NO-GO. Se requiere una sesión de After Effects que ejecute de
+forma observable el harness y produzca RUN 1, RUN 2 y RUN 3 con resolución
+segmento a segmento.

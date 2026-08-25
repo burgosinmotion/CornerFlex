@@ -1259,3 +1259,245 @@ El AEX instalado en Program Files no fue reemplazado y conserva el baseline
 Phase 5.11B.1. Shape Group Transforms, Skew, nesting real, parenting, 3D,
 MFR y cualquier conversión de `CF_AffineRectangle` al renderer siguen fuera
 de alcance.
+
+## Phase 5.13C — Single Shape Group Transform
+
+Phase 5.13C incorpora infraestructura para resolver un único `ADBE Vector
+Group` padre inmediato del Rectangle Path y aplicar, después de Trim en
+primitive-space y antes del Layer Transform 2D, Anchor, Position, Scale y
+Rotation del grupo. La composición usa `ComposeAffineTransform2D(layer,
+group)`, es decir, `layer · group`: el grupo actúa primero y la capa después.
+
+El contrato POD `CF_GroupTransform2DContext` mantiene valores simples y una
+`CF_AffineTransform2D`; no retiene handles ni referencias del SDK. Los streams
+se resuelven en render time mediante `AEGP_ConvertEffectToCompTime()` y
+`AEGP_GetNewStreamValue()` con `pre_expressionB = FALSE`. Scale debe ser finito
+y estrictamente positivo. Skew distinto de cero, propiedades no evaluables,
+determinantes inválidos, parenting, 3D, nesting o errores de suite producen
+fallback completo a Layer Bounds sin aplicar transformaciones parciales.
+
+Match Names confirmados en After Effects 26.3x87:
+
+- `ADBE Vector Group`;
+- `ADBE Vector Transform Group`;
+- `ADBE Vector Anchor`;
+- `ADBE Vector Position`;
+- `ADBE Vector Scale`;
+- `ADBE Vector Rotation`;
+- `ADBE Vector Skew`;
+- `ADBE Vector Skew Axis`.
+
+El probe confirmó también `ADBE Vector Shape - Rect`, `ADBE Vector Rect Size`,
+`ADBE Vector Rect Position` y `ADBE Vector Rect Roundness`. El Match Name
+`ADBE Vector Rect Direction` no está disponible en este runtime y no se utiliza.
+
+Cuando existe un único grupo válido, la ruta experimental utiliza
+`CF_AffineRectangle`, `ComputeAffineRectangleAABB()` como rechazo rápido y
+`IsPointInsideAffineRectangle()` para membership final. `CF_OrientedRectangle`
+permanece sin cambios para la ruta histórica sin grupo.
+
+La compilación Debug x64 fue correcta y la regresión visual Phase 5.12D cerró
+con PASS. La validación funcional A–Z de un grupo real queda pendiente: el
+transporte actual CEP → AEX no entrega `uniqueStreamId`, por lo que no es
+posible activar reproduciblemente una Rectangle Source dentro de un grupo sin
+inventar una identidad. El soporte Group Transform no debe declararse cerrado
+ni como contrato de producto hasta completar ese canal y repetir la matriz
+visual específica.
+
+## Phase 5.13C.1 — Stable Geometry Target Identity Transport
+
+Phase 5.13C.1 define una identidad jerárquica persistente para el Rectangle
+Path seleccionado. El payload combina el `Layer ID` existente con hasta ocho
+segmentos POD `{propertyIndex, expectedMatchToken}`. Los tokens permitidos son
+`Root Vectors Group`, `Vector Group`, `Vectors Group` y `Rectangle Path`; no se
+transportan strings arbitrarios, nombres visibles, handles ni punteros.
+
+La ruta se serializa en parámetros escalares ocultos versionados:
+`Geometry Target Path Version`, `Geometry Target Path Valid`, `Geometry Target
+Path Count` y ocho pares de índice/token. La escritura del provider es
+transaccional: invalida primero, escribe versión, conteo y segmentos, verifica
+los valores y activa `Valid` al final. Cualquier error deja `Valid = FALSE` y
+el resolver selecciona Layer Bounds.
+
+El resolver nativo valida el Layer ID, el límite de profundidad, los índices y
+el Match Name de cada segmento. Recorre exactamente la ruta; no busca
+alternativas. Al llegar al Rectangle Path puede obtener `Unique Stream ID`
+mediante `AEGP_GetUniqueStreamID()` como diagnóstico runtime secundario. CEP no
+intenta derivar ni transportar ese ID.
+
+La política de duplicación es conservadora: copiar o duplicar una instancia
+solo conserva la identidad si el Layer ID y toda la ruta siguen apuntando al
+mismo objeto; si cambia la capa, se reordena la jerarquía, se elimina el target
+o algún Match Name no coincide, la identidad queda inválida hasta una nueva
+captura. La profundidad superior a ocho segmentos también invalida.
+
+Los tests puros de serialización, versión, límites, tokens y jerarquía pasan.
+Los Match Names de los parámetros ocultos fueron inspeccionados en After
+Effects 26.3x87. La captura automatizada del provider no produjo un reporte
+completo en esta ejecución y queda pendiente de diagnóstico; no se simuló una
+identidad ni se activó Group Transform. Por tanto, Phase 5.13C.1 queda como
+foundation de transporte pendiente de validación runtime completa.
+## Phase 5.13C.2 — Geometry Target Identity End-to-End Validation
+
+La identidad jerárquica de un Rectangle Path se transporta desde el provider
+CEP mediante parámetros ocultos versionados. El payload contiene `layerId`,
+`propertyIndex` y un token de Match Name por segmento; CEP no genera ni
+persiste `uniqueStreamId`.
+
+La captura es transaccional: primero invalida el path y el snapshot, escribe
+y relee todos los campos, y sólo entonces marca el path y el snapshot como
+válidos. En una escena temporal simple la ruta capturada fue:
+
+`ADBE Root Vectors Group` → `ADBE Vector Group` → `ADBE Vectors Group` →
+`ADBE Vector Shape - Rect`.
+
+El adaptador AEX resuelve la capa por `layerId`, obtiene el grupo raíz por
+Match Name, recorre exactamente los índices almacenados, valida cada token
+contra el Match Name real y obtiene el Unique Stream ID únicamente después de
+alcanzar el Rectangle Path. No busca alternativas y libera las referencias
+del SDK dentro del mismo ámbito.
+
+La validación descubrió y corrigió en el provider dos problemas de diagnóstico:
+la composición debía estar activa y los Match Names de los parámetros de ruta
+debían conservar cuatro dígitos (`-0023`…`-0038`). La captura posterior devolvió
+`SNAPSHOT_CAPTURED` con una ruta de profundidad cuatro.
+
+La resolución AEX permanece como infraestructura no activada: Render ignora
+su resultado y Group Transform continúa deshabilitado. Hasta disponer de una
+traza runtime observable del resolver y completar los casos de duplicación,
+reordenamiento, eliminación y raíz directa, no se considera cerrada la
+reactivación funcional de Phase 5.13C.
+## Phase 5.13C.3 — Runtime Geometry Target Resolver Trace
+
+La traza temporal del resolver AEX se ejecuta una vez por intento de
+resolución, fuera de los callbacks de píxeles, y registra únicamente metadata
+serializable: versión, `layerId`, segmentos, índices, tokens, Match Names y el
+Unique Stream ID final. No registra handles ni punteros.
+
+La primera ejecución runtime confirmó que el flujo alcanza el resolver, pero
+rechazó el path como `invalid_request`: el provider había escrito los
+segmentos sin escribir el parámetro existente `Target Layer ID`. Por ello
+`ReadGeometryTargetPath()` recibía `AEGP_LayerIDVal_NONE`. El provider fue
+ajustado para escribir ese valor capturado, manteniendo `Target Identity Valid`
+desactivado y sin activar Rectangle Source.
+
+Los intentos automatizados posteriores no generaron una traza reproducible;
+la fase queda `NO-GO` hasta observar una sesión estable con coincidencia
+segmento a segmento entre CEP, parámetros y streams AEX. La instrumentación
+temporal permanece identificada para retirarse antes de cualquier commit de
+producto. Group Transform, renderer, affine math y Trim no cambian.
+## Phase 5.13C.4 — Deterministic Runtime Identity Resolver Validation
+
+El harness determinista crea una composición nueva por ejecución, relee los
+parámetros ocultos antes del render y etiqueta cada intento con `RUN_ID`. La
+primera traza confirmó que el resolver rechazaba el payload cuando faltaba
+`Target Layer ID`; el provider ahora escribe ese valor existente junto con la
+ruta jerárquica.
+
+La repetición posterior no produjo tres trazas runtime observables de forma
+estable. Por ello no se ejecuta todavía la matriz de invalidación ni se
+reactiva Group Transform. La instrumentación temporal del resolver permanece
+pendiente de retirada y el AEX estable continúa siendo la ruta instalada.
+## Phase 5.13C.5 — Resolver Observability Contract
+
+La observabilidad del resolver se separa de su decisión funcional mediante el
+POD `CF_GeometryTargetResolutionDiagnostic` y el enum
+`CF_GeometryTargetResolveStatus`. El diagnóstico contiene versión, intento,
+layer IDs, profundidad solicitada/resuelta, tokens finales, índice de
+desajuste y Unique Stream ID runtime. No contiene handles, punteros ni strings.
+
+Se evaluaron parámetros ocultos, arbitrary data, sequence data y rutas AEGP.
+Los parámetros ocultos son legibles desde CEP, pero `PF_ParamDef` durante
+Render es una instantánea de entrada; escribirla no persiste por instancia.
+`AEGP_SetStreamValue()` mutaría streams del proyecto y no es un canal seguro
+para MFR ni para observación temporal. Arbitrary/sequence data no ofrecen un
+lector CEP directo en el flujo actual. Por ello esta fase implementa el
+contrato POD/status como salida local del resolver y conserva el trace de
+archivo únicamente como puente diagnóstico; no añade parámetros ni Disk IDs.
+
+La política de lifecycle es reiniciar el diagnóstico en cada intento, sin
+estado global mutable. El diagnóstico observa el resolver, no rescata rutas,
+no activa Rectangle Source y no habilita Group Transform. Falta todavía un
+canal externo reproducible para leer ese POD después del render; hasta que se
+defina uno compatible con el SDK, la fase permanece NO-GO y la instrumentación
+temporal de archivo no debe incorporarse al producto final.
+## Phase 5.13C.6 — Functional Geometry Target Resolver Proof
+
+La activación controlada del Single Group Transform queda condicionada a una
+identidad jerárquica válida, resolución completa hasta Rectangle Path y un
+contexto de grupo 2D finito, no anidado, sin skew, con escalas positivas y sin
+parenting/3D. Si cualquiera de esas condiciones falla, el resultado conserva
+Layer Bounds como fallback completo.
+
+La compuerta construye una identidad runtime a partir de `CF_GeometryTargetPath`
+y `CF_GeometryTargetLocation`; no usa selección UI ni rebinding heurístico.
+Sólo cuando el resolver devuelve el Rectangle Path final se consulta el
+transform del grupo inmediato y se entrega al pipeline existente. El renderer,
+la matemática affine y Trim no cambian.
+
+El harness de C6 crea dos grupos hermanos deliberadamente distintos y captura
+cada Rectangle Path por separado para comprobar que los índices de ruta
+seleccionan objetivos inequívocos. La matriz de invalidación y la matriz A–Z
+permanecen pendientes hasta demostrar ambos resultados contra un oracle raster
+independiente. Group Transform animado o por expresión queda fuera de alcance.
+### Resultado de validación C6
+
+La compuerta de activación Single Group Transform quedó implementada de forma
+conservadora, pero el harness automatizado no produjo una ejecución runtime
+observable de Target A/B. No se declara soporte funcional ni se ejecuta la
+matriz A–Z hasta contar con un oracle raster independiente y una sesión de
+After Effects reproducible.
+
+## Phase 5.13C.16 — Hierarchical Path Runtime Resolver
+
+El runtime utiliza `CF_GeometryTargetPath` como identidad primaria: valida la
+versión, la capa, el número de segmentos, el `propertyIndex` exacto y el token
+de Match Name de cada segmento. No escanea siblings ni intenta re-enlazar el
+target por heurística.
+
+`uniqueStreamId` no es una identidad válida cuando vale cero. En particular,
+After Effects puede devolver cero para streams no relacionados, como `ADBE
+Marker`; por ello ese valor no participa en la selección del Rectangle Path.
+Tras resolver correctamente el último stream y comprobar `ADBE Vector Shape -
+Rect`, el ID puede conservarse únicamente como diagnóstico secundario.
+
+Para el Single Group Transform, la cadena de referencias se resuelve en el
+mismo ámbito: Rectangle Path → `ADBE Vectors Group` → `ADBE Vector Group` →
+`ADBE Vector Transform Group`. El stream final de Rectangle Path y cada parent
+creado por el SDK son referencias temporales; el componente que los adquiere
+los libera antes de retornar y ningún handle se almacena en el Core.
+
+Un Rectangle Path directamente bajo `ADBE Root Vectors Group` es un no-op
+válido (`isValid = TRUE`, `hasGroupTransform = FALSE`). Si la ruta contiene
+más de un `ADBE Vector Group`, la resolución se considera no soportada y se
+mantiene el fallback. Esta fase no habilita Nested Groups ni modifica el
+renderer, la matemática affine, Trim o el provider CEP.
+
+## Phase 5.13C.17–C.25 — Cierre de validación del Single Group Transform
+
+Las fases C.17–C.19 verificaron el flujo affine, Trim al cero y la igualdad
+exacta del fallback. En todos los casos no soportados, Layer Bounds continúa
+siendo la fuente seleccionada y el renderer histórico permanece sin cambios.
+
+C.20–C.24 establecieron el oracle raster independiente: la AABB se utiliza
+como rechazo temprano y la membership final se evalúa contra la primitive
+orientada con centros de píxel `(x + 0.5, y + 0.5)`. Un píxel dentro de la
+AABB pero fuera de `CF_OrientedRectangle` debe permanecer transparente.
+
+C.25 completó las referencias Layer Bounds para P, Q, R, S, T, U y Z. Cada
+captura coincidió byte a byte con su referencia existente: dimensiones
+`1920 × 1080`, cero píxeles RGBA distintos y diferencia máxima por canal cero.
+Scale cero conserva un frame transparente; Scale negativo y las condiciones de
+parenting, 3D y rotation mantienen el fallback esperado.
+
+La matriz funcional A–Z obtuvo `STATUS=PASS` operativo y `STATUS=PASS` en el
+análisis visual independiente. Las muestras X/Y confirmaron centro e interior
+opacos, exterior transparente y rechazo de un punto dentro de la AABB pero
+fuera de la primitive orientada. X/Y reutilizan la misma geometría capturada
+por el harness, por lo que esta evidencia confirma membership y rasterización,
+pero no pretende demostrar dos targets distintos en una misma ejecución.
+
+El cierre no habilita nuevas fuentes geométricas ni cambia la política de
+fallback. Group Transform sigue limitado a un único grupo 2D, sin skew,
+parenting, 3D, nesting, animación ni expresiones. Cualquier condición fuera de
+ese contrato debe continuar resolviendo Layer Bounds.

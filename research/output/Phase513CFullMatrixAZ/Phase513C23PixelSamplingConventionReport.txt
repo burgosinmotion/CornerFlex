@@ -1,0 +1,35 @@
+PHASE 5.13C.23 — PIXEL SAMPLING COORDINATE CONVENTION
+NO After Effects run; existing PNGs only.
+
+RENDERER STATIC PATH
+TrimFunc8() and TrimFunc16() call IsPointInsideOrientedRectangle/IsPointInsideAffineRectangle with x + 0.5 and y + 0.5.
+Integer x,y is not the current production sample convention.
+
+G SAMPLES
+(663,129): local=(-150.631601,89.389827), u=-1.004211, v=0.993220, integer=OUTSIDE
+(663.5,129.5): local=(-149.924494,89.389827), u=-0.999497, v=0.993220, pixel-center=INSIDE
+(664,129): local=(-149.924494,88.682720), u=-0.999497, v=0.985364, integer=INSIDE
+(664.5,129.5): local=(-149.217388,88.682720), u=-0.994783, v=0.985364, pixel-center=INSIDE
+G observed alpha bbox=(664,3)-(1001,341)
+
+CASE | PIXEL_CENTER_ORACLE | INTEGER_ORACLE | OBSERVED
+A | (810, 450, 1109, 629) | (810, 450, 1110, 630) | existing PNG
+B | (560, 330, 859, 509) | (560, 330, 860, 510) | existing PNG
+C | (360, 225, 809, 494) | (360, 225, 810, 495) | existing PNG
+D | (699, 109, 1036, 447) | (699, 110, 1037, 447) | existing PNG
+E | (529, 463, 867, 800) | (530, 463, 867, 801) | existing PNG
+F | (552, 5, 964, 417) | (552, 5, 964, 417) | existing PNG
+G | (663, 3, 1001, 341) | (664, 3, 1002, 341) | existing PNG
+
+D observed=(699,109)-(1036,447); pixel-center oracle matches exactly; integer oracle=(699,110)-(1037,447) does not.
+A-F observed PNGs match the pixel-center oracle; integer sampling changes axis-aligned bounds and D/E.
+C.18 historical observed Target A=(414,426)-(721,721), Target B=(1001,340)-(1852,1041); available evidence was produced with the same renderer path and does not support replacing +0.5 with integer sampling.
+
+ALPHA SEMANTICS
+The renderer performs boolean membership and copies/removes the input pixel; it does not compute geometric area coverage. The static code nevertheless uses +0.5 samples.
+
+CONCLUSION
+Integer-coordinate sampling is REJECTED as a general explanation: it explains G's missing left column but predicts an incorrect right edge and contradicts A-F/D.
+G remains FAIL pending a separate coordinate/edge investigation.
+STATUS=FAIL_SAMPLING_HYPOTHESIS_REJECTED
+NEXT_FIRST_FAIL=G

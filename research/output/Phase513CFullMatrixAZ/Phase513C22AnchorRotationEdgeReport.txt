@@ -1,0 +1,81 @@
+PHASE 5.13C.22 — ANCHOR + ROTATION LEFT-EDGE ORACLE INVESTIGATION
+
+No se ejecutó After Effects ni se regeneró CaseG.png.
+
+CONFIGURATION G
+Rectangle Size=(300,180)
+Rectangle Position=(-250,-120)
+Group Anchor/Position/Scale/Rotation=(0,0)/(0,0)/(100,100)/0
+Layer Anchor=(100,50)
+Layer Position=(960,540)
+Layer Scale=(100,100)
+Layer Rotation=45 degrees
+Trim=(0,0,0,0)
+Composition=(1920,1080)
+
+TRANSFORM CONTRACT
+The independent reconstruction applies local rectangle position, then
+T(-LayerAnchor), Layer Scale, Layer Rotation and Layer Position. This matches
+the production BuildLayerTransform2D translation terms, including the rotated
+anchor contribution.
+
+LOCAL CORNERS BEFORE LAYER TRANSFORM
+(-150,-90), (150,-90), (150,90), (-150,90)
+
+FINAL TRANSFORMED VERTICES
+(790.294373,2.598846)
+(1002.426407,214.730881)
+(875.147186,342.010101)
+(663.015152,129.878067)
+
+GEOMETRIC_AABB=(663.015152,2.598846)-(1002.426407,342.010101)
+PIXEL_CENTER_ORACLE_AABB=(663,3)-(1001,341)
+OBSERVED_ALPHA_AABB=(664,3)-(1001,341)
+
+LEFT EDGE CANDIDATES x=663
+Pixel center x=663.5.
+At y=129 (center y=129.5): inverse local=(-149.924494,89.389827),
+u=-0.999496629, v=0.993220299, margins=(0.075506,0.610173).
+The point is inside under abs(u)<=1 and abs(v)<=1, including the production
+epsilon convention.
+At y=130 (center y=130.5): inverse local=(-149.217388,90.096934),
+u=-0.994783, v=1.001077, outside by 0.096934 in local Y.
+
+ALPHA SAMPLES (RGBA alpha channel)
+Column 662: alpha=0 for rows 124..135.
+Column 663: alpha=0 for rows 124..135, including (663,129).
+Column 664: alpha=165 at (664,127), 255 at (664,128..130), 0 outside edge.
+Column 665: interior alpha begins at adjacent rows.
+The analyzer visible threshold remains alpha>0 and max(R,G,B)>8;
+opaque threshold remains alpha>=250 and max(R,G,B)>8.
+
+BOUNDARY SEMANTICS
+The analyzer bbox uses inclusive first/last visible pixel coordinates. The
+production IsPointInsideOrientedRectangle() uses <= plus epsilon=1e-6 and the
+renderer samples x+0.5,y+0.5. The independent classification and the C++
+membership contract therefore agree for (663.5,129.5): inside.
+
+FLOATING-POINT
+The smallest local margin at the candidate is 0.075506, far above 1e-9 and
+1e-6. This is not a floating-point ambiguity or an exact-boundary case.
+
+CPP REPLICA COMPARISON
+BuildLayerTransform2D/TransformOrientedRectangle/IsPointInsideOrientedRectangle
+classify the candidate as inside under the current contract. The observed alpha
+is nevertheless zero. Therefore the discrepancy is after geometric membership,
+in raster edge coverage/sampling or an unmodelled coordinate detail, not a
+simple independent-oracle arithmetic mismatch.
+
+COMPARISON WITH D
+D has the same center-sample rule and passes. G uniquely adds Layer Anchor;
+the one-pixel discrepancy appears at the transformed corner where coverage is
+subpixel. No general tolerance was widened.
+
+CONCLUSION
+RESULT B: the geometric oracle and the C++ membership contract agree, but the
+alpha raster excludes a near-corner pixel whose center is mathematically inside.
+This cannot be explained as a floating-point boundary. It requires a separate
+renderer coverage/coordinate investigation; no production correction is made.
+
+STATUS=FAIL_PENDING_RENDERER_SEMANTICS
+GO_FOR_NEXT_ANALYSIS=NO

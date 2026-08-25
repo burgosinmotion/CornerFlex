@@ -46,6 +46,7 @@
 
 #include <cfloat>
 #include <cmath>
+#include <cstring>
 
 static AEGP_PluginID S_cornerFlexPluginId = 0;
 
@@ -422,6 +423,59 @@ ParamsSetup(
 		0,
 		RECTANGLE_SNAPSHOT_ENABLED_DISK_ID);
 
+	const PF_ParamFlags pathParamFlags =
+		PF_ParamFlag_CANNOT_TIME_VARY |
+		PF_ParamFlag_CANNOT_INTERP |
+		PF_ParamFlag_USE_VALUE_FOR_OLD_PROJECTS;
+
+	AEFX_CLR_STRUCT(def);
+	def.flags = pathParamFlags;
+	def.ui_flags = PF_PUI_INVISIBLE;
+	PF_ADD_SLIDER(CF_GEOMETRY_TARGET_PATH_VERSION_MATCH_NAME, 0, INT32_MAX, 0, 1, 1, GEOMETRY_TARGET_PATH_VERSION_DISK_ID);
+	AEFX_CLR_STRUCT(def);
+	def.flags = pathParamFlags;
+	def.ui_flags = PF_PUI_INVISIBLE;
+	PF_ADD_CHECKBOX(CF_GEOMETRY_TARGET_PATH_VALID_MATCH_NAME, "", FALSE, 0, GEOMETRY_TARGET_PATH_VALID_DISK_ID);
+	AEFX_CLR_STRUCT(def);
+	def.flags = pathParamFlags;
+	def.ui_flags = PF_PUI_INVISIBLE;
+	PF_ADD_SLIDER(CF_GEOMETRY_TARGET_PATH_COUNT_MATCH_NAME, 0, CF_GEOMETRY_TARGET_PATH_MAX_DEPTH, 0, CF_GEOMETRY_TARGET_PATH_MAX_DEPTH, 0, GEOMETRY_TARGET_PATH_COUNT_DISK_ID);
+
+	AEFX_CLR_STRUCT(def);
+	def.flags = pathParamFlags;
+	def.ui_flags = PF_PUI_INVISIBLE;
+	PF_ADD_SLIDER(CF_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_PREFIX "0", 0, INT32_MAX, 0, INT32_MAX, 0, GEOMETRY_TARGET_PATH_SEGMENT_INDEX_0_DISK_ID);
+	AEFX_CLR_STRUCT(def); def.flags = pathParamFlags; def.ui_flags = PF_PUI_INVISIBLE;
+	PF_ADD_SLIDER(CF_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_PREFIX "0", 0, 4, 0, 4, 0, GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_0_DISK_ID);
+	AEFX_CLR_STRUCT(def); def.flags = pathParamFlags; def.ui_flags = PF_PUI_INVISIBLE;
+	PF_ADD_SLIDER(CF_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_PREFIX "1", 0, INT32_MAX, 0, INT32_MAX, 0, GEOMETRY_TARGET_PATH_SEGMENT_INDEX_1_DISK_ID);
+	AEFX_CLR_STRUCT(def); def.flags = pathParamFlags; def.ui_flags = PF_PUI_INVISIBLE;
+	PF_ADD_SLIDER(CF_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_PREFIX "1", 0, 4, 0, 4, 0, GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_1_DISK_ID);
+	AEFX_CLR_STRUCT(def); def.flags = pathParamFlags; def.ui_flags = PF_PUI_INVISIBLE;
+	PF_ADD_SLIDER(CF_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_PREFIX "2", 0, INT32_MAX, 0, INT32_MAX, 0, GEOMETRY_TARGET_PATH_SEGMENT_INDEX_2_DISK_ID);
+	AEFX_CLR_STRUCT(def); def.flags = pathParamFlags; def.ui_flags = PF_PUI_INVISIBLE;
+	PF_ADD_SLIDER(CF_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_PREFIX "2", 0, 4, 0, 4, 0, GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_2_DISK_ID);
+	AEFX_CLR_STRUCT(def); def.flags = pathParamFlags; def.ui_flags = PF_PUI_INVISIBLE;
+	PF_ADD_SLIDER(CF_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_PREFIX "3", 0, INT32_MAX, 0, INT32_MAX, 0, GEOMETRY_TARGET_PATH_SEGMENT_INDEX_3_DISK_ID);
+	AEFX_CLR_STRUCT(def); def.flags = pathParamFlags; def.ui_flags = PF_PUI_INVISIBLE;
+	PF_ADD_SLIDER(CF_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_PREFIX "3", 0, 4, 0, 4, 0, GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_3_DISK_ID);
+	AEFX_CLR_STRUCT(def); def.flags = pathParamFlags; def.ui_flags = PF_PUI_INVISIBLE;
+	PF_ADD_SLIDER(CF_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_PREFIX "4", 0, INT32_MAX, 0, INT32_MAX, 0, GEOMETRY_TARGET_PATH_SEGMENT_INDEX_4_DISK_ID);
+	AEFX_CLR_STRUCT(def); def.flags = pathParamFlags; def.ui_flags = PF_PUI_INVISIBLE;
+	PF_ADD_SLIDER(CF_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_PREFIX "4", 0, 4, 0, 4, 0, GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_4_DISK_ID);
+	AEFX_CLR_STRUCT(def); def.flags = pathParamFlags; def.ui_flags = PF_PUI_INVISIBLE;
+	PF_ADD_SLIDER(CF_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_PREFIX "5", 0, INT32_MAX, 0, INT32_MAX, 0, GEOMETRY_TARGET_PATH_SEGMENT_INDEX_5_DISK_ID);
+	AEFX_CLR_STRUCT(def); def.flags = pathParamFlags; def.ui_flags = PF_PUI_INVISIBLE;
+	PF_ADD_SLIDER(CF_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_PREFIX "5", 0, 4, 0, 4, 0, GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_5_DISK_ID);
+	AEFX_CLR_STRUCT(def); def.flags = pathParamFlags; def.ui_flags = PF_PUI_INVISIBLE;
+	PF_ADD_SLIDER(CF_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_PREFIX "6", 0, INT32_MAX, 0, INT32_MAX, 0, GEOMETRY_TARGET_PATH_SEGMENT_INDEX_6_DISK_ID);
+	AEFX_CLR_STRUCT(def); def.flags = pathParamFlags; def.ui_flags = PF_PUI_INVISIBLE;
+	PF_ADD_SLIDER(CF_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_PREFIX "6", 0, 4, 0, 4, 0, GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_6_DISK_ID);
+	AEFX_CLR_STRUCT(def); def.flags = pathParamFlags; def.ui_flags = PF_PUI_INVISIBLE;
+	PF_ADD_SLIDER(CF_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_PREFIX "7", 0, INT32_MAX, 0, INT32_MAX, 0, GEOMETRY_TARGET_PATH_SEGMENT_INDEX_7_DISK_ID);
+	AEFX_CLR_STRUCT(def); def.flags = pathParamFlags; def.ui_flags = PF_PUI_INVISIBLE;
+	PF_ADD_SLIDER(CF_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_PREFIX "7", 0, 4, 0, 4, 0, GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_7_DISK_ID);
+
 	out_data->num_params = CORNERFLEX_NUM_PARAMS;
 
 	return err;
@@ -458,7 +512,15 @@ TrimFunc16(
 		y < topBoundary ||
 		y >= bottomBoundary;
 
+	const PF_Boolean outsideAffineRectangle =
+		context->hasAffineRect &&
+		!IsPointInsideAffineRectangle(
+			context->affineRect,
+			static_cast<PF_FpLong>(x) + 0.5,
+			static_cast<PF_FpLong>(y) + 0.5);
+
 	const PF_Boolean outsideOrientedRectangle =
+		!context->hasAffineRect &&
 		context->hasOrientedRect &&
 		!IsPointInsideOrientedRectangle(
 			context->orientedRect,
@@ -466,6 +528,7 @@ TrimFunc16(
 			static_cast<PF_FpLong>(y) + 0.5);
 
 	if (outsideBounds ||
+		outsideAffineRectangle ||
 		outsideOrientedRectangle) {
 		outP->alpha = 0;
 		outP->red = 0;
@@ -510,7 +573,15 @@ TrimFunc8(
 		y < topBoundary ||
 		y >= bottomBoundary;
 
+	const PF_Boolean outsideAffineRectangle =
+		context->hasAffineRect &&
+		!IsPointInsideAffineRectangle(
+			context->affineRect,
+			static_cast<PF_FpLong>(x) + 0.5,
+			static_cast<PF_FpLong>(y) + 0.5);
+
 	const PF_Boolean outsideOrientedRectangle =
+		!context->hasAffineRect &&
 		context->hasOrientedRect &&
 		!IsPointInsideOrientedRectangle(
 			context->orientedRect,
@@ -518,6 +589,7 @@ TrimFunc8(
 			static_cast<PF_FpLong>(y) + 0.5);
 
 	if (outsideBounds ||
+		outsideAffineRectangle ||
 		outsideOrientedRectangle) {
 		outP->alpha = 0;
 		outP->red = 0;
@@ -635,6 +707,387 @@ GetActiveGeometryTargetIdentity(
 	}
 
 	return targetIdentity;
+}
+
+CF_GeometryTargetPath
+ReadGeometryTargetPath(
+	PF_ParamDef* params[])
+{
+	CF_GeometryTargetPath path;
+	AEFX_CLR_STRUCT(path);
+
+	path.version =
+		params[CORNERFLEX_GEOMETRY_TARGET_PATH_VERSION]->u.sd.value;
+	path.isValid =
+		params[CORNERFLEX_GEOMETRY_TARGET_PATH_VALID]->u.bd.value
+			? TRUE
+			: FALSE;
+	path.layerId =
+		params[CORNERFLEX_TARGET_LAYER_ID]->u.sd.value;
+	path.segmentCount =
+		params[CORNERFLEX_GEOMETRY_TARGET_PATH_COUNT]->u.sd.value;
+
+	const A_long indexParams[CF_GEOMETRY_TARGET_PATH_MAX_DEPTH] = {
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_0,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_1,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_2,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_3,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_4,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_5,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_6,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_INDEX_7};
+	const A_long tokenParams[CF_GEOMETRY_TARGET_PATH_MAX_DEPTH] = {
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_0,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_1,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_2,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_3,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_4,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_5,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_6,
+		CORNERFLEX_GEOMETRY_TARGET_PATH_SEGMENT_TOKEN_7};
+
+	const A_long count =
+		(path.segmentCount >= 0 &&
+		 path.segmentCount <= CF_GEOMETRY_TARGET_PATH_MAX_DEPTH)
+			? path.segmentCount
+			: 0;
+
+	for (A_long index = 0; index < count; index++) {
+		path.segments[index].propertyIndex =
+			params[indexParams[index]]->u.sd.value;
+		path.segments[index].expectedMatchToken =
+			static_cast<CF_GeometryMatchToken>(
+				params[tokenParams[index]]->u.sd.value);
+	}
+
+	const A_Boolean versionIsSupported =
+		path.version == CF_GEOMETRY_TARGET_PATH_VERSION;
+	const A_Boolean identityIsValid =
+		path.isValid &&
+		path.layerId != AEGP_LayerIDVal_NONE &&
+		count >= 2;
+	A_Boolean tokensAreValid = TRUE;
+	for (A_long index = 0; index < count; index++) {
+		const CF_GeometryPathSegment& segment = path.segments[index];
+		const A_Boolean indexIsValid =
+			(index == 0 && segment.propertyIndex == 0) ||
+			(index > 0 && segment.propertyIndex > 0);
+		const A_Boolean tokenIsValid =
+			segment.expectedMatchToken >= CF_MATCH_ROOT_VECTORS_GROUP &&
+			segment.expectedMatchToken <= CF_MATCH_RECTANGLE_PATH;
+		tokensAreValid = tokensAreValid && indexIsValid && tokenIsValid;
+	}
+	if (count < 2) {
+		tokensAreValid = FALSE;
+	}
+	else {
+		tokensAreValid = tokensAreValid &&
+			path.segments[0].expectedMatchToken ==
+				CF_MATCH_ROOT_VECTORS_GROUP &&
+			path.segments[count - 1].expectedMatchToken ==
+				CF_MATCH_RECTANGLE_PATH;
+	}
+
+	path.isValid =
+		versionIsSupported && identityIsValid && tokensAreValid
+			? TRUE
+			: FALSE;
+	return path;
+}
+
+static const A_char*
+MatchNameForGeometryToken(
+	CF_GeometryMatchToken token)
+{
+	switch (token) {
+		case CF_MATCH_ROOT_VECTORS_GROUP:
+			return "ADBE Root Vectors Group";
+		case CF_MATCH_VECTOR_GROUP:
+			return "ADBE Vector Group";
+		case CF_MATCH_VECTORS_GROUP:
+			return "ADBE Vectors Group";
+		case CF_MATCH_RECTANGLE_PATH:
+			return "ADBE Vector Shape - Rect";
+		default:
+			return NULL;
+	}
+}
+
+static CF_GeometryMatchToken
+GeometryTokenForMatchName(
+	const A_char* matchName)
+{
+	if (!matchName) {
+		return CF_MATCH_TOKEN_INVALID;
+	}
+	if (!strcmp(matchName, "ADBE Root Vectors Group")) {
+		return CF_MATCH_ROOT_VECTORS_GROUP;
+	}
+	if (!strcmp(matchName, "ADBE Vector Group")) {
+		return CF_MATCH_VECTOR_GROUP;
+	}
+	if (!strcmp(matchName, "ADBE Vectors Group")) {
+		return CF_MATCH_VECTORS_GROUP;
+	}
+	if (!strcmp(matchName, "ADBE Vector Shape - Rect")) {
+		return CF_MATCH_RECTANGLE_PATH;
+	}
+	return CF_MATCH_TOKEN_INVALID;
+}
+
+static CF_GeometryTargetLocation
+ResolveGeometryTargetPathFromAfterEffects(
+	PF_InData* in_data,
+	const CF_GeometryTargetPath& path,
+	CF_GeometryTargetResolutionDiagnostic* diagnostic)
+{
+	CF_GeometryTargetLocation location;
+	AEFX_CLR_STRUCT(location);
+	if (diagnostic) {
+		AEFX_CLR_STRUCT(*diagnostic);
+		diagnostic->version =
+			CF_GEOMETRY_TARGET_RESOLUTION_DIAGNOSTIC_VERSION;
+		diagnostic->wasAttempted = FALSE;
+		diagnostic->status = CF_TARGET_RESOLVE_NOT_ATTEMPTED;
+		diagnostic->requestedLayerId = path.layerId;
+		diagnostic->requestedSegmentCount = path.segmentCount;
+		diagnostic->mismatchSegmentIndex = -1;
+	}
+
+	if (!in_data || !path.isValid || !in_data->pica_basicP) {
+		if (diagnostic) {
+			diagnostic->status = CF_TARGET_RESOLVE_INVALID_REQUEST;
+		}
+		return location;
+	}
+
+	AEGP_SuiteHandler suites(in_data->pica_basicP);
+	AEGP_PFInterfaceSuite1* pfInterfaceSuite = NULL;
+	AEGP_LayerSuite9* layerSuite = NULL;
+	AEGP_DynamicStreamSuite4* dynamicStreamSuite = NULL;
+	AEGP_StreamSuite6* streamSuite = NULL;
+	try {
+		pfInterfaceSuite = suites.PFInterfaceSuite1();
+		layerSuite = suites.LayerSuite9();
+		dynamicStreamSuite = suites.DynamicStreamSuite4();
+		streamSuite = suites.StreamSuite6();
+	}
+	catch (...) {
+		return location;
+	}
+
+	AEGP_LayerH layerH = NULL;
+	AEGP_LayerIDVal layerId = AEGP_LayerIDVal_NONE;
+	AEGP_StreamRefH currentH = NULL;
+	if (diagnostic) {
+		diagnostic->wasAttempted = TRUE;
+	}
+	A_Err err = pfInterfaceSuite->AEGP_GetEffectLayer(
+		in_data->effect_ref, &layerH);
+	if (!err && layerH) {
+		err = layerSuite->AEGP_GetLayerID(layerH, &layerId);
+	}
+	if (err || layerId != path.layerId) {
+		if (diagnostic) {
+			diagnostic->status = CF_TARGET_RESOLVE_LAYER_MISMATCH;
+			diagnostic->resolvedLayerId = layerId;
+		}
+		return location;
+	}
+	if (!dynamicStreamSuite->AEGP_GetNewStreamRefForLayer(
+		S_cornerFlexPluginId, layerH, &currentH)) {
+		for (A_long index = 0;
+			index < path.segmentCount && currentH;
+			index++) {
+			const CF_GeometryPathSegment& segment = path.segments[index];
+			const A_char* expectedMatchName =
+				MatchNameForGeometryToken(
+					segment.expectedMatchToken);
+			if (!expectedMatchName) {
+				if (diagnostic) {
+					diagnostic->status = CF_TARGET_RESOLVE_INVALID_REQUEST;
+					diagnostic->mismatchSegmentIndex = index;
+				}
+				break;
+			}
+
+			AEGP_StreamRefH nextH = NULL;
+			if (index == 0 &&
+				segment.expectedMatchToken ==
+					CF_MATCH_ROOT_VECTORS_GROUP) {
+				err = dynamicStreamSuite->AEGP_GetNewStreamRefByMatchname(
+					S_cornerFlexPluginId,
+					currentH,
+					expectedMatchName,
+					&nextH);
+			}
+			else {
+				err = dynamicStreamSuite->AEGP_GetNewStreamRefByIndex(
+					S_cornerFlexPluginId,
+					currentH,
+					segment.propertyIndex - 1,
+					&nextH);
+			}
+			if (err || !nextH) {
+				if (diagnostic) {
+					diagnostic->status = CF_TARGET_RESOLVE_STREAM_ERROR;
+					diagnostic->mismatchSegmentIndex = index;
+				}
+				break;
+			}
+
+			A_char actualMatchName[AEGP_MAX_STREAM_MATCH_NAME_SIZE] = {};
+			err = dynamicStreamSuite->AEGP_GetMatchName(
+				nextH, actualMatchName);
+			const CF_GeometryMatchToken actualToken =
+				GeometryTokenForMatchName(actualMatchName);
+			if (diagnostic) {
+				diagnostic->resolvedSegmentCount = index + 1;
+				diagnostic->finalExpectedToken =
+					segment.expectedMatchToken;
+				diagnostic->finalResolvedToken = actualToken;
+			}
+			if (err || strcmp(actualMatchName, expectedMatchName) != 0) {
+				if (diagnostic) {
+					diagnostic->status = CF_TARGET_RESOLVE_MATCH_NAME_MISMATCH;
+					diagnostic->mismatchSegmentIndex = index;
+				}
+				streamSuite->AEGP_DisposeStream(nextH);
+				break;
+			}
+
+			streamSuite->AEGP_DisposeStream(currentH);
+			currentH = nextH;
+			if (index == path.segmentCount - 1) {
+				int32_t uniqueStreamId = 0;
+				if (!streamSuite->AEGP_GetUniqueStreamID(
+					currentH, &uniqueStreamId)) {
+					location.wasFound = TRUE;
+					location.isRectanglePath = TRUE;
+					location.uniqueStreamId = uniqueStreamId;
+					if (diagnostic) {
+						diagnostic->status =
+							location.isRectanglePath
+								? CF_TARGET_RESOLVE_OK
+								: CF_TARGET_RESOLVE_FINAL_NOT_RECTANGLE;
+						diagnostic->finalUniqueStreamId = uniqueStreamId;
+						diagnostic->resolvedLayerId = layerId;
+					}
+				}
+				else {
+					if (diagnostic) {
+						diagnostic->status = CF_TARGET_RESOLVE_STREAM_ERROR;
+					}
+				}
+			}
+		}
+	}
+
+	if (currentH) {
+		streamSuite->AEGP_DisposeStream(currentH);
+	}
+	return location;
+}
+
+// Resolves the persisted hierarchy and returns the final stream only to the
+// caller that needs to inspect its parent chain. The caller owns the result.
+static A_Err
+ResolveGeometryTargetPathStreamFromAfterEffects(
+	PF_InData* in_data,
+	const CF_GeometryTargetPath& path,
+	AEGP_PFInterfaceSuite1* pfInterfaceSuite,
+	AEGP_LayerSuite9* layerSuite,
+	AEGP_DynamicStreamSuite4* dynamicStreamSuite,
+	AEGP_StreamSuite6* streamSuite,
+	AEGP_StreamRefH* finalStreamH)
+{
+	if (finalStreamH) {
+		*finalStreamH = NULL;
+	}
+	if (!in_data || !path.isValid || !finalStreamH ||
+		!pfInterfaceSuite || !layerSuite || !dynamicStreamSuite ||
+		!streamSuite) {
+		return A_Err_GENERIC;
+	}
+
+	AEGP_LayerH layerH = NULL;
+	AEGP_LayerIDVal layerId = AEGP_LayerIDVal_NONE;
+	AEGP_StreamRefH currentH = NULL;
+	A_Err err = pfInterfaceSuite->AEGP_GetEffectLayer(
+		in_data->effect_ref, &layerH);
+	if (!err && layerH) {
+		err = layerSuite->AEGP_GetLayerID(layerH, &layerId);
+	}
+	if (err || layerId != path.layerId) {
+		return err ? err : A_Err_GENERIC;
+	}
+
+	err = dynamicStreamSuite->AEGP_GetNewStreamRefForLayer(
+		S_cornerFlexPluginId, layerH, &currentH);
+	for (A_long index = 0;
+		!err && currentH && index < path.segmentCount;
+		index++) {
+		const CF_GeometryPathSegment& segment = path.segments[index];
+		const A_char* expectedMatchName =
+			MatchNameForGeometryToken(segment.expectedMatchToken);
+		if (!expectedMatchName) {
+			err = A_Err_GENERIC;
+			break;
+		}
+
+		AEGP_StreamRefH nextH = NULL;
+		if (index == 0 &&
+			segment.expectedMatchToken == CF_MATCH_ROOT_VECTORS_GROUP) {
+			err = dynamicStreamSuite->AEGP_GetNewStreamRefByMatchname(
+				S_cornerFlexPluginId, currentH, expectedMatchName, &nextH);
+		}
+		else if (segment.propertyIndex > 0) {
+			err = dynamicStreamSuite->AEGP_GetNewStreamRefByIndex(
+				S_cornerFlexPluginId, currentH,
+				segment.propertyIndex - 1, &nextH);
+		}
+		else {
+			err = A_Err_GENERIC;
+		}
+
+		if (err || !nextH) {
+			if (nextH) {
+				streamSuite->AEGP_DisposeStream(nextH);
+			}
+			break;
+		}
+
+		A_char actualMatchName[AEGP_MAX_STREAM_MATCH_NAME_SIZE] = {};
+		err = dynamicStreamSuite->AEGP_GetMatchName(
+			nextH, actualMatchName);
+		if (err || strcmp(actualMatchName, expectedMatchName) != 0) {
+			streamSuite->AEGP_DisposeStream(nextH);
+			err = A_Err_GENERIC;
+			break;
+		}
+
+		streamSuite->AEGP_DisposeStream(currentH);
+		currentH = nextH;
+	}
+
+	if (!err && currentH) {
+		A_char finalMatchName[AEGP_MAX_STREAM_MATCH_NAME_SIZE] = {};
+		err = dynamicStreamSuite->AEGP_GetMatchName(
+			currentH, finalMatchName);
+		if (!err && strcmp(
+			finalMatchName, "ADBE Vector Shape - Rect") == 0) {
+			*finalStreamH = currentH;
+			currentH = NULL;
+		}
+		else if (!err) {
+			err = A_Err_GENERIC;
+		}
+	}
+
+	if (currentH) {
+		streamSuite->AEGP_DisposeStream(currentH);
+	}
+	return err;
 }
 
 CF_RectangleGeometrySnapshot
@@ -933,7 +1386,9 @@ BuildTrimRectangle(
 	return rect;
 }
 
-static const A_long CF_MAX_TARGET_STREAM_DEPTH = 32;
+/* Legacy Unique Stream ID locator retained only as historical reference.
+   Runtime selection is now exclusively hierarchical. */
+/* static const A_long CF_MAX_TARGET_STREAM_DEPTH = 32;
 
 static A_Err
 LocateGeometryTargetInStreamGroup(
@@ -1108,6 +1563,7 @@ LocateGeometryTargetInAfterEffects(
 
 	return location;
 }
+*/
 
 static CF_RectanglePathProperties
 ReadRectanglePathPropertiesFromAfterEffects(
@@ -1148,21 +1604,487 @@ DiscoverRectangleSourceFromAfterEffects(
 	AEFX_CLR_STRUCT(rectangleSource);
 
 	rectangleSource.isAvailable = FALSE;
-
-	const CF_GeometryTargetLocation targetLocation =
-		LocateGeometryTargetInAfterEffects(
-			in_data,
-			targetIdentity);
-
-	const CF_RectanglePathProperties rectangleProperties =
-		ReadRectanglePathPropertiesFromAfterEffects(
-			in_data,
-			targetIdentity,
-			targetLocation);
-
-	static_cast<void>(rectangleProperties);
+	// Rectangle Source remains disabled. Runtime target selection is performed
+	// by the hierarchical path resolver; Unique Stream ID is not a locator.
+	static_cast<void>(in_data);
+	static_cast<void>(targetIdentity);
 
 	return rectangleSource;
+}
+
+static const A_char* const CF_VECTOR_GROUP_MATCH_NAME =
+	"ADBE Vector Group";
+static const A_char* const CF_VECTORS_GROUP_MATCH_NAME =
+	"ADBE Vectors Group";
+static const A_char* const CF_VECTOR_TRANSFORM_GROUP_MATCH_NAME =
+	"ADBE Vector Transform Group";
+static const A_char* const CF_VECTOR_ANCHOR_MATCH_NAME =
+	"ADBE Vector Anchor";
+static const A_char* const CF_VECTOR_POSITION_MATCH_NAME =
+	"ADBE Vector Position";
+static const A_char* const CF_VECTOR_SCALE_MATCH_NAME =
+	"ADBE Vector Scale";
+static const A_char* const CF_VECTOR_ROTATION_MATCH_NAME =
+	"ADBE Vector Rotation";
+static const A_char* const CF_VECTOR_SKEW_MATCH_NAME =
+	"ADBE Vector Skew";
+
+static A_Boolean
+ReadGroupTwoDValue(
+	AEGP_DynamicStreamSuite4* dynamicStreamSuite,
+	AEGP_StreamSuite6* streamSuite,
+	AEGP_StreamRefH transformGroupH,
+	AEGP_PluginID pluginId,
+	const A_char* matchName,
+	const A_Time& compTime,
+	PF_FpLong& valueX,
+	PF_FpLong& valueY)
+{
+	AEGP_StreamRefH streamH = NULL;
+	AEGP_StreamType streamType = AEGP_StreamType_NO_DATA;
+	AEGP_StreamValue2 streamValue;
+	AEFX_CLR_STRUCT(streamValue);
+
+	A_Err err =
+		dynamicStreamSuite->AEGP_GetNewStreamRefByMatchname(
+			pluginId,
+			transformGroupH,
+			matchName,
+			&streamH);
+
+	if (!err) {
+		err = streamSuite->AEGP_GetStreamType(
+			streamH,
+			&streamType);
+	}
+
+	if (!err &&
+		(streamType == AEGP_StreamType_TwoD ||
+		 streamType == AEGP_StreamType_TwoD_SPATIAL)) {
+		err = streamSuite->AEGP_GetNewStreamValue(
+			pluginId,
+			streamH,
+			AEGP_LTimeMode_CompTime,
+			&compTime,
+			FALSE,
+			&streamValue);
+	}
+
+	if (!err) {
+		valueX = streamValue.val.two_d.x;
+		valueY = streamValue.val.two_d.y;
+	}
+
+	if (streamValue.streamH) {
+		streamSuite->AEGP_DisposeStreamValue(&streamValue);
+	}
+
+	if (streamH) {
+		streamSuite->AEGP_DisposeStream(streamH);
+	}
+
+	return !err &&
+		std::isfinite(valueX) &&
+		std::isfinite(valueY)
+		? TRUE
+		: FALSE;
+}
+
+static A_Boolean
+ReadGroupOneDValue(
+	AEGP_DynamicStreamSuite4* dynamicStreamSuite,
+	AEGP_StreamSuite6* streamSuite,
+	AEGP_StreamRefH transformGroupH,
+	AEGP_PluginID pluginId,
+	const A_char* matchName,
+	const A_Time& compTime,
+	PF_FpLong& value)
+{
+	AEGP_StreamRefH streamH = NULL;
+	AEGP_StreamType streamType = AEGP_StreamType_NO_DATA;
+	AEGP_StreamValue2 streamValue;
+	AEFX_CLR_STRUCT(streamValue);
+
+	A_Err err =
+		dynamicStreamSuite->AEGP_GetNewStreamRefByMatchname(
+			pluginId,
+			transformGroupH,
+			matchName,
+			&streamH);
+
+	if (!err) {
+		err = streamSuite->AEGP_GetStreamType(
+			streamH,
+			&streamType);
+	}
+
+	if (!err && streamType == AEGP_StreamType_OneD) {
+		err = streamSuite->AEGP_GetNewStreamValue(
+			pluginId,
+			streamH,
+			AEGP_LTimeMode_CompTime,
+			&compTime,
+			FALSE,
+			&streamValue);
+	}
+
+	if (!err) {
+		value = streamValue.val.one_d;
+	}
+
+	if (streamValue.streamH) {
+		streamSuite->AEGP_DisposeStreamValue(&streamValue);
+	}
+
+	if (streamH) {
+		streamSuite->AEGP_DisposeStream(streamH);
+	}
+
+	return !err && std::isfinite(value) ? TRUE : FALSE;
+}
+
+static A_Boolean
+ReadSingleGroupTransform(
+	AEGP_DynamicStreamSuite4* dynamicStreamSuite,
+	AEGP_StreamSuite6* streamSuite,
+	AEGP_StreamRefH groupContentsH,
+	AEGP_PluginID pluginId,
+	const A_Time& compTime,
+	CF_GroupTransform2DContext& context)
+{
+	AEGP_StreamRefH groupH = NULL;
+	AEGP_StreamRefH grandParentH = NULL;
+	AEGP_StreamRefH transformGroupH = NULL;
+	A_char matchName[AEGP_MAX_STREAM_MATCH_NAME_SIZE] = {};
+
+	A_Err err =
+		dynamicStreamSuite->AEGP_GetNewParentStreamRef(
+			pluginId,
+			groupContentsH,
+			&groupH);
+
+	if (!err) {
+		err = dynamicStreamSuite->AEGP_GetMatchName(
+			groupH,
+			matchName);
+	}
+
+	if (!err && strcmp(matchName, CF_VECTOR_GROUP_MATCH_NAME) == 0) {
+		A_Err parentErr =
+			dynamicStreamSuite->AEGP_GetNewParentStreamRef(
+				pluginId,
+				groupH,
+				&grandParentH);
+
+		if (!parentErr && grandParentH) {
+			A_char grandMatchName[AEGP_MAX_STREAM_MATCH_NAME_SIZE] = {};
+			parentErr = dynamicStreamSuite->AEGP_GetMatchName(
+				grandParentH,
+				grandMatchName);
+			if (parentErr == A_Err_NONE &&
+				strcmp(grandMatchName, CF_VECTOR_GROUP_MATCH_NAME) == 0) {
+				context.isValid = FALSE;
+				context.isUnsupported = TRUE;
+				if (grandParentH) {
+					streamSuite->AEGP_DisposeStream(grandParentH);
+				}
+				if (groupH) {
+					streamSuite->AEGP_DisposeStream(groupH);
+				}
+				return FALSE;
+			}
+		}
+
+		if (!err) {
+			err = dynamicStreamSuite->AEGP_GetNewStreamRefByMatchname(
+				pluginId,
+				groupH,
+				CF_VECTOR_TRANSFORM_GROUP_MATCH_NAME,
+				&transformGroupH);
+		}
+
+		if (!err && transformGroupH) {
+			context.isValid =
+				ReadGroupTwoDValue(
+					dynamicStreamSuite, streamSuite, transformGroupH,
+					pluginId, CF_VECTOR_ANCHOR_MATCH_NAME, compTime,
+					context.anchorX, context.anchorY) &&
+				ReadGroupTwoDValue(
+					dynamicStreamSuite, streamSuite, transformGroupH,
+					pluginId, CF_VECTOR_POSITION_MATCH_NAME, compTime,
+					context.positionX, context.positionY) &&
+				ReadGroupTwoDValue(
+					dynamicStreamSuite, streamSuite, transformGroupH,
+					pluginId, CF_VECTOR_SCALE_MATCH_NAME, compTime,
+					context.scaleX, context.scaleY) &&
+				ReadGroupOneDValue(
+					dynamicStreamSuite, streamSuite, transformGroupH,
+					pluginId, CF_VECTOR_ROTATION_MATCH_NAME, compTime,
+					context.rotationDegrees);
+
+			if (!context.isValid) {
+				context.isUnsupported = TRUE;
+			}
+			else {
+				// AE exposes Shape Group Scale as percentages; the affine core uses normalized factors.
+				context.scaleX /= 100.0;
+				context.scaleY /= 100.0;
+			}
+
+			PF_FpLong skew = 0;
+			if (context.isValid &&
+				!ReadGroupOneDValue(
+					dynamicStreamSuite, streamSuite, transformGroupH,
+					pluginId, CF_VECTOR_SKEW_MATCH_NAME, compTime, skew)) {
+				context.isValid = FALSE;
+				context.isUnsupported = TRUE;
+			}
+
+			if (context.isValid &&
+				(context.scaleX <= 0.0 || context.scaleY <= 0.0 ||
+				 std::fabs(skew) > 1.0e-6)) {
+				context.isValid = FALSE;
+				context.isUnsupported = TRUE;
+			}
+
+			if (context.isValid) {
+				const PF_FpLong radians =
+					context.rotationDegrees *
+					(3.14159265358979323846 / 180.0);
+				const PF_FpLong c = std::cos(radians);
+				const PF_FpLong s = std::sin(radians);
+				context.transform = MakeIdentityAffineTransform2D();
+				context.transform.a = c * context.scaleX;
+				context.transform.b = s * context.scaleX;
+				context.transform.c = -s * context.scaleY;
+				context.transform.d = c * context.scaleY;
+				context.transform.tx = context.positionX -
+					((context.transform.a * context.anchorX) +
+					 (context.transform.c * context.anchorY));
+				context.transform.ty = context.positionY -
+					((context.transform.b * context.anchorX) +
+					 (context.transform.d * context.anchorY));
+				context.hasGroupTransform = TRUE;
+				context.isValid =
+					std::isfinite(context.transform.a) &&
+					std::isfinite(context.transform.b) &&
+					std::isfinite(context.transform.c) &&
+					std::isfinite(context.transform.d) &&
+					std::isfinite(context.transform.tx) &&
+					std::isfinite(context.transform.ty);
+				if (!context.isValid) {
+					context.isUnsupported = TRUE;
+				}
+			}
+		}
+	}
+
+	if (transformGroupH) {
+		streamSuite->AEGP_DisposeStream(transformGroupH);
+	}
+	if (grandParentH) {
+		streamSuite->AEGP_DisposeStream(grandParentH);
+	}
+	if (groupH) {
+		streamSuite->AEGP_DisposeStream(groupH);
+	}
+
+	return context.isValid;
+}
+
+/*
+static A_Boolean
+LocateSingleGroupForTargetInStreamGroup(
+	AEGP_DynamicStreamSuite4* dynamicStreamSuite,
+	AEGP_StreamSuite6* streamSuite,
+	AEGP_StreamRefH groupStreamH,
+	const CF_GeometryTargetIdentity& targetIdentity,
+	const A_Time& compTime,
+	A_long depth,
+	CF_GroupTransform2DContext& context)
+{
+	if (!groupStreamH || depth >= CF_MAX_TARGET_STREAM_DEPTH) {
+		return FALSE;
+	}
+
+	A_long streamCount = 0;
+	if (dynamicStreamSuite->AEGP_GetNumStreamsInGroup(
+		groupStreamH, &streamCount)) {
+		return FALSE;
+	}
+
+	for (A_long streamIndex = 0;
+		streamIndex < streamCount;
+		streamIndex++) {
+		AEGP_StreamRefH childStreamH = NULL;
+		A_Err err = dynamicStreamSuite->AEGP_GetNewStreamRefByIndex(
+			S_cornerFlexPluginId, groupStreamH, streamIndex, &childStreamH);
+		if (err || !childStreamH) {
+			continue;
+		}
+
+		int32_t uniqueStreamId = 0;
+		AEGP_StreamGroupingType groupingType =
+			AEGP_StreamGroupingType_NONE;
+		dynamicStreamSuite->AEGP_GetStreamGroupingType(
+			childStreamH, &groupingType);
+		const A_Err uniqueIdErr =
+			streamSuite->AEGP_GetUniqueStreamID(childStreamH, &uniqueStreamId);
+		if (!uniqueIdErr &&
+			uniqueStreamId == targetIdentity.uniqueStreamId) {
+			const A_Boolean found =
+				ReadSingleGroupTransform(
+					dynamicStreamSuite,
+					streamSuite,
+					groupStreamH,
+					S_cornerFlexPluginId,
+					compTime,
+					context);
+			streamSuite->AEGP_DisposeStream(childStreamH);
+			return found;
+		}
+
+		if (groupingType == AEGP_StreamGroupingType_NAMED_GROUP ||
+			groupingType == AEGP_StreamGroupingType_INDEXED_GROUP) {
+			if (LocateSingleGroupForTargetInStreamGroup(
+				dynamicStreamSuite,
+				streamSuite,
+				childStreamH,
+				targetIdentity,
+				compTime,
+				depth + 1,
+				context)) {
+				streamSuite->AEGP_DisposeStream(childStreamH);
+			return TRUE;
+			}
+		}
+
+		streamSuite->AEGP_DisposeStream(childStreamH);
+	}
+
+	return FALSE;
+}
+*/
+
+CF_GroupTransform2DContext
+ResolveSingleGroupTransformFromAfterEffects(
+	PF_InData* in_data,
+	const CF_GeometryTargetPath& targetPath)
+{
+	CF_GroupTransform2DContext context;
+	AEFX_CLR_STRUCT(context);
+	context.transform = MakeIdentityAffineTransform2D();
+	context.isValid = FALSE;
+
+	if (!in_data || !targetPath.isValid || !in_data->pica_basicP) {
+		return context;
+	}
+	A_long vectorGroupCount = 0;
+	for (A_long index = 0; index < targetPath.segmentCount; index++) {
+		if (targetPath.segments[index].expectedMatchToken ==
+			CF_MATCH_VECTOR_GROUP) {
+			vectorGroupCount++;
+		}
+	}
+	if (vectorGroupCount > 1) {
+		context.isUnsupported = TRUE;
+		return context;
+	}
+
+	AEGP_SuiteHandler suites(in_data->pica_basicP);
+	AEGP_PFInterfaceSuite1* pfInterfaceSuite = NULL;
+	AEGP_LayerSuite9* layerSuite = NULL;
+	AEGP_DynamicStreamSuite4* dynamicStreamSuite = NULL;
+	AEGP_StreamSuite6* streamSuite = NULL;
+	try {
+		pfInterfaceSuite = suites.PFInterfaceSuite1();
+		layerSuite = suites.LayerSuite9();
+		dynamicStreamSuite = suites.DynamicStreamSuite4();
+		streamSuite = suites.StreamSuite6();
+	}
+	catch (...) {
+		return context;
+	}
+
+	AEGP_StreamRefH rectangleStreamH = NULL;
+	A_Time compTime;
+	AEFX_CLR_STRUCT(compTime);
+
+	A_Err err = A_Err_NONE;
+	if (!err) {
+		err = pfInterfaceSuite->AEGP_ConvertEffectToCompTime(
+			in_data->effect_ref,
+			in_data->current_time,
+			in_data->time_scale,
+			&compTime);
+	}
+
+	if (!err) {
+		err = ResolveGeometryTargetPathStreamFromAfterEffects(
+			in_data,
+			targetPath,
+			pfInterfaceSuite,
+			layerSuite,
+			dynamicStreamSuite,
+			streamSuite,
+			&rectangleStreamH);
+	}
+
+	if (!err && rectangleStreamH) {
+		AEGP_StreamRefH vectorsGroupH = NULL;
+		AEGP_StreamRefH vectorGroupH = NULL;
+		A_char vectorsMatchName[AEGP_MAX_STREAM_MATCH_NAME_SIZE] = {};
+		A_char vectorMatchName[AEGP_MAX_STREAM_MATCH_NAME_SIZE] = {};
+
+		err = dynamicStreamSuite->AEGP_GetNewParentStreamRef(
+			S_cornerFlexPluginId, rectangleStreamH, &vectorsGroupH);
+		if (!err && vectorsGroupH) {
+			err = dynamicStreamSuite->AEGP_GetMatchName(
+				vectorsGroupH, vectorsMatchName);
+		}
+		if (!err && strcmp(vectorsMatchName, CF_VECTORS_GROUP_MATCH_NAME) != 0) {
+			err = A_Err_GENERIC;
+		}
+		if (!err) {
+			err = dynamicStreamSuite->AEGP_GetNewParentStreamRef(
+				S_cornerFlexPluginId, vectorsGroupH, &vectorGroupH);
+		}
+		if (!err && vectorGroupH) {
+			err = dynamicStreamSuite->AEGP_GetMatchName(
+				vectorGroupH, vectorMatchName);
+		}
+		if (!err && strcmp(vectorMatchName, CF_VECTOR_GROUP_MATCH_NAME) == 0) {
+			ReadSingleGroupTransform(
+				dynamicStreamSuite,
+				streamSuite,
+				vectorsGroupH,
+				S_cornerFlexPluginId,
+				compTime,
+				context);
+		}
+		else if (!err && strcmp(vectorMatchName,
+			"ADBE Root Vectors Group") == 0) {
+			// Rectangle directly under root Contents is a valid no-op.
+			context.isValid = TRUE;
+			context.hasGroupTransform = FALSE;
+		}
+		else if (!err) {
+			err = A_Err_GENERIC;
+		}
+
+		if (vectorGroupH) {
+			streamSuite->AEGP_DisposeStream(vectorGroupH);
+		}
+		if (vectorsGroupH) {
+			streamSuite->AEGP_DisposeStream(vectorsGroupH);
+		}
+	}
+
+	if (rectangleStreamH) {
+		streamSuite->AEGP_DisposeStream(rectangleStreamH);
+	}
+
+	return context;
 }
 
 static A_Boolean
@@ -1464,8 +2386,14 @@ ResolveRectangleGeometry(
 	sourceData.layerTransform =
 		rectangleSource.layerTransform;
 
+	sourceData.groupTransform =
+		rectangleSource.groupTransform;
+
 	sourceData.hasLayerTransform =
 		rectangleSource.hasLayerTransform;
+
+	sourceData.hasGroupTransform =
+		rectangleSource.hasGroupTransform;
 
 	sourceData.source =
 		CF_GEOMETRY_SOURCE_RECTANGLE;
@@ -1483,8 +2411,16 @@ ResolveGeometrySource(
 	const CF_GeometryResolveRequest& request)
 {
 	if (request.rectangleSource.isAvailable) {
-		return ResolveRectangleGeometry(
+		CF_GeometrySourceData sourceData =
+			ResolveRectangleGeometry(
 			request.rectangleSource);
+
+		sourceData.groupTransform =
+			request.groupTransform;
+		sourceData.hasGroupTransform =
+			request.hasGroupTransform;
+
+		return sourceData;
 	}
 
 	return ResolveLayerBoundsGeometry(
@@ -2051,6 +2987,9 @@ BuildGeometryContext(
 	geometryContext.layerTransform =
 		sourceData.layerTransform;
 
+	geometryContext.groupTransform =
+		sourceData.groupTransform;
+
 	geometryContext.cornerRadii.topLeft = 0;
 	geometryContext.cornerRadii.topRight = 0;
 	geometryContext.cornerRadii.bottomRight = 0;
@@ -2064,6 +3003,9 @@ BuildGeometryContext(
 
 	geometryContext.hasLayerTransform =
 		sourceData.hasLayerTransform;
+
+	geometryContext.hasGroupTransform =
+		sourceData.hasGroupTransform;
 
 	geometryContext.isFallback =
 		sourceData.isFallback;
@@ -2161,22 +3103,58 @@ BuildRenderContext(
 	if (geometryContext.source == CF_GEOMETRY_SOURCE_RECTANGLE &&
 		geometryContext.primitiveType == CF_PRIMITIVE_RECTANGLE &&
 		geometryContext.hasLayerTransform) {
+		CF_AffineTransform2D combinedTransform =
+			geometryContext.layerTransform;
 
-		const CF_OrientedRectangle localRectangle =
-			BuildAxisAlignedOrientedRectangle(
-				geometryContext.geometryBounds);
+		if (geometryContext.hasGroupTransform) {
+			combinedTransform =
+				ComposeAffineTransform2D(
+					geometryContext.layerTransform,
+					geometryContext.groupTransform);
+		}
 
-		renderContext.orientedRect =
-			TransformOrientedRectangle(
-				localRectangle,
-				geometryContext.layerTransform);
+		if (geometryContext.hasGroupTransform) {
+			const CF_AffineRectangle localRectangle =
+				BuildAxisAlignedAffineRectangle(
+					geometryContext.geometryBounds);
 
-		renderContext.geometryBounds =
-			ComputeOrientedRectangleAABB(
-				renderContext.orientedRect);
+			renderContext.affineRect =
+				TransformAffineRectangle(
+					localRectangle,
+					combinedTransform);
 
-		renderContext.hasOrientedRect = TRUE;
+			renderContext.geometryBounds =
+				ComputeAffineRectangleAABB(
+					renderContext.affineRect);
+
+			renderContext.hasAffineRect =
+			IsPointInsideAffineRectangle(
+				renderContext.affineRect,
+				renderContext.affineRect.center.x,
+				renderContext.affineRect.center.y);
+		}
+		else {
+			const CF_OrientedRectangle localRectangle =
+				BuildAxisAlignedOrientedRectangle(
+					geometryContext.geometryBounds);
+
+			renderContext.orientedRect =
+				TransformOrientedRectangle(
+					localRectangle,
+					combinedTransform);
+
+			renderContext.geometryBounds =
+				ComputeOrientedRectangleAABB(
+					renderContext.orientedRect);
+
+			renderContext.hasOrientedRect = TRUE;
+		}
 	}
+
+	renderContext.groupTransform =
+		geometryContext.groupTransform;
+	renderContext.hasGroupTransform =
+		geometryContext.hasGroupTransform;
 
 	renderContext.inputWidth = inputWidth;
 	renderContext.inputHeight = inputHeight;
@@ -2210,6 +3188,25 @@ Render(
 	const A_long inputHeight =
 		params[CORNERFLEX_INPUT]->u.ld.height;
 
+	const CF_GeometryTargetState storedTargetState =
+		ReadGeometryTargetState(params);
+
+	const CF_GeometryTargetIdentity targetIdentity =
+		GetActiveGeometryTargetIdentity(
+			storedTargetState);
+
+	const CF_GeometryTargetPath targetPath =
+		ReadGeometryTargetPath(params);
+	CF_GeometryTargetResolutionDiagnostic targetResolutionDiagnostic;
+	const CF_GeometryTargetLocation targetPathLocation =
+		ResolveGeometryTargetPathFromAfterEffects(
+			in_data,
+			targetPath,
+			&targetResolutionDiagnostic);
+	// Phase 5.13C.1 only validates identity; Group Transform remains gated.
+	static_cast<void>(targetPathLocation);
+	static_cast<void>(targetResolutionDiagnostic);
+
 	const CF_RectangleCoordinateContext coordinateContext =
 		BuildRectangleCoordinateContext(
 			inputWidth,
@@ -2226,18 +3223,27 @@ Render(
 				in_data);
 	}
 
-	const CF_RectangleSourceData convertedRectangleSource =
+	CF_RectangleSourceData convertedRectangleSource =
 		ConvertRectangleGeometrySnapshotToSourceData(
 			rectangleSnapshot,
 			coordinateContext,
 			layerTransformContext);
 
-	const CF_GeometryTargetState storedTargetState =
-		ReadGeometryTargetState(params);
+	CF_GroupTransform2DContext groupTransformContext;
+	AEFX_CLR_STRUCT(groupTransformContext);
+	groupTransformContext.transform =
+		MakeIdentityAffineTransform2D();
+	groupTransformContext.isValid = FALSE;
 
-	const CF_GeometryTargetIdentity targetIdentity =
-		GetActiveGeometryTargetIdentity(
-			storedTargetState);
+	// Activate only the fully resolved, single-group target path.
+	if (snapshotSourceEnabled &&
+		targetPathLocation.wasFound &&
+		targetPathLocation.isRectanglePath) {
+		groupTransformContext =
+			ResolveSingleGroupTransformFromAfterEffects(
+				in_data,
+				targetPath);
+	}
 
 	CF_GeometryResolveRequest resolveRequest;
 	AEFX_CLR_STRUCT(resolveRequest);
@@ -2259,6 +3265,11 @@ Render(
 	// First activation point where an enabled snapshot can modify geometryBounds.
 	resolveRequest.rectangleSource =
 		selectedRectangleSource;
+	resolveRequest.groupTransform =
+		groupTransformContext.transform;
+	resolveRequest.hasGroupTransform =
+		groupTransformContext.isValid &&
+		groupTransformContext.hasGroupTransform;
 
 	const CF_GeometrySourceData sourceData =
 		ResolveGeometrySource(resolveRequest);

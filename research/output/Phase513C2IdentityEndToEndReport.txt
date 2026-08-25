@@ -1,0 +1,126 @@
+CornerFlex — Phase 5.13C.2 Geometry Target Identity End-to-End Validation
+=======================================================================
+
+Fecha: 2026-08-23
+Workspace: E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton
+Rama: codex/cornerflex-development
+
+RESULTADO GLOBAL: NO-GO para reactivar Group Transform.
+
+La identidad se transporta correctamente desde CEP hasta los parámetros
+ocultos. La reconstrucción AEX está implementada y validada estáticamente,
+pero no se obtuvo una traza runtime observable del resolver AEX durante esta
+fase. Por tanto, no se declara PASS de extremo a extremo.
+
+1. Diagnóstico del fallo inicial del provider
+----------------------------------------------
+
+Primer intento: el provider retornó NO_ACTIVE_COMP porque la composición
+creada por el harness no estaba activa.
+
+Segundo intento, con comp.openInViewer(): el provider llegó a la captura, pero
+buscaba los Match Names de los segmentos como -23 ... -38. Los parámetros
+publicados por el AEX son -0023 ... -0038. Se corrigió únicamente el formateo
+del provider para conservar cuatro dígitos.
+
+Resultado posterior: SNAPSHOT_CAPTURED.
+
+2. Captura CEP
+-------------
+
+Escena creada por el harness:
+
+Shape Layer 1
+└─ Group 1
+   └─ Rectangle Path 1
+
+Path producido por CEP para el caso simple:
+
+segment 0: propertyIndex=0, matchName=ADBE Root Vectors Group, token=1
+segment 1: propertyIndex=1, matchName=ADBE Vector Group, token=2
+segment 2: propertyIndex=1, matchName=ADBE Vectors Group, token=3
+segment 3: propertyIndex=1, matchName=ADBE Vector Shape - Rect, token=4
+
+layerId capturado: 13 (valor de la composición temporal del diagnóstico).
+pathDepth: 4.
+snapshot: Size 100x100, Position 0,0, Roundness 0, Direction 1.
+
+3. Parámetros almacenados
+-------------------------
+
+Los Match Names inspeccionados en el AEX son:
+
+Geometry Target Path Version  -> BurgosInMotion CornerFlex-0020
+Geometry Target Path Valid    -> BurgosInMotion CornerFlex-0021
+Geometry Target Path Count    -> BurgosInMotion CornerFlex-0022
+Segment Index/Token 0..7      -> BurgosInMotion CornerFlex-0023 ... -0038
+
+El provider escribe de forma transaccional:
+
+Path Valid=FALSE; Snapshot Enabled=FALSE;
+version, layerId, count y segmentos;
+verificación de lectura;
+Path Valid=TRUE; Snapshot Valid=TRUE; Snapshot Enabled=TRUE.
+
+El provider no genera ni persiste uniqueStreamId.
+
+4. Resolución AEX
+-----------------
+
+ResolveGeometryTargetPathFromAfterEffects() consume únicamente el payload
+serializado, obtiene la capa por layerId, resuelve el Root Vectors Group por
+Match Name, recorre los índices propertyIndex-1 y valida el Match Name contra
+el token en cada segmento. Obtiene Unique Stream ID sólo después de alcanzar
+el Rectangle Path y libera cada StreamRef en el mismo ámbito.
+
+La función no busca alternativas y Render ignora el resultado durante esta
+fase; Group Transform permanece desactivado.
+
+La comparación CEP == stored params está confirmada para el caso simple. La
+comparación stored params == resolución AEX no pudo observarse en runtime sin
+introducir logging o una interfaz diagnóstica en el render; no se añadió tal
+instrumentación.
+
+5. Casos mínimos A-J
+--------------------
+
+A  Group único + Rectangle Path: PASS en captura CEP; AEX runtime no observado.
+B  Renombrado visual del Group: no ejecutado en AE; Match Name no cambia por diseño.
+C  Renombrado visual del Rectangle Path: no ejecutado; Match Name no cambia por diseño.
+D  Insertar sibling antes del Group: política estática PASS; el índice antiguo debe fallar.
+E  Reordenar Groups: política estática PASS; no hay rebinding heurístico.
+F  Duplicar Group: no ejecutado; no se selecciona automáticamente la copia.
+G  Eliminar target: no ejecutado; identidad inválida/fallback esperado.
+H  Duplicar Layer: no ejecutado; layerId copiado no coincide con la nueva capa.
+I  Recapturar en capa duplicada: no ejecutado.
+J  Rectangle Path directo en Root Contents: no ejecutado; requiere validar ruta específica.
+
+Los casos de invalidación D/E y validaciones de versión, profundidad, índice,
+token y jerarquía tienen PASS en ValidateGeometryTargetPathIdentity.py.
+
+6. Estado del binario
+---------------------
+
+Build temporal Phase 5.13C.1:
+SHA-256 DA9BE3E8524F1F302C19510D12EC9AF08F6C469430D657DE3F49AD5B547074AB
+Tamaño 115200 bytes.
+
+Backup utilizado:
+E:\Files\Proyectos\CornerFlexDev\Plugins\backup\Phase513C2Validation_20260823_203249\CornerFlex.aex
+SHA-256 backup 7F88245DDD3FC180EF90BA08E6DD19AF6B76FF42F9B58D3BA5E0741978AA939B
+
+Restauración final confirmada:
+C:\Program Files\Adobe\Adobe After Effects 2026\Support Files\Plug-ins\CornerFlex\CornerFlex.aex
+SHA-256 7F88245DDD3FC180EF90BA08E6DD19AF6B76FF42F9B58D3BA5E0741978AA939B
+Tamaño 83968 bytes.
+After Effects permanece cerrado.
+
+7. Conclusión
+-------------
+
+El transporte CEP → parámetros ocultos funciona para una ruta jerárquica
+real y no usa Unique Stream ID como entrada. No se activó Group Transform,
+no se modificó el renderer ni Trim y Layer Bounds conserva la ruta activa.
+
+NO-GO para Phase 5.13C funcional hasta obtener una prueba runtime observable
+de la resolución AEX y ejecutar los casos B, C, F, G, H, I y J.

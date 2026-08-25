@@ -1,0 +1,53 @@
+Phase 5.13C.7 Manual Controlled Runtime Validation
+START
+PROVIDER_LOADED
+COMP_CREATED
+COMP_OPENED
+LAYER_CREATED
+ROOT_RESOLVED
+RECTANGLE_A_CREATED
+RECTANGLE_B_CREATED
+EFFECT_CREATED
+RECTANGLES_REACQUIRED
+SELECT_BEGIN
+LAYER_DESELECTED
+RECTANGLE_DESELECTED
+LAYER_SELECTED
+RECTANGLE_SELECTED
+SELECT_BEGIN
+LAYER_DESELECTED
+RECTANGLE_DESELECTED
+LAYER_SELECTED
+RECTANGLE_SELECTED
+LAYER_BOUNDS_DISABLE_BEGIN
+LAYER_BOUNDS_DISABLE_RETURNED
+LAYER_BOUNDS_FALLBACK={"ok":true,"code":"SNAPSHOT_DISABLED","message":"Layer Bounds restaurado.","data":{"layerId":25,"layerName":"Shape Layer 1","enabled":false}}
+LayerBoundsReference=RENDER_COMPLETED
+SELECT_BEGIN
+LAYER_DESELECTED
+RECTANGLE_DESELECTED
+LAYER_SELECTED
+RECTANGLE_SELECTED
+TARGET_A_PROVIDER_BEGIN
+TARGET_A_PROVIDER_RETURNED
+TARGET_A_CAPTURE={"ok":true,"code":"SNAPSHOT_CAPTURED","message":"Rectangle Path capturado.","data":{"layerId":25,"layerName":"Shape Layer 1","rectangleName":"Group A Rectangle","pathDepth":4,"sizeX":300,"sizeY":180,"positionX":-250,"positionY":-120,"roundness":0,"direction":1,"snapshotVersion":1,"enabled":true}}
+TargetA=RENDER_COMPLETED
+SELECT_BEGIN
+LAYER_DESELECTED
+RECTANGLE_DESELECTED
+LAYER_SELECTED
+RECTANGLE_SELECTED
+TARGET_B_PROVIDER_BEGIN
+TARGET_B_PROVIDER_RETURNED
+TARGET_B_CAPTURE={"ok":true,"code":"SNAPSHOT_CAPTURED","message":"Rectangle Path capturado.","data":{"layerId":25,"layerName":"Shape Layer 1","rectangleName":"Group B Rectangle","pathDepth":4,"sizeX":640,"sizeY":360,"positionX":220,"positionY":140,"roundness":0,"direction":1,"snapshotVersion":1,"enabled":true}}
+TargetB=RENDER_COMPLETED
+SELECT_BEGIN
+LAYER_DESELECTED
+RECTANGLE_DESELECTED
+LAYER_SELECTED
+RECTANGLE_SELECTED
+FINAL_DISABLE_BEGIN
+FINAL_DISABLE_RETURNED
+FINAL_FALLBACK={"ok":true,"code":"SNAPSHOT_DISABLED","message":"Layer Bounds restaurado.","data":{"layerId":25,"layerName":"Shape Layer 1","enabled":false}}
+Fallback=RENDER_COMPLETED
+END

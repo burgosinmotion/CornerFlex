@@ -1,0 +1,7 @@
+EXPECTED_A_AABB=(93.48,245.42)-(402.28,542.61)
+EXPECTED_B_AABB=(680.93,159.63)-(1533.22,861.63)
+TargetA_CAPTURE={"ok":true,"code":"SNAPSHOT_CAPTURED","message":"Rectangle Path capturado.","data":{"layerId":25,"layerName":"Shape Layer 1","rectangleName":"Group A Rectangle","pathDepth":4,"sizeX":300,"sizeY":180,"positionX":-250,"positionY":-120,"roundness":0,"direction":1,"snapshotVersion":1,"enabled":true}}
+TargetA_RENDER_COMPLETED
+TargetB_CAPTURE={"ok":true,"code":"SNAPSHOT_CAPTURED","message":"Rectangle Path capturado.","data":{"layerId":25,"layerName":"Shape Layer 1","rectangleName":"Group B Rectangle","pathDepth":4,"sizeX":640,"sizeY":360,"positionX":220,"positionY":140,"roundness":0,"direction":1,"snapshotVersion":1,"enabled":true}}
+TargetB_RENDER_COMPLETED
+STATUS=PASS

@@ -1,0 +1,64 @@
+CornerFlex — Phase 5.13C.6 Functional Geometry Target Resolver Proof
+====================================================================
+
+Resultado: NO-GO
+
+Cambios de código
+-----------------
+
+- Retirado únicamente el logging temporal de archivo de C.3/C.4.
+- Conservados CF_GeometryTargetResolveStatus y
+  CF_GeometryTargetResolutionDiagnostic como POD local, sin efectos
+  persistentes.
+- Activación controlada del Single Group Transform cuando:
+  - Path válido y Rectangle Path final resuelto;
+  - layerId y Unique Stream ID runtime disponibles;
+  - el resolver de grupo devuelve contexto válido;
+  - siguen aplicando las validaciones existentes de escala positiva, skew cero,
+    profundidad única, 2D y ausencia de parenting.
+- El transform del grupo ya se entrega al request de geometría únicamente en
+  esa ruta validada. Layer Bounds continúa siendo fallback completo.
+
+Build Debug x64
+---------------
+
+Errores: 0
+Advertencias: 0
+Tamaño: 116736 bytes
+SHA-256: C4CE2EB416FB6BC574E4B37F0EDF695BB20667271761AD5428D141E87A3A7E0D
+
+Harness
+-------
+
+Se creó ValidateRectangleSingleGroupTargetIdentityFunctional.jsx con dos
+Groups hermanos deliberadamente distintos y dos Rectangle Paths.
+
+La ejecución automatizada de After Effects no produjo el reporte runtime ni
+archivos de render observables. Por tanto no se declara captura SNAPSHOT,
+resolución A/B, comparación RGBA, bbox ni membresía affine.
+
+Matriz adicional
+----------------
+
+No se ejecutaron rename, insert/reorder, duplicate, delete, Layer duplication,
+Root Contents ni la matriz A–Z. El caso base no fue reproducible.
+
+Restauración
+------------
+
+Backup:
+E:\Files\Proyectos\CornerFlexDev\Plugins\backup\Phase513C6Validation_20260823_214138\CornerFlex.aex
+SHA-256 backup: 7F88245DDD3FC180EF90BA08E6DD19AF6B76FF42F9B58D3BA5E0741978AA939B
+
+AEX instalado restaurado:
+Tamaño: 83968 bytes
+SHA-256: 7F88245DDD3FC180EF90BA08E6DD19AF6B76FF42F9B58D3BA5E0741978AA939B
+After Effects: cerrado.
+
+Conclusión
+----------
+
+La compuerta funcional está implementada de forma conservadora, pero no hay
+evidencia runtime suficiente para declarar Phase 5.13C funcional. No avanzar
+a la matriz A–Z ni a grupos anidados/animados hasta ejecutar el harness en una
+sesión estable y comparar contra un oracle raster independiente.

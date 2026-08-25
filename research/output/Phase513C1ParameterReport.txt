@@ -1,0 +1,39 @@
+1|BurgosInMotion CornerFlex-0001|Link Trim
+2|BurgosInMotion CornerFlex-0002|Trim
+3|BurgosInMotion CornerFlex-0003|Trim Left
+4|BurgosInMotion CornerFlex-0004|Trim Top
+5|BurgosInMotion CornerFlex-0005|Trim Right
+6|BurgosInMotion CornerFlex-0006|Trim Bottom
+7|BurgosInMotion CornerFlex-0007|Target State Version
+8|BurgosInMotion CornerFlex-0008|Target Identity Valid
+9|BurgosInMotion CornerFlex-0009|Target Layer ID
+10|BurgosInMotion CornerFlex-0010|Target Unique Stream ID
+11|BurgosInMotion CornerFlex-0011|Rectangle Snapshot Version
+12|BurgosInMotion CornerFlex-0012|Rectangle Snapshot Valid
+13|BurgosInMotion CornerFlex-0013|Rectangle Snapshot Size X
+14|BurgosInMotion CornerFlex-0014|Rectangle Snapshot Size Y
+15|BurgosInMotion CornerFlex-0015|Rectangle Snapshot Position X
+16|BurgosInMotion CornerFlex-0016|Rectangle Snapshot Position Y
+17|BurgosInMotion CornerFlex-0017|Rectangle Snapshot Roundness
+18|BurgosInMotion CornerFlex-0018|Rectangle Snapshot Direction
+19|BurgosInMotion CornerFlex-0019|Rectangle Snapshot Enabled
+20|BurgosInMotion CornerFlex-0020|Geometry Target Path Version
+21|BurgosInMotion CornerFlex-0021|Geometry Target Path Valid
+22|BurgosInMotion CornerFlex-0022|Geometry Target Path Count
+23|BurgosInMotion CornerFlex-0023|Geometry Target Path Segment In
+24|BurgosInMotion CornerFlex-0024|Geometry Target Path Segment To
+25|BurgosInMotion CornerFlex-0025|Geometry Target Path Segment In
+26|BurgosInMotion CornerFlex-0026|Geometry Target Path Segment To
+27|BurgosInMotion CornerFlex-0027|Geometry Target Path Segment In
+28|BurgosInMotion CornerFlex-0028|Geometry Target Path Segment To
+29|BurgosInMotion CornerFlex-0029|Geometry Target Path Segment In
+30|BurgosInMotion CornerFlex-0030|Geometry Target Path Segment To
+31|BurgosInMotion CornerFlex-0031|Geometry Target Path Segment In
+32|BurgosInMotion CornerFlex-0032|Geometry Target Path Segment To
+33|BurgosInMotion CornerFlex-0033|Geometry Target Path Segment In
+34|BurgosInMotion CornerFlex-0034|Geometry Target Path Segment To
+35|BurgosInMotion CornerFlex-0035|Geometry Target Path Segment In
+36|BurgosInMotion CornerFlex-0036|Geometry Target Path Segment To
+37|BurgosInMotion CornerFlex-0037|Geometry Target Path Segment In
+38|BurgosInMotion CornerFlex-0038|Geometry Target Path Segment To
+39|ADBE Effect Built In Params|Compositing Options

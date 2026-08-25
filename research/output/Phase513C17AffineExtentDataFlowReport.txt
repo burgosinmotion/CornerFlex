@@ -1,0 +1,41 @@
+Phase 5.13C.17 — Affine Extent / Basis Scaling Investigation
+
+Estado: análisis estático/matemático; no se modificó producción.
+
+Contrato CF_AffineRectangle:
+- center es el centro transformado.
+- basisX/basisY son vectores afines no normalizados.
+- halfWidth/halfHeight conservan las semidimensiones locales.
+- ComputeAffineRectangleAABB multiplica cada basis por su half extent una sola vez.
+- IsPointInsideAffineRectangle resuelve la inversa 2x2 y compara contra los half extents.
+
+Target A sin Trim:
+- size = 300 x 180
+- group scale = (0.8, 1.2)
+- rotation = -25 grados
+- AABB esperado = aproximadamente 308.80 x 297.19
+
+Target A con el estado real del harness:
+- Link Trim = TRUE
+- Trim por defecto = 10
+- ExecuteTrimOperation reduce 300 x 180 a 240 x 144 antes de BuildRenderContext.
+- AABB matemático posterior = aproximadamente 247.04 x 237.75.
+- Captura observada = aproximadamente 245 x 236.
+
+Centro:
+- El Trim simétrico conserva el centro.
+- El centro observado coincide con el oracle dentro del margen de rasterización.
+
+Punto exacto de divergencia aparente:
+- No está en TransformAffineRectangle, ComputeAffineRectangleAABB ni membership.
+- La comparación visual usó un oracle sin Trim contra un frame con Trim 10% activo.
+
+Target B:
+- El frame anterior estaba recortado por la composición 1280 x 720.
+- No es un oracle válido de dimensiones completas.
+
+Conclusión:
+- No se demuestra doble aplicación de Group Scale.
+- No se propone corrección C++.
+- El gate visual anterior debe repetirse con Trim explícitamente en 0% para comparar contra el oracle de tamaño completo.
+- GO para una nueva prueba visual controlada; NO-GO para cambios de producción o matriz A–Z hasta repetir esa prueba.

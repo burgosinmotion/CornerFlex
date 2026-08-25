@@ -1,0 +1,91 @@
+Phase 5.13C.11 Target A/B Reconciliation Against Confirmed Coordinate Model
+
+STATUS: INVESTIGATION_ONLY
+NO production changes were made.
+
+1. Confirmed C.10 contract
+
+T(layerPosition)
+* M(layerAnchor, layerScale, layerRotation)
+* T(groupPosition)
+* M(groupAnchor, groupScale, groupRotation)
+* T(rectanglePosition)
+
+For C.7 the real defaults were:
+Group Anchor [0,0], Layer Anchor [0,0,0], Layer Position [640,360,0],
+Layer Scale [100,100,100], Layer Rotation 0.
+
+2. Target A
+
+Rectangle: size 300x180, position [-250,-120]
+Group: position [-150,80], scale [80,120], rotation -25 degrees
+
+Correct normalized oracle (scale [0.8,1.2]):
+AABB approximately (93.48,245.42)-(402.28,542.61), center (490,440).
+
+Current C++ group-scale interpretation (raw [80,120]):
+The resulting affine primitive is enormous and mostly outside the 1280x720
+buffer. Its intersection with the source produces the observed partial frame:
+Target A observed alpha bbox (270,245)-(343,312), centroid (300.5,284.4).
+
+3. Target B
+
+Rectangle: size 640x360, position [220,140]
+Group: position [280,-100], scale [135,70], rotation 35 degrees
+
+Correct normalized oracle (scale [1.35,0.7]):
+AABB approximately (680.93,159.63)-(1533.22,861.63), center (1217,358).
+
+Current C++ group-scale interpretation (raw [135,70]):
+Again the affine primitive is enormous. Its buffer intersection matches the
+observed partial frame: Target B observed alpha bbox (680,356)-(1116,644),
+centroid (964.6,459.4).
+
+4. Exact divergence
+
+Layer Transform path in ResolveLayerTransform2DFromAfterEffects() explicitly
+normalizes scalePercentX/Y by dividing by 100.0.
+
+Group Transform path in ReadSingleGroupTransform() reads ADBE Vector Scale
+through ReadGroupTwoDValue() and assigns the raw percentage values directly:
+context.scaleX = streamValue.val.two_d.x;
+context.scaleY = streamValue.val.two_d.y;
+
+The subsequent matrix construction and BuildRenderContext() are otherwise
+consistent with the C.10 chain. This single unit mismatch explains A and B
+simultaneously; no arbitrary offset is required.
+
+5. Hypotheses
+
+Rejected as primary cause:
+- double input center after Layer Transform;
+- Rectangle Position applied twice;
+- Group Position in the wrong unit;
+- Group Anchor reapplied;
+- Layer Position converted twice;
+- Trim moving the center.
+
+These do not explain both A and B, whereas raw Group Scale does.
+
+6. Root Contents regression impact
+
+Root Contents has no active Group Transform. Its historical Phase 5.12D path
+continues through Layer Transform only, whose scale is already normalized.
+The potential correction is therefore isolated to the Group Transform reader.
+
+7. Minimal future correction proposal
+
+Normalize Group Scale immediately after reading the ADBE Vector Scale stream,
+or at the single assignment site that initializes CF_GroupTransform2DContext:
+scaleX = scalePercentX / 100.0;
+scaleY = scalePercentY / 100.0.
+
+Do not implement this in Phase 5.13C.11. It requires a separate authorized
+implementation and a new visual regression pass.
+
+8. Decision
+
+GO for a narrowly isolated implementation review: one unit conversion in the
+Group Transform path explains both targets and preserves Root Contents.
+NO-GO for declaring product support until the correction is implemented and
+validated against Target A/B plus the existing regression matrix.

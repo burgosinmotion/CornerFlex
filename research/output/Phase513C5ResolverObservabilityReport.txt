@@ -1,0 +1,44 @@
+CornerFlex — Phase 5.13C.5 Resolver Observability Contract
+============================================================
+
+Resultado: NO-GO para declarar el resolver observable desde CEP.
+
+Opciones evaluadas:
+
+- Parámetros ocultos: legibles desde CEP, pero PF_ParamDef durante Render es
+  una instantánea de entrada. Escribirla no persiste por instancia.
+- AEGP_SetStreamValue(): puede mutar un stream del proyecto, pero no es un
+  canal observacional seguro bajo MFR y puede introducir cambios persistentes.
+- Arbitrary data: requiere un lector compatible y no existe un canal CEP
+  directo en el flujo actual.
+- Sequence data: tiene lifecycle de instancia, pero no es legible desde el
+  provider CEP sin una ruta adicional no implementada.
+- Archivo temporal: fue útil para C.3/C.4, pero su ejecución dependía de
+  render/cache y no es un contrato determinista de producto.
+
+Contrato implementado:
+
+CF_GeometryTargetResolveStatus distingue NOT_ATTEMPTED, OK, INVALID_REQUEST,
+LAYER_MISMATCH, SEGMENT_INDEX_INVALID, MATCH_NAME_MISMATCH, STREAM_ERROR,
+FINAL_NOT_RECTANGLE y DEPTH_INVALID.
+
+CF_GeometryTargetResolutionDiagnostic es POD, versionado, por intento, sin
+handles ni punteros. Contiene layer IDs solicitados/resueltos, counts,
+tokens finales, índice de mismatch y Unique Stream ID runtime.
+
+El resolver inicializa el diagnóstico en cada llamada y no modifica su
+decisión, Rectangle Source, Group Transform, renderer ni Trim. El resultado
+permanece local al render porque no existe aún un canal externo seguro para
+leerlo desde CEP.
+
+La prueba pura ValidateGeometryTargetResolutionDiagnostic.py cubre defaults,
+resolved, invalid request, layer mismatch, segment mismatch, final-not-
+rectangle, invalid depth, reset y version mismatch. El runtime probe queda
+preparado para confirmar la captura CEP y registrar explícitamente que el
+diagnóstico POD local no es legible desde CEP; no se declara una ejecución
+runtime RESOLVED sin ese canal.
+
+Instrumentación temporal de archivo: permanece en Skeleton.cpp como puente de
+diagnóstico histórico y debe retirarse antes de cualquier commit de producto.
+
+Group Transform permanece deshabilitado. No se ejecutó la matriz A–Z.

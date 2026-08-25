@@ -1,0 +1,9 @@
+TRIM Link=1 Trim=0 Left=0 Top=0 Right=0 Bottom=0
+COMP=1920x1080
+LAYER_BOUNDS_REFERENCE=enabled
+LayerBoundsReference_RENDER_COMPLETED
+RECTANGLE_SOURCE_CAPTURE={"ok":true,"code":"SNAPSHOT_CAPTURED","message":"Rectangle Path capturado.","data":{"layerId":25,"layerName":"Shape Layer 1","rectangleName":"Group A Rectangle","pathDepth":4,"sizeX":300,"sizeY":180,"positionX":-250,"positionY":-120,"roundness":0,"direction":1,"snapshotVersion":1,"enabled":true}}
+RectangleSource_RENDER_COMPLETED
+FALLBACK_RESULT={"ok":true,"code":"SNAPSHOT_DISABLED","message":"Layer Bounds restaurado.","data":{"layerId":25,"layerName":"Shape Layer 1","enabled":false}}
+Fallback_RENDER_COMPLETED
+STATUS=PASS

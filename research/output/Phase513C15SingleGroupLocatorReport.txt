@@ -1,0 +1,71 @@
+Phase 5.13C.15 Single Group Locator / Transform Reader Investigation
+
+STATUS: TEMPORARY INSTRUMENTATION PREPARED; RUNTIME TRACE PENDING
+
+Static tree expected from DOM:
+Root Vectors Group
+└─ Vector Group
+   ├─ Vectors Group
+   │  └─ Rectangle Path
+   └─ Vector Transform Group
+
+The AEGP recursion currently visits children by stream index, compares each
+child Unique Stream ID with the target identity, and recursively enters only
+NAMED_GROUP or INDEXED_GROUP streams. When the target ID matches, it calls
+ReadSingleGroupTransform() with the current group stream as the parent context.
+
+ReadSingleGroupTransform() then ascends one parent from the current Vectors
+Group, validates parent Match Name == ADBE Vector Group, and searches that
+Group for ADBE Vector Transform Group. It reads Anchor, Position, Scale,
+Rotation and Skew before setting hasGroupTransform.
+
+C.14 proved:
+wasFound=TRUE, isRectanglePath=TRUE, groupValid=TRUE,
+groupHas=FALSE, requestHas=FALSE.
+
+Therefore the path resolver succeeds, but the single-group traversal either:
+- fails to match the Rectangle Unique Stream ID during recursive traversal;
+- fails to read the parent Group/Transform Group;
+- or returns FALSE from ReadSingleGroupTransform().
+
+The temporary trace records each visited Match Name, grouping type, Unique ID,
+target match, parent Match Name, Transform Group lookup and final result. The
+trace is outside the renderer and pixel callbacks and will be removed after
+the controlled runtime inspection.
+
+No production correction is proposed until the runtime trace identifies the
+exact failing condition.
+
+RUNTIME TRACE RESULT
+
+Target A and Target B both produced the same decisive trace:
+
+VISIT depth=0 groupMatch=ADBE Vector Layer targetId=0
+CHILD depth=0 index=0 match=ADBE Marker grouping=0 uniqueId=0
+TARGET_ID_MATCH
+READ_GROUP parentMatch= parentErr=3
+TARGET_READ_RESULT found=0
+
+The target path resolver reports wasFound/isRectanglePath, but the final
+uniqueStreamId transported into ResolveSingleGroupTransformFromAfterEffects()
+is 0. The recursive locator then treats the first stream with unique ID 0
+(ADBE Marker) as the target. Its parent is the layer stream, not ADBE Vector
+Group, so GetNewParentStreamRef() fails before Transform Group lookup.
+
+Confirmed cause:
+
+AEGP_GetUniqueStreamID() is not providing a non-zero usable identity for this
+Rectangle Path in the current transport path. The current locator does not
+reject uniqueStreamId == 0 before comparing child streams. This creates a
+false match against ADBE Marker and leads to the valid/no-op fallback.
+
+Minimal future correction direction (not implemented in C.15):
+
+- reject uniqueStreamId == 0 as an invalid target identity;
+- do not treat zero as a stream match;
+- use a stable path-based traversal/identity for this AEGP context, or resolve
+  the path segments directly before reading the immediate Vector Group parent;
+- preserve Root Contents and nested-group fallback behavior.
+
+This explains why wasFound/isRectanglePath were TRUE while groupHas/requestHas
+remained FALSE. No renderer or affine code is involved.

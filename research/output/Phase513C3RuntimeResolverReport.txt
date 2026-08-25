@@ -1,0 +1,80 @@
+CornerFlex — Phase 5.13C.3 Runtime Geometry Target Resolver Trace
+=================================================================
+
+Fecha: 2026-08-23
+Resultado: NO-GO
+
+Objetivo
+--------
+Validar CEP path == parámetros ocultos == resolución AEX sin activar Group
+Transform ni modificar renderer, affine math o Trim.
+
+Build instrumentado
+-------------------
+Ruta: E:\Files\Proyectos\CornerFlexDev\Plugins\CornerFlex.aex
+Tamaño: 117760 bytes
+SHA-256: B2831F8E874110D9C38FFEDD72E1EEED5A89B5FDEC4B4D762BA4304B6A873B28
+Compilación Debug x64: 0 errores, 0 advertencias.
+
+Captura CEP
+-----------
+La captura productiva devolvió SNAPSHOT_CAPTURED.
+
+Path:
+0: ADBE Root Vectors Group, token 1, propertyIndex 0
+1: ADBE Vector Group, token 2, propertyIndex 1
+2: ADBE Vectors Group, token 3, propertyIndex 1
+3: ADBE Vector Shape - Rect, token 4, propertyIndex 1
+
+El provider usa Match Names -0023 … -0038 con padding de cuatro dígitos.
+CEP no genera uniqueStreamId.
+
+Traza AEX observada
+-------------------
+El render instrumentado entró en ResolveGeometryTargetPathFromAfterEffects(),
+pero la primera ejecución registró:
+
+RESULT targetFound=0 reason=invalid_request
+
+Causa: el provider escribía Path Valid, versión, count y segmentos, pero no
+escribía el parámetro existente Target Layer ID (-0009). ReadGeometryTargetPath()
+por tanto recibía AEGP_LayerIDVal_NONE y rechazaba el path antes de adquirir
+streams.
+
+Corrección aplicada al provider
+-------------------------------
+El provider ahora localiza y escribe el Target Layer ID existente con el
+layer.id capturado. No se añadieron parámetros, Disk IDs ni lógica de
+re-binding. El estado Target Identity Valid continúa sin activarse, por lo que
+no se habilita Rectangle Source ni Group Transform.
+
+Repetición
+----------
+Después de la corrección, los lanzamientos automatizados posteriores de After
+Effects no produjeron un reporte/traza reproducible. No se considera válida
+una inferencia basada en el frame residual del render anterior y no se declara
+PASS del resolver runtime.
+
+Restauración
+------------
+Backup:
+E:\Files\Proyectos\CornerFlexDev\Plugins\backup\Phase513C3Validation_20260823_212216\CornerFlex.aex
+Backup SHA-256: 7F88245DDD3FC180EF90BA08E6DD19AF6B76FF42F9B58D3BA5E0741978AA939B
+
+AEX instalado restaurado:
+C:\Program Files\Adobe\Adobe After Effects 2026\Support Files\Plug-ins\CornerFlex\CornerFlex.aex
+Tamaño: 83968 bytes
+SHA-256: 7F88245DDD3FC180EF90BA08E6DD19AF6B76FF42F9B58D3BA5E0741978AA939B
+After Effects: cerrado.
+
+Instrumentación pendiente
+-------------------------
+La traza temporal está en Skeleton.cpp y debe retirarse antes de cualquier
+commit de producto. El harness de reproducción es
+research/ValidateGeometryTargetResolverRuntime.jsx.
+
+Conclusión
+----------
+NO-GO para reactivar Phase 5.13C funcional. Debe repetirse una sesión runtime
+estable y observarse, segmento por segmento, el Match Name real, el Rectangle
+Path final y el Unique Stream ID obtenido por AEX después de resolver.

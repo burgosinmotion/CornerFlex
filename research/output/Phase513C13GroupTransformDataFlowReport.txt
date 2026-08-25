@@ -1,0 +1,88 @@
+Phase 5.13C.13 Group Transform Data Flow Verification
+
+STATUS: STATIC_AND_PURE_ANALYSIS_ONLY
+NO production changes made.
+
+1. Data flow
+
+ReadSingleGroupTransform()
+  -> ReadGroupTwoDValue(ADBE Vector Anchor)
+  -> ReadGroupTwoDValue(ADBE Vector Position)
+  -> ReadGroupTwoDValue(ADBE Vector Scale)
+  -> ReadGroupOneDValue(ADBE Vector Rotation)
+  -> normalize scaleX/scaleY by /100.0
+  -> validate positive scale and zero skew
+  -> construct context.transform
+  -> return CF_GroupTransform2DContext
+
+Render()
+  -> ResolveSingleGroupTransformFromAfterEffects(resolvedTargetIdentity)
+  -> groupTransformContext
+  -> resolveRequest.groupTransform
+  -> resolveRequest.hasGroupTransform
+  -> ResolveGeometrySource()
+  -> CF_GeometrySourceData.groupTransform/hasGroupTransform
+  -> BuildGeometryContext()
+  -> CF_GeometryContext.groupTransform/hasGroupTransform
+  -> BuildRenderContext()
+  -> ComposeAffineTransform2D(layerTransform, groupTransform)
+  -> TransformAffineRectangle()
+  -> TrimFunc8()/TrimFunc16().
+
+No later assignment to scaleX/scaleY was found. The only scale divisions are:
+- Group: ReadSingleGroupTransform(), lines 1733-1734.
+- Layer: ResolveLayerTransform2DFromAfterEffects(), lines 2151-2155.
+No second Group Scale normalization exists.
+
+2. Expected values after C.12
+
+Target A: anchor [0,0], position [-150,80], scale [0.8,1.2], rotation -25.
+Target B: anchor [0,0], position [280,-100], scale [1.35,0.7], rotation 35.
+
+Expected Group matrices (a,b,c,d,tx,ty):
+Target A: (0.725046, -0.338095, 0.507142, 1.087569, -150, 80)
+Target B: (1.105855, 0.774328, -0.401504, 0.573406, 280, -100)
+
+3. Activation gate
+
+The renderer uses Group Transform only when:
+geometry source is Rectangle;
+primitive type is Rectangle;
+hasLayerTransform is TRUE;
+hasGroupTransform is TRUE.
+
+Render sets hasGroupTransform from:
+groupTransformContext.isValid && groupTransformContext.hasGroupTransform.
+
+If ResolveGeometryTargetPathFromAfterEffects() does not find the stored path,
+ResolveSingleGroupTransformFromAfterEffects() is not called with a valid
+resolved identity and hasGroupTransform remains FALSE. In that case the
+renderer follows the historical Layer Transform-only route.
+
+The C.7 report does not record targetPathLocation or hasGroupTransform, so the
+actual runtime gate for that session cannot be proven from the existing report.
+The identical C.7/C.12 PNG hashes are consistent with the Group Transform gate
+remaining FALSE, but this is an inference, not a runtime measurement.
+
+4. Snapshot source
+
+C.7 provider reports confirm independent snapshots:
+Target A: 300x180, position [-250,-120].
+Target B: 640x360, position [220,140].
+No snapshot reuse is indicated by the provider report.
+
+5. Exact unresolved divergence
+
+The C++ source path contains no overwrite or double normalization after C.12.
+Therefore the unchanged visual output cannot be explained by matrix math after
+ReadSingleGroupTransform(). The missing evidence is the runtime activation
+state: targetPathLocation.wasFound/isRectanglePath and
+groupTransformContext.isValid/hasGroupTransform for A and B.
+
+6. Decision
+
+NO-GO for another production correction.
+GO only for a diagnostic validation that records these four runtime booleans
+and the final transform, without file logging in production and without
+changing renderer behavior. Until then, C.12 normalization remains unproven
+at the active renderer boundary.

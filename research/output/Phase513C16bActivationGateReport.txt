@@ -1,0 +1,22 @@
+TARGET A
+wasFound=1
+isRectanglePath=1
+groupValid=1
+groupHas=1
+requestHas=1
+source=1
+groupPosition=(-150.000000,80.000000)
+groupScale=(0.800000,1.200000)
+groupRotation=-25.000000
+groupSkew=0
+TARGET B
+wasFound=1
+isRectanglePath=1
+groupValid=1
+groupHas=1
+requestHas=1
+source=1
+groupPosition=(280.000000,-100.000000)
+groupScale=(1.350000,0.700000)
+groupRotation=35.000000
+groupSkew=0

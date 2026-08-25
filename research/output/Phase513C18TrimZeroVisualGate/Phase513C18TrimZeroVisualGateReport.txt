@@ -1,0 +1,14 @@
+Link Trim=1
+Trim=0
+Trim Left=0
+Trim Top=0
+Trim Right=0
+Trim Bottom=0
+COMP=1920x1080
+EXPECTED_A_AABB=(413.48,425.42)-(722.28,722.61)
+EXPECTED_B_AABB=(1000.93,339.63)-(1853.22,1041.63)
+TargetA_CAPTURE={"ok":true,"code":"SNAPSHOT_CAPTURED","message":"Rectangle Path capturado.","data":{"layerId":25,"layerName":"Shape Layer 1","rectangleName":"Group A Rectangle","pathDepth":4,"sizeX":300,"sizeY":180,"positionX":-250,"positionY":-120,"roundness":0,"direction":1,"snapshotVersion":1,"enabled":true}}
+TargetA_RENDER_COMPLETED
+TargetB_CAPTURE={"ok":true,"code":"SNAPSHOT_CAPTURED","message":"Rectangle Path capturado.","data":{"layerId":25,"layerName":"Shape Layer 1","rectangleName":"Group B Rectangle","pathDepth":4,"sizeX":640,"sizeY":360,"positionX":220,"positionY":140,"roundness":0,"direction":1,"snapshotVersion":1,"enabled":true}}
+TargetB_RENDER_COMPLETED
+STATUS=PASS

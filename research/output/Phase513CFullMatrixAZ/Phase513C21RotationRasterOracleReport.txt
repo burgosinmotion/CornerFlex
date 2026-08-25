@@ -1,0 +1,63 @@
+PHASE 5.13C.21 — ROTATION RASTER ORACLE CALIBRATION
+
+No se ejecutó After Effects. Se utilizaron únicamente CaseD.png y el contrato
+del harness A-Z.
+
+CASE D CONFIGURATION
+Rectangle Size=(300,180)
+Rectangle Position=(-250,-120)
+Group Transform=identity
+Layer Position=(960,540)
+Layer Scale=(100,100)
+Layer Rotation=45 degrees
+Trim=(0,0,0,0)
+Composition=(1920,1080)
+
+GEOMETRIC VERTICES
+P0=(825.6497,108.6649)
+P1=(1037.7817,320.7969)
+P2=(910.5025,448.0761)
+P3=(698.3705,235.9441)
+
+GEOMETRIC_CONTINUOUS_AABB=(698.3705,108.6649)-(1037.7817,448.0761)
+INTEGER_CONTAINMENT_AABB=floor(left/top),ceil(right/bottom)
+PIXEL_CENTER_RULE=include pixel (x,y) iff (x+0.5,y+0.5) is inside the rotated primitive
+EXPECTED_PIXEL_CENTER_AABB=(699,109)-(1036,447)
+OBSERVED_ALPHA_AABB=(699,109)-(1036,447)
+PIXEL_CENTER_COUNT=53848
+
+ALPHA_THRESHOLD_ANALYZER=alpha>0 and max(R,G,B)>8 for visible bbox
+OPAQUE_COUNT_RULE=alpha>=250 and max(R,G,B)>8
+
+ALPHA_EDGE_SAMPLES
+top row y=109: (825,109) alpha=246
+bottom row y=446: (909,446) alpha=241; (910,446) alpha=255; (911,446) alpha=241
+bottom row y=447: (910,447) alpha=226
+left column x=699: (235,699) alpha=246; (236,699) alpha=241
+right column x=1035: (319,1035) alpha=255; (320,1035) alpha=255; (321,1035) alpha=255; (322,1035) alpha=241
+x=1036: (320,1036) alpha=255; (321,1036) alpha=241
+x=1037: no visible alpha
+
+BBOX_CONVENTION
+The analyzer stores (left,top,right,bottom) as inclusive coordinates of the
+last visible pixel, not an exclusive post-bound. The continuous AABB is kept
+separately and is not compared directly with the inclusive alpha bbox.
+
+CONTROL A-C
+A, B and C remain consistent with the pixel-center convention. Their observed
+inclusive bboxes differ from continuous bounds only by normal edge quantization.
+
+PHASE 5.12C CROSS-CHECK
+Historical oriented-rectangle evidence uses the same distinction between the
+continuous primitive/AABB and raster membership. The available Phase 5.12C
+evidence is consistent with pixel-center membership; no new After Effects run
+was performed.
+
+CONCLUSION
+The former D discrepancy is fully explained by raster coverage, not by a
+geometry or renderer error. D is recalibrated PASS under one general rule:
+the expected raster bbox is the inclusive bbox of pixels whose centers lie
+inside the oriented primitive.
+
+STATUS=PASS_ORACLE_CALIBRATED
+NEXT=Re-run independent analysis from A over existing PNGs only.
