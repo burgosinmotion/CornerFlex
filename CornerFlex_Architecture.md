@@ -1501,3 +1501,19 @@ El cierre no habilita nuevas fuentes geométricas ni cambia la política de
 fallback. Group Transform sigue limitado a un único grupo 2D, sin skew,
 parenting, 3D, nesting, animación ni expresiones. Cualquier condición fuera de
 ese contrato debe continuar resolviendo Layer Bounds.
+
+## Cross-Repository Compatibility
+
+El panel CEP vive en el repositorio independiente
+`burgosinmotion/CornerFlex-CEP`. Su archivo `COMPATIBILITY.md` es la fuente
+principal para la matriz AEX ↔ CEP.
+
+Baseline actualmente compatible:
+
+- AEX: `ebea005d87dfc40be136bce7bf4d109c654f0f88`.
+- CEP: `5a270dcb58bce6abc34f3177b8635dc2ce11fa75`.
+- Rectangle Geometry Snapshot: `1`.
+- Geometry Target Path: `1`.
+
+Cualquier cambio contractual debe validarse en ambos repositorios y actualizar
+la matriz de compatibilidad correspondiente.
