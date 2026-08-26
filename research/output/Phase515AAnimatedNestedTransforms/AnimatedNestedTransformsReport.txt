@@ -1,0 +1,258 @@
+PHASE 5.15A-I ANIMATED NESTED TRANSFORM VALIDATION
+STOP_ON_FIRST_FAILURE=true
+CASE_COUNT=12
+RUN_ONLY_CASE_A=false
+TIMES=T0,T0.5,T1
+TRIM=0
+EXPECTED_SOURCE=RECTANGLE_SOURCE
+MODE=AUTONOMOUS_MANUAL_EXECUTION
+CASE_A_CHECKPOINT_01=RECTANGLE_SIZE_ASSIGNED
+CASE_A_CHECKPOINT_02=RECTANGLE_POSITION_ASSIGNED
+CASE_A_CHECKPOINT_03=RECTANGLE_REACQUIRED=TRUE matchName=ADBE Vector Shape - Rect name=Phase515A Rectangle propertyIndex=1
+CASE_A_CONFIG=Inner Position animated EXPECTED_SOURCE=Rectangle Source FALLBACK=false
+CASE_A_CAPTURE=SNAPSHOT_CAPTURED layerId=25 pathDepth=6
+CASE_A_VALUES_TIME=0 INNER={"pos":[[0,0],[80,-40],[160,20]]} OUTER={
+
+} LAYER={
+
+}
+CASE_A_TIME=0 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseA_T0.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_A_VALUES_TIME=0.5 INNER={"pos":[[0,0],[80,-40],[160,20]]} OUTER={
+
+} LAYER={
+
+}
+CASE_A_TIME=0.5 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseA_T0p5.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_A_VALUES_TIME=1 INNER={"pos":[[0,0],[80,-40],[160,20]]} OUTER={
+
+} LAYER={
+
+}
+CASE_A_TIME=1 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseA_T1.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_A_OPERATIONAL_PASS=true
+CASE_B_CONFIG=Outer Position animated EXPECTED_SOURCE=Rectangle Source FALLBACK=false
+CASE_B_CAPTURE=SNAPSHOT_CAPTURED layerId=38 pathDepth=6
+CASE_B_VALUES_TIME=0 INNER={
+
+} OUTER={"pos":[[0,0],[-80,40],[-160,20]]} LAYER={
+
+}
+CASE_B_TIME=0 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseB_T0.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_B_VALUES_TIME=0.5 INNER={
+
+} OUTER={"pos":[[0,0],[-80,40],[-160,20]]} LAYER={
+
+}
+CASE_B_TIME=0.5 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseB_T0p5.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_B_VALUES_TIME=1 INNER={
+
+} OUTER={"pos":[[0,0],[-80,40],[-160,20]]} LAYER={
+
+}
+CASE_B_TIME=1 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseB_T1.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_B_OPERATIONAL_PASS=true
+CASE_C_CONFIG=Inner Rotation animated EXPECTED_SOURCE=Rectangle Source FALLBACK=false
+CASE_C_CAPTURE=SNAPSHOT_CAPTURED layerId=51 pathDepth=6
+CASE_C_VALUES_TIME=0 INNER={"rot":[0,25,50]} OUTER={
+
+} LAYER={
+
+}
+CASE_C_TIME=0 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseC_T0.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_C_VALUES_TIME=0.5 INNER={"rot":[0,25,50]} OUTER={
+
+} LAYER={
+
+}
+CASE_C_TIME=0.5 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseC_T0p5.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_C_VALUES_TIME=1 INNER={"rot":[0,25,50]} OUTER={
+
+} LAYER={
+
+}
+CASE_C_TIME=1 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseC_T1.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_C_OPERATIONAL_PASS=true
+CASE_D_CONFIG=Outer Rotation animated EXPECTED_SOURCE=Rectangle Source FALLBACK=false
+CASE_D_CAPTURE=SNAPSHOT_CAPTURED layerId=64 pathDepth=6
+CASE_D_VALUES_TIME=0 INNER={
+
+} OUTER={"rot":[0,-20,-40]} LAYER={
+
+}
+CASE_D_TIME=0 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseD_T0.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_D_VALUES_TIME=0.5 INNER={
+
+} OUTER={"rot":[0,-20,-40]} LAYER={
+
+}
+CASE_D_TIME=0.5 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseD_T0p5.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_D_VALUES_TIME=1 INNER={
+
+} OUTER={"rot":[0,-20,-40]} LAYER={
+
+}
+CASE_D_TIME=1 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseD_T1.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_D_OPERATIONAL_PASS=true
+CASE_E_CONFIG=Inner Scale animated EXPECTED_SOURCE=Rectangle Source FALLBACK=false
+CASE_E_CAPTURE=SNAPSHOT_CAPTURED layerId=77 pathDepth=6
+CASE_E_VALUES_TIME=0 INNER={"scale":[[100,100],[125,85],[150,70]]} OUTER={
+
+} LAYER={
+
+}
+CASE_E_TIME=0 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseE_T0.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_E_VALUES_TIME=0.5 INNER={"scale":[[100,100],[125,85],[150,70]]} OUTER={
+
+} LAYER={
+
+}
+CASE_E_TIME=0.5 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseE_T0p5.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_E_VALUES_TIME=1 INNER={"scale":[[100,100],[125,85],[150,70]]} OUTER={
+
+} LAYER={
+
+}
+CASE_E_TIME=1 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseE_T1.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_E_OPERATIONAL_PASS=true
+CASE_F_CONFIG=Outer Scale animated EXPECTED_SOURCE=Rectangle Source FALLBACK=false
+CASE_F_CAPTURE=SNAPSHOT_CAPTURED layerId=90 pathDepth=6
+CASE_F_VALUES_TIME=0 INNER={
+
+} OUTER={"scale":[[100,100],[90,120],[80,140]]} LAYER={
+
+}
+CASE_F_TIME=0 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseF_T0.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_F_VALUES_TIME=0.5 INNER={
+
+} OUTER={"scale":[[100,100],[90,120],[80,140]]} LAYER={
+
+}
+CASE_F_TIME=0.5 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseF_T0p5.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_F_VALUES_TIME=1 INNER={
+
+} OUTER={"scale":[[100,100],[90,120],[80,140]]} LAYER={
+
+}
+CASE_F_TIME=1 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseF_T1.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_F_OPERATIONAL_PASS=true
+CASE_G_CONFIG=Inner Anchor animated EXPECTED_SOURCE=Rectangle Source FALLBACK=false
+CASE_G_CAPTURE=SNAPSHOT_CAPTURED layerId=103 pathDepth=6
+CASE_G_VALUES_TIME=0 INNER={"anchor":[[0,0],[40,20],[80,40]]} OUTER={
+
+} LAYER={
+
+}
+CASE_G_TIME=0 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseG_T0.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_G_VALUES_TIME=0.5 INNER={"anchor":[[0,0],[40,20],[80,40]]} OUTER={
+
+} LAYER={
+
+}
+CASE_G_TIME=0.5 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseG_T0p5.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=8464
+CASE_G_VALUES_TIME=1 INNER={"anchor":[[0,0],[40,20],[80,40]]} OUTER={
+
+} LAYER={
+
+}
+CASE_G_TIME=1 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseG_T1.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_G_OPERATIONAL_PASS=true
+CASE_H_CONFIG=Outer Anchor animated EXPECTED_SOURCE=Rectangle Source FALLBACK=false
+CASE_H_CAPTURE=SNAPSHOT_CAPTURED layerId=116 pathDepth=6
+CASE_H_VALUES_TIME=0 INNER={
+
+} OUTER={"anchor":[[0,0],[-30,25],[-60,50]]} LAYER={
+
+}
+CASE_H_TIME=0 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseH_T0.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_H_VALUES_TIME=0.5 INNER={
+
+} OUTER={"anchor":[[0,0],[-30,25],[-60,50]]} LAYER={
+
+}
+CASE_H_TIME=0.5 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseH_T0p5.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_H_VALUES_TIME=1 INNER={
+
+} OUTER={"anchor":[[0,0],[-30,25],[-60,50]]} LAYER={
+
+}
+CASE_H_TIME=1 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseH_T1.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_H_OPERATIONAL_PASS=true
+CASE_I_CONFIG=Inner and Outer animated EXPECTED_SOURCE=Rectangle Source FALLBACK=false
+CASE_I_CAPTURE=SNAPSHOT_CAPTURED layerId=129 pathDepth=6
+CASE_I_VALUES_TIME=0 INNER={"pos":[[0,0],[60,-30],[120,0]],"rot":[0,15,30]} OUTER={"pos":[[0,0],[-40,20],[-80,40]],"rot":[0,-10,-20]} LAYER={
+
+}
+CASE_I_TIME=0 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseI_T0.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_I_VALUES_TIME=0.5 INNER={"pos":[[0,0],[60,-30],[120,0]],"rot":[0,15,30]} OUTER={"pos":[[0,0],[-40,20],[-80,40]],"rot":[0,-10,-20]} LAYER={
+
+}
+CASE_I_TIME=0.5 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseI_T0p5.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_I_VALUES_TIME=1 INNER={"pos":[[0,0],[60,-30],[120,0]],"rot":[0,15,30]} OUTER={"pos":[[0,0],[-40,20],[-80,40]],"rot":[0,-10,-20]} LAYER={
+
+}
+CASE_I_TIME=1 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseI_T1.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_I_OPERATIONAL_PASS=true
+CASE_J_CONFIG=Nested plus Layer animated EXPECTED_SOURCE=Rectangle Source FALLBACK=false
+CASE_J_CAPTURE=SNAPSHOT_CAPTURED layerId=142 pathDepth=6
+CASE_J_VALUES_TIME=0 INNER={"pos":[[0,0],[40,-20],[80,0]],"scale":[[100,100],[120,90],[140,80]]} OUTER={"rot":[0,20,40]} LAYER={"pos":[[960,540],[1040,500],[1120,460]],"rot":[0,10,20],"scale":[[100,100],[110,95],[120,90]]}
+CASE_J_TIME=0 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseJ_T0.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_J_VALUES_TIME=0.5 INNER={"pos":[[0,0],[40,-20],[80,0]],"scale":[[100,100],[120,90],[140,80]]} OUTER={"rot":[0,20,40]} LAYER={"pos":[[960,540],[1040,500],[1120,460]],"rot":[0,10,20],"scale":[[100,100],[110,95],[120,90]]}
+CASE_J_TIME=0.5 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseJ_T0p5.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_J_VALUES_TIME=1 INNER={"pos":[[0,0],[40,-20],[80,0]],"scale":[[100,100],[120,90],[140,80]]} OUTER={"rot":[0,20,40]} LAYER={"pos":[[960,540],[1040,500],[1120,460]],"rot":[0,10,20],"scale":[[100,100],[110,95],[120,90]]}
+CASE_J_TIME=1 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseJ_T1.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=8621
+CASE_J_OPERATIONAL_PASS=true
+CASE_K_CONFIG=Inner deterministic expression EXPECTED_SOURCE=Rectangle Source FALLBACK=false
+CASE_K_CAPTURE=SNAPSHOT_CAPTURED layerId=155 pathDepth=6
+CASE_K_VALUES_TIME=0 INNER={
+
+} OUTER={
+
+} LAYER={
+
+}
+CASE_K_TIME=0 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseK_T0.png PNG_CHECK_ATTEMPTS=3 PNG_EXISTS=true PNG_SIZE=0
+CASE_K_VALUES_TIME=0.5 INNER={
+
+} OUTER={
+
+} LAYER={
+
+}
+CASE_K_TIME=0.5 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseK_T0p5.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=8476
+CASE_K_VALUES_TIME=1 INNER={
+
+} OUTER={
+
+} LAYER={
+
+}
+CASE_K_TIME=1 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseK_T1.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_K_OPERATIONAL_PASS=true
+CASE_L_CONFIG=Inner and Outer deterministic expressions EXPECTED_SOURCE=Rectangle Source FALLBACK=false
+CASE_L_CAPTURE=SNAPSHOT_CAPTURED layerId=168 pathDepth=6
+CASE_L_VALUES_TIME=0 INNER={
+
+} OUTER={
+
+} LAYER={
+
+}
+CASE_L_TIME=0 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseL_T0.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_L_VALUES_TIME=0.5 INNER={
+
+} OUTER={
+
+} LAYER={
+
+}
+CASE_L_TIME=0.5 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseL_T0p5.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_L_VALUES_TIME=1 INNER={
+
+} OUTER={
+
+} LAYER={
+
+}
+CASE_L_TIME=1 OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase515AAnimatedNestedTransforms/CaseL_T1.png PNG_CHECK_ATTEMPTS=2 PNG_EXISTS=true PNG_SIZE=0
+CASE_L_OPERATIONAL_PASS=true
+STATUS=PASS_OPERATIONAL_ONLY

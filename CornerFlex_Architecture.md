@@ -1675,3 +1675,24 @@ no amplía la profundidad soportada, no implementa Skew y no modifica los
 contratos Snapshot/Geometry Target Path v1. Rectangle Source continúa limitado
 a Root, Single Group y Double Group affine válidos; todas las condiciones fuera
 de ese contrato deben continuar usando Layer Bounds.
+
+## Phase 5.15A — Animated Nested Transform Validation
+
+Phase 5.15A validó de forma independiente la evaluación temporal de transforms
+animados y expresiones sobre la cadena `Layer · Outer · Inner · Rectangle`.
+Los doce casos (`A–L`) y sus 36 frames (`T0`, `T0.5`, `T1`) pasaron:
+
+- Inner Position, Outer Position, Inner Rotation y Outer Rotation animados;
+- Inner Scale, Outer Scale, Inner Anchor y Outer Anchor animados;
+- animación simultánea Inner + Outer y Nested + Layer;
+- expresiones deterministas de Inner y de Inner + Outer.
+
+La evaluación post-expresión en tiempo de render quedó confirmada. El oracle
+independiente respeta ahora valores de keyframes explícitas cuando el tiempo
+coincide exactamente y solo interpola entre keys adyacentes. No fue necesario
+modificar producción: Snapshot Version 1, Geometry Target Path Version 1,
+provider CEP y contratos del AEX permanecen sin cambios.
+
+`FILE_LENGTH_REPORTING=UNRELIABLE_INFORMATIONAL_ONLY` y
+`SOURCE_EFFECTIVE=UNVERIFIED` son conclusiones operativas del harness; no
+representan un fallo funcional del efecto.
