@@ -1,0 +1,4 @@
+PHASE 5.14D REDUCED VISUAL MATRIX PREPARED
+STOP_ON_FIRST_FAILURE=true
+CASES=A_SingleGroupRegression,B_NestedIdentity,C_NestedPosition,D_NestedRotation,E_NonUniformScaleRotation,F_ImplicitShear,G_TrimZero,H_TrimTen,I_DepthThreeFallback,J_SkewFallback
+Provider loaded; manual Shape Group fixtures required.

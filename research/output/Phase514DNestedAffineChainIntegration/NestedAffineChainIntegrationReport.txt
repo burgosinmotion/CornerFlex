@@ -1,0 +1,103 @@
+PHASE 5.14D REDUCED VISUAL MATRIX A-J
+STOP_ON_FIRST_FAILURE=true
+CASE_COUNT=10
+MODE=AUTONOMOUS_MANUAL_EXECUTION
+CASE_A_CONFIG=Single Group Regression depth=1 source=Rectangle Source trim=0
+CASE_A_RECT_SIZE=500,500 RECT_POSITION=0,0
+CASE_A_GROUP_PATH=Root/Phase514D Outer/Phase514D Rectangle
+CASE_A_CAPTURE=SNAPSHOT_CAPTURED layerId=25 pathDepth=4 segments=4
+CASE_A_PNG_CHECK_ATTEMPTS=2
+CASE_A_PNG_EXISTS=true
+CASE_A_PNG_SIZE=0
+CASE_A_OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase514DNestedAffineChainIntegration/CaseA.png
+CASE_A_OPERATIONAL_PASS=true
+CASE_B_CONFIG=Nested Identity depth=2 source=Rectangle Source trim=0
+CASE_B_RECT_SIZE=500,500 RECT_POSITION=0,0
+CASE_B_GROUP_PATH=Root/Phase514D Outer/Phase514D Inner/Phase514D Rectangle
+CASE_B_CAPTURE=SNAPSHOT_CAPTURED layerId=38 pathDepth=6 segments=6
+CASE_B_PNG_CHECK_ATTEMPTS=2
+CASE_B_PNG_EXISTS=true
+CASE_B_PNG_SIZE=0
+CASE_B_OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase514DNestedAffineChainIntegration/CaseB.png
+CASE_B_OPERATIONAL_PASS=true
+CASE_C_CONFIG=Nested Position depth=2 source=Rectangle Source trim=0
+CASE_C_RECT_SIZE=500,500 RECT_POSITION=0,0
+CASE_C_GROUP_PATH=Root/Phase514D Outer/Phase514D Inner/Phase514D Rectangle
+CASE_C_CAPTURE=SNAPSHOT_CAPTURED layerId=51 pathDepth=6 segments=6
+CASE_C_PNG_CHECK_ATTEMPTS=2
+CASE_C_PNG_EXISTS=true
+CASE_C_PNG_SIZE=0
+CASE_C_OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase514DNestedAffineChainIntegration/CaseC.png
+CASE_C_OPERATIONAL_PASS=true
+CASE_D_CONFIG=Nested Rotation depth=2 source=Rectangle Source trim=0
+CASE_D_RECT_SIZE=500,500 RECT_POSITION=0,0
+CASE_D_GROUP_PATH=Root/Phase514D Outer/Phase514D Inner/Phase514D Rectangle
+CASE_D_CAPTURE=SNAPSHOT_CAPTURED layerId=64 pathDepth=6 segments=6
+CASE_D_PNG_CHECK_ATTEMPTS=2
+CASE_D_PNG_EXISTS=true
+CASE_D_PNG_SIZE=0
+CASE_D_OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase514DNestedAffineChainIntegration/CaseD.png
+CASE_D_OPERATIONAL_PASS=true
+CASE_E_CONFIG=Non-Uniform Scale + Rotation depth=2 source=Rectangle Source trim=0
+CASE_E_RECT_SIZE=500,500 RECT_POSITION=0,0
+CASE_E_GROUP_PATH=Root/Phase514D Outer/Phase514D Inner/Phase514D Rectangle
+CASE_E_CAPTURE=SNAPSHOT_CAPTURED layerId=77 pathDepth=6 segments=6
+CASE_E_PNG_CHECK_ATTEMPTS=2
+CASE_E_PNG_EXISTS=true
+CASE_E_PNG_SIZE=14403
+CASE_E_OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase514DNestedAffineChainIntegration/CaseE.png
+CASE_E_OPERATIONAL_PASS=true
+CASE_F_CONFIG=Implicit Shear depth=2 source=Rectangle Source trim=0
+CASE_F_RECT_SIZE=500,500 RECT_POSITION=0,0
+CASE_F_GROUP_PATH=Root/Phase514D Outer/Phase514D Inner/Phase514D Rectangle
+CASE_F_CAPTURE=SNAPSHOT_CAPTURED layerId=90 pathDepth=6 segments=6
+CASE_F_PNG_CHECK_ATTEMPTS=2
+CASE_F_PNG_EXISTS=true
+CASE_F_PNG_SIZE=14862
+CASE_F_OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase514DNestedAffineChainIntegration/CaseF.png
+CASE_F_OPERATIONAL_PASS=true
+CASE_G_CONFIG=Trim 0 depth=2 source=Rectangle Source trim=0
+CASE_G_RECT_SIZE=500,500 RECT_POSITION=0,0
+CASE_G_GROUP_PATH=Root/Phase514D Outer/Phase514D Inner/Phase514D Rectangle
+CASE_G_CAPTURE=SNAPSHOT_CAPTURED layerId=103 pathDepth=6 segments=6
+CASE_G_PNG_CHECK_ATTEMPTS=2
+CASE_G_PNG_EXISTS=true
+CASE_G_PNG_SIZE=0
+CASE_G_OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase514DNestedAffineChainIntegration/CaseG.png
+CASE_G_OPERATIONAL_PASS=true
+CASE_H_CONFIG=Trim 10% depth=2 source=Rectangle Source trim=10
+CASE_H_RECT_SIZE=500,500 RECT_POSITION=0,0
+CASE_H_GROUP_PATH=Root/Phase514D Outer/Phase514D Inner/Phase514D Rectangle
+CASE_H_CAPTURE=SNAPSHOT_CAPTURED layerId=116 pathDepth=6 segments=6
+CASE_H_PNG_CHECK_ATTEMPTS=2
+CASE_H_PNG_EXISTS=true
+CASE_H_PNG_SIZE=8628
+CASE_H_OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase514DNestedAffineChainIntegration/CaseH.png
+CASE_H_OPERATIONAL_PASS=true
+CASE_I_CONFIG=Depth Three Fallback depth=3 source=Layer Bounds trim=0
+CASE_I_RECT_SIZE=500,500 RECT_POSITION=0,0
+CASE_I_GROUP_PATH=Root/Phase514D Outer/Phase514D Inner/Phase514D Deep/Phase514D Rectangle
+CASE_I_CAPTURE=SNAPSHOT_CAPTURED layerId=129 pathDepth=8 segments=8
+CASE_I_PNG_CHECK_ATTEMPTS=2
+CASE_I_PNG_EXISTS=true
+CASE_I_PNG_SIZE=15140
+CASE_I_OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase514DNestedAffineChainIntegration/CaseI.png
+CASE_I_PNG_CHECK_ATTEMPTS=2
+CASE_I_PNG_EXISTS=true
+CASE_I_PNG_SIZE=15140
+CASE_I_OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase514DNestedAffineChainIntegration/CaseI_LayerBoundsReference.png
+CASE_I_OPERATIONAL_PASS=true
+CASE_J_CONFIG=Skew Fallback depth=2 source=Layer Bounds trim=0
+CASE_J_RECT_SIZE=500,500 RECT_POSITION=0,0
+CASE_J_GROUP_PATH=Root/Phase514D Outer/Phase514D Inner/Phase514D Rectangle
+CASE_J_CAPTURE=SNAPSHOT_CAPTURED layerId=142 pathDepth=6 segments=6
+CASE_J_PNG_CHECK_ATTEMPTS=2
+CASE_J_PNG_EXISTS=true
+CASE_J_PNG_SIZE=11239
+CASE_J_OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase514DNestedAffineChainIntegration/CaseJ.png
+CASE_J_PNG_CHECK_ATTEMPTS=2
+CASE_J_PNG_EXISTS=true
+CASE_J_PNG_SIZE=11239
+CASE_J_OUTPUT=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase514DNestedAffineChainIntegration/CaseJ_LayerBoundsReference.png
+CASE_J_OPERATIONAL_PASS=true
+STATUS=PASS_OPERATIONAL_ONLY

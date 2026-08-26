@@ -1517,3 +1517,161 @@ Baseline actualmente compatible:
 
 Cualquier cambio contractual debe validarse en ambos repositorios y actualizar
 la matriz de compatibilidad correspondiente.
+
+## Phase 5.14B — Bounded Affine Transform Chain Foundation
+
+Phase 5.14B introduce únicamente una foundation matemática/estructural para
+componer una cadena acotada de transformaciones 2D afines. No activa todavía
+Rectangle Source para dos Shape Groups anidados: el resolver runtime conserva la
+restricción Single Group de Phase 5.13C y cualquier nesting continúa en
+fallback Layer Bounds.
+
+`CF_AffineTransform2DChain` es un POD de capacidad máxima tres, suficiente para
+la secuencia conceptual `Inner Group → Outer Group → Layer`. No utiliza heap ni
+STL. Las entradas se almacenan desde el transform más cercano al Rectangle
+hacia sus padres. `AppendAffineTransform2DChain()` rechaza overflow, estados
+inválidos y componentes no finitos.
+
+La composición reutiliza `ComposeAffineTransform2D(parent, child)`, cuya
+convención es `parent · child`: primero se aplica el child y después el parent.
+Por tanto, para:
+
+```text
+Rectangle → Inner Group → Outer Group → Layer
+```
+
+el resultado es:
+
+```text
+Layer · Outer Group · Inner Group
+```
+
+`ComposeAffineTransform2DChain()` conserva la matriz afín completa. No intenta
+reducir una composición de escalas no uniformes y rotaciones a una suma de
+posiciones, una sola rotación y escalas componente a componente. Esa
+combinación puede producir shear implícito aunque Skew sea cero; la matriz
+general es la representación correcta.
+
+La foundation es compatible con el pipeline Single Group existente: la cadena
+de un solo grupo produce exactamente `Layer · Group`, con los mismos elementos
+`a`, `b`, `c`, `d`, `tx` y `ty`. Durante esta fase la chain permanece desconectada
+del resolver, `CF_GeometryResolveRequest`, renderer, membership y Trim. No se
+modifican los contratos `Rectangle Snapshot Version = 1` ni `Geometry Target
+Path Version = 1`, y no se modifica CEP/provider.
+
+El oracle independiente
+`research/ValidateAffineTransformChainFoundation.py` cubre identidad,
+posición, escala uniforme/no uniforme, rotación, anchor, valores fraccionarios,
+rotación negativa, combinaciones nested, anchors distintos, shear implícito,
+overflow, valores no finitos y la política de dos grupos todavía deshabilitada.
+
+El siguiente gate posible es Phase 5.14C — Hierarchical Runtime Resolution.
+Solo podrá activarse después de demostrar equivalencia Single Group, preservación
+de shear, fallback intacto y ausencia de cambios funcionales en Phase 5.13C.
+
+## Phase 5.14C — Hierarchical Nested Group Runtime Resolution
+
+Phase 5.14C separa la resolución jerárquica de la activación geométrica. El
+resolver puede inspeccionar y validar una cadena de hasta dos Shape Groups, pero
+la profundidad 2 todavía se marca como render-disabled y continúa usando
+fallback Layer Bounds.
+
+La clasificación runtime es:
+
+- profundidad 0: Rectangle Path directo bajo Root Contents; cero transforms;
+- profundidad 1: Single Group histórico; una transformación `inner`;
+- profundidad 2: candidato nested; `inner` y `outer` válidos, pero no activado
+  para Rectangle Source en esta fase;
+- profundidad mayor que 2: unsupported/fallback.
+
+`CF_GroupTransform2DChainContext` es un POD de metadata runtime con `count`,
+`supportedDepth`, validez, estado unsupported y dos contextos de grupo. No usa
+heap, STL ni handles persistentes. `chain[0]` corresponde al Inner Group y
+`chain[1]` al Outer Group. La composición futura mantiene el contrato:
+
+```text
+Layer · Outer · Inner · Rectangle
+```
+
+Cada grupo se resuelve por la ruta versionada existente, `propertyIndex` y
+Match Name token. `uniqueStreamId` permanece únicamente como diagnóstico. En
+tiempo de render se leen Anchor, Position, Scale, Rotation y Skew; Scale se
+normaliza dividiendo por 100. Scale no finita, cero o negativa, Skew distinto de
+cero, parenting, 3D o una propiedad ausente invalidan la cadena completa.
+
+`ResolveGroupTransform2DChainFromAfterEffects()` dispone las referencias del SDK
+en el mismo ámbito. No selecciona otro grupo, no rebindea hermanos y no
+conserva handles. Para profundidad 2 el contexto se construye únicamente como
+resultado de resolución; el gate de Render no lo copia a `groupTransform`, por
+lo que `ResolveGeometrySource()` y el renderer siguen usando Layer Bounds.
+
+Los contratos Rectangle Snapshot y Geometry Target Path permanecen en versión 1
+y el provider CEP no cambia. El harness diagnóstico
+`research/ValidateNestedGroupRuntimeResolution.jsx` crea casos Root, Single,
+Double y Triple, y captura cada Rectangle Path mediante el provider existente.
+El oracle `research/ValidateNestedGroupRuntimeResolution.py` cubre además
+índices inválidos, tokens incorrectos y paths truncados.
+
+## Phase 5.14D — Nested Affine Chain Integration
+
+Phase 5.14D conecta la resolución de profundidad 2 con la foundation afín. La
+activación está limitada a exactamente dos Shape Groups 2D válidos. La cadena
+se construye en orden:
+
+```text
+Inner → Outer → Layer
+```
+
+y `ComposeAffineTransform2DChain()` produce:
+
+```text
+Layer · Outer · Inner
+```
+
+La primitive Rectangle permanece en coordenadas locales. Trim se ejecuta antes
+de componer las transformaciones. Para la ruta nested, `CF_AffineRectangle` es
+la representación final y `IsPointInsideAffineRectangle()` realiza la
+membership; el AABB se usa únicamente para rechazo rápido y containment. No se
+convierte una affine con shear implícito a `CF_OrientedRectangle`.
+
+La activación exige target/path válidos, dos grupos exactos, transforms finitas,
+Scale X/Y positiva, Skew cero, capa 2D, ausencia de parenting, chain válida y
+determinante no degenerado. Cualquier fallo conserva Layer Bounds sin render
+parcial. Profundidad 0 y Single Group mantienen sus rutas históricas; profundidad
+mayor que 2, Skew, Scale cero/negativa, parenting y 3D continúan en fallback.
+
+Los contratos Snapshot y Geometry Target Path permanecen en versión 1. CEP y el
+provider no cambian. La integración ocurre antes de la iteración de píxeles; los
+callbacks 8/16 bpc mantienen la semántica validada de bounds rejection, centro
+de píxel, membership affine y copia/alpha.
+
+### Phase 5.14D-I–III — Cierre de Nested Affine Chain
+
+Phase 5.14D-I identificó una fuga en la selección de fuente: una jerarquía no
+soportada podía conservar Rectangle Source aunque la cadena de grupos hubiera
+sido rechazada. El resolver sí marcaba `isUnsupported = TRUE` e
+`isValid = FALSE` para profundidad mayor que dos; la decisión faltante estaba
+en `Render()` antes de construir `CF_GeometrySourceData`.
+
+Phase 5.14D-II añadió el gate de selección de fuente. Rectangle Source solo se
+permite cuando el target es válido, la jerarquía está completamente soportada y
+la fuente rectangular convertida está disponible. Root válido, Single Group
+válido y Double Group affine válido permanecen permitidos. Una resolución de
+jerarquía fallida, cadena affine inválida, transform no soportada, profundidad
+mayor que dos o fuente convertida no disponible fuerza Layer Bounds. No se
+aplican transformaciones parciales.
+
+Phase 5.14D-III repitió manualmente la matriz visual reducida A–J con
+`STOP_ON_FIRST_FAILURE=true`. Los diez casos llegaron a
+`STATUS=PASS_OPERATIONAL_ONLY`. La comparación RGBA independiente confirmó:
+
+- Case I (Depth Three Fallback) frente a `CaseI_LayerBoundsReference.png`:
+  cero píxeles diferentes y diferencia máxima por canal cero.
+- Case J (Skew Fallback) frente a `CaseJ_LayerBoundsReference.png`:
+  cero píxeles diferentes y diferencia máxima por canal cero.
+
+Por tanto, Phase 5.14D queda cerrada con PASS visual y operacional. La matriz
+no amplía la profundidad soportada, no implementa Skew y no modifica los
+contratos Snapshot/Geometry Target Path v1. Rectangle Source continúa limitado
+a Root, Single Group y Double Group affine válidos; todas las condiciones fuera
+de ese contrato deben continuar usando Layer Bounds.

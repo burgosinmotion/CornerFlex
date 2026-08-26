@@ -439,6 +439,29 @@ typedef short int			int16;
 
 	} CF_GroupTransform2DContext;
 
+	// Runtime-only hierarchy result. Entries are ordered Inner, then Outer.
+	typedef struct
+	{
+		A_Boolean isValid;
+		A_Boolean isUnsupported;
+		A_long count;
+		A_long supportedDepth;
+		CF_GroupTransform2DContext inner;
+		CF_GroupTransform2DContext outer;
+
+	} CF_GroupTransform2DChainContext;
+
+	// Bounded affine chain: local Shape Group transforms are appended first,
+	// followed by outer groups and finally the Layer transform.
+	#define CF_AFFINE_TRANSFORM_CHAIN_MAX 3
+	typedef struct
+	{
+		A_Boolean isValid;
+		A_long count;
+		CF_AffineTransform2D transforms[CF_AFFINE_TRANSFORM_CHAIN_MAX];
+
+	} CF_AffineTransform2DChain;
+
 	typedef struct
 	{
 		A_long inputWidth;
@@ -469,10 +492,12 @@ typedef short int			int16;
 		CF_RectangleGeometry rectangleGeometry;
 		CF_CornerRadii cornerRadii;
 		CF_AffineTransform2D groupTransform;
+		CF_AffineTransform2DChain transformChain;
 		CF_GeometrySource source;
 		CF_PrimitiveType primitiveType;
 		A_Boolean hasLayerTransform;
 		A_Boolean hasGroupTransform;
+		A_Boolean hasTransformChain;
 		A_Boolean isFallback;
 
 	} CF_GeometryContext;
@@ -538,6 +563,22 @@ typedef short int			int16;
 	ComposeAffineTransform2D(
 		const CF_AffineTransform2D& parent,
 		const CF_AffineTransform2D& child);
+
+	CF_AffineTransform2DChain
+	InitializeAffineTransform2DChain();
+
+	A_Boolean
+	AppendAffineTransform2DChain(
+		CF_AffineTransform2DChain& chain,
+		const CF_AffineTransform2D& transform);
+
+	A_Boolean
+	IsAffineTransform2DChainValid(
+		const CF_AffineTransform2DChain& chain);
+
+	CF_AffineTransform2D
+	ComposeAffineTransform2DChain(
+		const CF_AffineTransform2DChain& chain);
 
 	CF_AffineTransform2D
 	BuildLayerTransform2D(
@@ -620,6 +661,13 @@ typedef short int			int16;
 	// Resolves one immediate Vector Group and never retains SDK references.
 	CF_GroupTransform2DContext
 	ResolveSingleGroupTransformFromAfterEffects(
+		PF_InData* in_data,
+		const CF_GeometryTargetPath& targetPath);
+
+	// Resolves zero, one, or two group transforms without activating nested
+	// geometry in the renderer. Depth greater than two remains unsupported.
+	CF_GroupTransform2DChainContext
+	ResolveGroupTransform2DChainFromAfterEffects(
 		PF_InData* in_data,
 		const CF_GeometryTargetPath& targetPath);
 

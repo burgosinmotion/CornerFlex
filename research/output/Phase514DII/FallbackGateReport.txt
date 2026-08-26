@@ -1,0 +1,10 @@
+PHASE 5.14D-II FALLBACK GATE I/J
+CASE=I DEPTH=3 CAPTURE=SNAPSHOT_CAPTURED PATH_DEPTH=8 EXPECTED_SOURCE=Layer Bounds
+PNG=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase514DII/CaseI.png ATTEMPTS=2 SIZE=15140
+PNG=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase514DII/CaseI_LayerBoundsReference.png ATTEMPTS=2 SIZE=15140
+CASE=I OPERATIONAL_PASS=true
+CASE=J DEPTH=2 CAPTURE=SNAPSHOT_CAPTURED PATH_DEPTH=6 EXPECTED_SOURCE=Layer Bounds
+PNG=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase514DII/CaseJ.png ATTEMPTS=2 SIZE=11239
+PNG=E:\Files\Proyectos\CornerFlexDev\AfterEffectsSDK2025\Examples\Template\Skeleton\research\output\Phase514DII/CaseJ_LayerBoundsReference.png ATTEMPTS=2 SIZE=0
+CASE=J OPERATIONAL_PASS=true
+STATUS=READY_FOR_RGBA_COMPARISON

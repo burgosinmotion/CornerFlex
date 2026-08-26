@@ -2088,6 +2088,269 @@ ResolveSingleGroupTransformFromAfterEffects(
 }
 
 static A_Boolean
+ReadDirectVectorGroupTransform(
+	AEGP_DynamicStreamSuite4* dynamicStreamSuite,
+	AEGP_StreamSuite6* streamSuite,
+	AEGP_StreamRefH groupH,
+	AEGP_PluginID pluginId,
+	const A_Time& compTime,
+	CF_GroupTransform2DContext& context)
+{
+	AEGP_StreamRefH transformGroupH = NULL;
+	AEFX_CLR_STRUCT(context);
+	context.transform = MakeIdentityAffineTransform2D();
+
+	if (!dynamicStreamSuite || !streamSuite || !groupH) {
+		context.isUnsupported = TRUE;
+		return FALSE;
+	}
+
+	A_char groupMatchName[AEGP_MAX_STREAM_MATCH_NAME_SIZE] = {};
+	A_Err err =
+		dynamicStreamSuite->AEGP_GetMatchName(
+			groupH,
+			groupMatchName);
+
+	if (!err &&
+		strcmp(groupMatchName, CF_VECTOR_GROUP_MATCH_NAME) != 0) {
+		err = A_Err_GENERIC;
+	}
+
+	if (!err) {
+		err = dynamicStreamSuite->AEGP_GetNewStreamRefByMatchname(
+			pluginId,
+			groupH,
+			CF_VECTOR_TRANSFORM_GROUP_MATCH_NAME,
+			&transformGroupH);
+	}
+
+	if (!err && transformGroupH) {
+		context.isValid =
+			ReadGroupTwoDValue(
+				dynamicStreamSuite, streamSuite, transformGroupH,
+				pluginId, CF_VECTOR_ANCHOR_MATCH_NAME, compTime,
+				context.anchorX, context.anchorY) &&
+			ReadGroupTwoDValue(
+				dynamicStreamSuite, streamSuite, transformGroupH,
+				pluginId, CF_VECTOR_POSITION_MATCH_NAME, compTime,
+				context.positionX, context.positionY) &&
+			ReadGroupTwoDValue(
+				dynamicStreamSuite, streamSuite, transformGroupH,
+				pluginId, CF_VECTOR_SCALE_MATCH_NAME, compTime,
+				context.scaleX, context.scaleY) &&
+			ReadGroupOneDValue(
+				dynamicStreamSuite, streamSuite, transformGroupH,
+				pluginId, CF_VECTOR_ROTATION_MATCH_NAME, compTime,
+				context.rotationDegrees);
+
+		if (context.isValid) {
+			context.scaleX /= 100.0;
+			context.scaleY /= 100.0;
+		}
+
+		PF_FpLong skew = 0;
+		if (context.isValid &&
+			!ReadGroupOneDValue(
+				dynamicStreamSuite, streamSuite, transformGroupH,
+				pluginId, CF_VECTOR_SKEW_MATCH_NAME, compTime, skew)) {
+			context.isValid = FALSE;
+		}
+
+		if (context.isValid &&
+			(context.scaleX <= 0.0 || context.scaleY <= 0.0 ||
+			 !std::isfinite(context.scaleX) ||
+			 !std::isfinite(context.scaleY) ||
+			 !std::isfinite(skew) ||
+			 std::fabs(skew) > 1.0e-6)) {
+			context.isValid = FALSE;
+		}
+
+		if (context.isValid) {
+			const PF_FpLong radians =
+				context.rotationDegrees *
+				(3.14159265358979323846 / 180.0);
+			const PF_FpLong c = std::cos(radians);
+			const PF_FpLong s = std::sin(radians);
+			context.transform = MakeIdentityAffineTransform2D();
+			context.transform.a = c * context.scaleX;
+			context.transform.b = s * context.scaleX;
+			context.transform.c = -s * context.scaleY;
+			context.transform.d = c * context.scaleY;
+			context.transform.tx = context.positionX -
+				((context.transform.a * context.anchorX) +
+				 (context.transform.c * context.anchorY));
+			context.transform.ty = context.positionY -
+				((context.transform.b * context.anchorX) +
+				 (context.transform.d * context.anchorY));
+			context.hasGroupTransform = TRUE;
+			context.isValid =
+				std::isfinite(context.transform.a) &&
+				std::isfinite(context.transform.b) &&
+				std::isfinite(context.transform.c) &&
+				std::isfinite(context.transform.d) &&
+				std::isfinite(context.transform.tx) &&
+				std::isfinite(context.transform.ty);
+		}
+	}
+
+	if (transformGroupH) {
+		streamSuite->AEGP_DisposeStream(transformGroupH);
+	}
+
+	context.isUnsupported = context.isValid ? FALSE : TRUE;
+	return context.isValid;
+}
+
+CF_GroupTransform2DChainContext
+ResolveGroupTransform2DChainFromAfterEffects(
+	PF_InData* in_data,
+	const CF_GeometryTargetPath& targetPath)
+{
+	CF_GroupTransform2DChainContext context;
+	AEFX_CLR_STRUCT(context);
+	context.inner.transform = MakeIdentityAffineTransform2D();
+	context.outer.transform = MakeIdentityAffineTransform2D();
+
+	if (!in_data || !targetPath.isValid || !in_data->pica_basicP ||
+		targetPath.segmentCount < 0 ||
+		targetPath.segmentCount > CF_GEOMETRY_TARGET_PATH_MAX_DEPTH) {
+		context.isUnsupported = TRUE;
+		return context;
+	}
+
+	for (A_long index = 0; index < targetPath.segmentCount; index++) {
+		if (targetPath.segments[index].expectedMatchToken ==
+			CF_MATCH_VECTOR_GROUP) {
+			context.count++;
+		}
+	}
+	context.supportedDepth = context.count;
+	if (context.count > 2) {
+		context.isUnsupported = TRUE;
+		return context;
+	}
+
+	AEGP_PFInterfaceSuite1* pfInterfaceSuite = NULL;
+	AEGP_LayerSuite9* layerSuite = NULL;
+	AEGP_DynamicStreamSuite4* dynamicStreamSuite = NULL;
+	AEGP_StreamSuite6* streamSuite = NULL;
+	AEGP_SuiteHandler suites(in_data->pica_basicP);
+	try {
+		pfInterfaceSuite = suites.PFInterfaceSuite1();
+		layerSuite = suites.LayerSuite9();
+		dynamicStreamSuite = suites.DynamicStreamSuite4();
+		streamSuite = suites.StreamSuite6();
+	}
+	catch (...) {
+		context.isUnsupported = TRUE;
+		return context;
+	}
+
+	AEGP_StreamRefH rectangleStreamH = NULL;
+	AEGP_StreamRefH currentContainerH = NULL;
+	A_Time compTime;
+	AEFX_CLR_STRUCT(compTime);
+	A_Err err =
+		pfInterfaceSuite->AEGP_ConvertEffectToCompTime(
+			in_data->effect_ref,
+			in_data->current_time,
+			in_data->time_scale,
+			&compTime);
+
+	if (!err) {
+		err = ResolveGeometryTargetPathStreamFromAfterEffects(
+			in_data,
+			targetPath,
+			pfInterfaceSuite,
+			layerSuite,
+			dynamicStreamSuite,
+			streamSuite,
+			&rectangleStreamH);
+	}
+
+	if (!err && rectangleStreamH) {
+		err = dynamicStreamSuite->AEGP_GetNewParentStreamRef(
+			S_cornerFlexPluginId,
+			rectangleStreamH,
+			&currentContainerH);
+	}
+
+	for (A_long groupIndex = 0;
+		!err && groupIndex < context.count;
+		groupIndex++) {
+		AEGP_StreamRefH groupH = NULL;
+		AEGP_StreamRefH nextContainerH = NULL;
+		A_char containerMatchName[AEGP_MAX_STREAM_MATCH_NAME_SIZE] = {};
+
+		err = dynamicStreamSuite->AEGP_GetMatchName(
+			currentContainerH,
+			containerMatchName);
+		if (!err && strcmp(containerMatchName,
+			CF_VECTORS_GROUP_MATCH_NAME) != 0) {
+			err = A_Err_GENERIC;
+		}
+		if (!err) {
+			err = dynamicStreamSuite->AEGP_GetNewParentStreamRef(
+				S_cornerFlexPluginId,
+				currentContainerH,
+				&groupH);
+		}
+
+		CF_GroupTransform2DContext& groupContext =
+			groupIndex == 0 ? context.inner : context.outer;
+		if (!err && !ReadDirectVectorGroupTransform(
+			dynamicStreamSuite,
+			streamSuite,
+			groupH,
+			S_cornerFlexPluginId,
+			compTime,
+			groupContext)) {
+			err = A_Err_GENERIC;
+		}
+
+		if (!err) {
+			err = dynamicStreamSuite->AEGP_GetNewParentStreamRef(
+				S_cornerFlexPluginId,
+				groupH,
+				&nextContainerH);
+		}
+		if (groupH) {
+			streamSuite->AEGP_DisposeStream(groupH);
+		}
+		if (currentContainerH) {
+			streamSuite->AEGP_DisposeStream(currentContainerH);
+		}
+		currentContainerH = nextContainerH;
+	}
+
+	if (!err && currentContainerH) {
+		A_char rootMatchName[AEGP_MAX_STREAM_MATCH_NAME_SIZE] = {};
+		err = dynamicStreamSuite->AEGP_GetMatchName(
+			currentContainerH,
+			rootMatchName);
+		if (!err && strcmp(rootMatchName, "ADBE Root Vectors Group") != 0) {
+			err = A_Err_GENERIC;
+		}
+	}
+
+	if (currentContainerH) {
+		streamSuite->AEGP_DisposeStream(currentContainerH);
+	}
+	if (rectangleStreamH) {
+		streamSuite->AEGP_DisposeStream(rectangleStreamH);
+	}
+
+	if (err) {
+		context.isValid = FALSE;
+		context.isUnsupported = TRUE;
+		return context;
+	}
+
+	context.isValid = TRUE;
+	return context;
+}
+
+static A_Boolean
 ReadLayerSpatialValue(
 	AEGP_StreamSuite6* streamSuite,
 	AEGP_LayerH layerH,
@@ -2553,6 +2816,89 @@ ComposeAffineTransform2D(
 		(parent.b * child.tx) +
 		(parent.d * child.ty) +
 		parent.ty;
+
+	return result;
+}
+
+static A_Boolean
+IsFiniteAffineTransform2D(
+	const CF_AffineTransform2D& transform)
+{
+	return std::isfinite(transform.a) &&
+		std::isfinite(transform.b) &&
+		std::isfinite(transform.c) &&
+		std::isfinite(transform.d) &&
+		std::isfinite(transform.tx) &&
+		std::isfinite(transform.ty)
+			? TRUE
+			: FALSE;
+}
+
+CF_AffineTransform2DChain
+InitializeAffineTransform2DChain()
+{
+	CF_AffineTransform2DChain chain;
+	AEFX_CLR_STRUCT(chain);
+	chain.isValid = TRUE;
+	chain.count = 0;
+	return chain;
+}
+
+A_Boolean
+AppendAffineTransform2DChain(
+	CF_AffineTransform2DChain& chain,
+	const CF_AffineTransform2D& transform)
+{
+	if (!chain.isValid ||
+		chain.count < 0 ||
+		chain.count >= CF_AFFINE_TRANSFORM_CHAIN_MAX ||
+		!IsFiniteAffineTransform2D(transform)) {
+		chain.isValid = FALSE;
+		return FALSE;
+	}
+
+	chain.transforms[chain.count] = transform;
+	chain.count++;
+	return TRUE;
+}
+
+A_Boolean
+IsAffineTransform2DChainValid(
+	const CF_AffineTransform2DChain& chain)
+{
+	if (!chain.isValid ||
+		chain.count < 0 ||
+		chain.count > CF_AFFINE_TRANSFORM_CHAIN_MAX) {
+		return FALSE;
+	}
+
+	for (A_long index = 0; index < chain.count; index++) {
+		if (!IsFiniteAffineTransform2D(chain.transforms[index])) {
+			return FALSE;
+		}
+	}
+
+	return TRUE;
+}
+
+CF_AffineTransform2D
+ComposeAffineTransform2DChain(
+	const CF_AffineTransform2DChain& chain)
+{
+	CF_AffineTransform2D result =
+		MakeIdentityAffineTransform2D();
+
+	if (!IsAffineTransform2DChainValid(chain)) {
+		return result;
+	}
+
+	// transforms[0] is closest to the Rectangle; each later transform is its
+	// parent. This produces Layer * Outer * Inner for a three-entry chain.
+	for (A_long index = 0; index < chain.count; index++) {
+		result = ComposeAffineTransform2D(
+			chain.transforms[index],
+			result);
+	}
 
 	return result;
 }
@@ -3106,14 +3452,22 @@ BuildRenderContext(
 		CF_AffineTransform2D combinedTransform =
 			geometryContext.layerTransform;
 
-		if (geometryContext.hasGroupTransform) {
+		if (geometryContext.hasTransformChain &&
+			IsAffineTransform2DChainValid(
+				geometryContext.transformChain)) {
+			combinedTransform =
+				ComposeAffineTransform2DChain(
+					geometryContext.transformChain);
+		}
+		else if (geometryContext.hasGroupTransform) {
 			combinedTransform =
 				ComposeAffineTransform2D(
 					geometryContext.layerTransform,
 					geometryContext.groupTransform);
 		}
 
-		if (geometryContext.hasGroupTransform) {
+		if (geometryContext.hasGroupTransform ||
+			geometryContext.hasTransformChain) {
 			const CF_AffineRectangle localRectangle =
 				BuildAxisAlignedAffineRectangle(
 					geometryContext.geometryBounds);
@@ -3235,14 +3589,54 @@ Render(
 		MakeIdentityAffineTransform2D();
 	groupTransformContext.isValid = FALSE;
 
-	// Activate only the fully resolved, single-group target path.
+	CF_GroupTransform2DChainContext groupTransformChainContext;
+	AEFX_CLR_STRUCT(groupTransformChainContext);
+	groupTransformChainContext.inner.transform =
+		MakeIdentityAffineTransform2D();
+	groupTransformChainContext.outer.transform =
+		MakeIdentityAffineTransform2D();
+
+	// Resolve hierarchy metadata, but keep depth 2 render-disabled in 5.14C.
 	if (snapshotSourceEnabled &&
 		targetPathLocation.wasFound &&
 		targetPathLocation.isRectanglePath) {
-		groupTransformContext =
-			ResolveSingleGroupTransformFromAfterEffects(
+		groupTransformChainContext =
+			ResolveGroupTransform2DChainFromAfterEffects(
 				in_data,
 				targetPath);
+
+		if (groupTransformChainContext.isValid &&
+			groupTransformChainContext.supportedDepth == 0) {
+			groupTransformContext.isValid = TRUE;
+			groupTransformContext.hasGroupTransform = FALSE;
+		}
+		else if (groupTransformChainContext.isValid &&
+			groupTransformChainContext.supportedDepth == 1) {
+			groupTransformContext =
+				groupTransformChainContext.inner;
+		}
+		else if (groupTransformChainContext.supportedDepth >= 2) {
+			// Nested detection is intentionally a fallback gate until 5.14D.
+			groupTransformContext.isUnsupported = TRUE;
+		}
+	}
+
+	// Rectangle Source is permitted only when the target hierarchy is fully
+	// supported. Unsupported depth, invalid transforms, and invalid targets
+	// must fall back before geometry source selection; no partial chain may leak
+	// into the renderer.
+	A_Boolean rectangleSourceEnabled =
+		snapshotSourceEnabled;
+
+	if (rectangleSourceEnabled) {
+		if (!targetPathLocation.wasFound ||
+			!targetPathLocation.isRectanglePath ||
+			!groupTransformChainContext.isValid ||
+			groupTransformChainContext.isUnsupported ||
+			groupTransformChainContext.supportedDepth > 2 ||
+			!convertedRectangleSource.isAvailable) {
+			rectangleSourceEnabled = FALSE;
+		}
 	}
 
 	CF_GeometryResolveRequest resolveRequest;
@@ -3255,12 +3649,17 @@ Render(
 		DiscoverRectangleSourceFromAfterEffects(
 			in_data,
 			targetIdentity);
+	CF_RectangleSourceData gatedDiscoveredRectangleSource =
+		discoveredRectangleSource;
+	if (!rectangleSourceEnabled) {
+		gatedDiscoveredRectangleSource.isAvailable = FALSE;
+	}
 
 	const CF_RectangleSourceData selectedRectangleSource =
 		SelectRectangleSourceData(
-			snapshotSourceEnabled,
+			rectangleSourceEnabled,
 			convertedRectangleSource,
-			discoveredRectangleSource);
+			gatedDiscoveredRectangleSource);
 
 	// First activation point where an enabled snapshot can modify geometryBounds.
 	resolveRequest.rectangleSource =
@@ -3276,6 +3675,32 @@ Render(
 
 	CF_GeometryContext geometryContext =
 		BuildGeometryContext(sourceData);
+
+	// Activate the complete affine chain only for a validated two-group target.
+	// The chain order is Inner, Outer, Layer; depth 0/1 keeps the historical path.
+	if (rectangleSourceEnabled &&
+		groupTransformChainContext.isValid &&
+		groupTransformChainContext.supportedDepth == 2 &&
+		sourceData.hasLayerTransform) {
+		CF_AffineTransform2DChain transformChain =
+			InitializeAffineTransform2DChain();
+		const A_Boolean chainBuilt =
+			AppendAffineTransform2DChain(
+				transformChain,
+				groupTransformChainContext.inner.transform) &&
+			AppendAffineTransform2DChain(
+				transformChain,
+				groupTransformChainContext.outer.transform) &&
+			AppendAffineTransform2DChain(
+				transformChain,
+				sourceData.layerTransform) &&
+			IsAffineTransform2DChainValid(transformChain);
+
+		if (chainBuilt) {
+			geometryContext.transformChain = transformChain;
+			geometryContext.hasTransformChain = TRUE;
+		}
+	}
 
 	const A_Boolean baseGeometryIsValid =
 		IsGeometryContextValid(geometryContext);
